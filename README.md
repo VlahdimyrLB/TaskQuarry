@@ -1,6 +1,20 @@
 # TaskQuarry
+
 A simple project management tool using Express.js, React 18 and TailwindCSS.
-## Addtional Tools 
+
+## Addtional Tools
+
 - Vite
 - Material Tailwind
-## IMPORTANT NOTE: ALWAYS ADD-COMMIT-PUSH in the ROOT Folder(TaskQuarry)
+- Heroicons
+
+## IMPORTANT NOTE
+
+- ALWAYS ADD, COMMIT and BRANCH in Root Folder
+- ALWAYS Create or Switch Branch First, Before Add and Commit
+- NPM INSTALL ONLY IN FRONTEND FOLDER / AVOID INSTALLING IN ROOT FOLDER
+
+## Branch Convention
+
+- git checkout -b "Name-Feature-SmallConciseDetail"
+- ex. "Dodi-Login-IconState"
