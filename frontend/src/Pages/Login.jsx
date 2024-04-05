@@ -10,10 +10,11 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { users } from "../data";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   const handleViewPassword = () => {
@@ -21,19 +22,22 @@ const Login = () => {
   };
 
   const handleLogin = () => {
-    // Find user by username
-    const user = users.find((user) => user.username === username);
+    // Validate username and password
+    const user = users.find(
+      (user) => user.username === username && user.password === password
+    );
+    console.log(user);
 
-    // Check if user exists and password matches
-    if (user && user.password === password) {
-      console.log("Login successful");
-      if (user.role === "user") {
-        navigate("/user");
-      } else if (user.role === "admin") {
-        navigate("/admin");
-      }
+    if (user.role === "user") {
+      setIsAuthenticated(true);
+      setUser({ username: username, password: password });
+      navigate("/user");
+    } else if (user.role === "admin") {
+      setIsAuthenticated(true);
+      setUser({ username: username, password: password });
+      navigate("/admin");
     } else {
-      console.log("Invalid username or password");
+      alert("Invalid username or password");
     }
   };
 
