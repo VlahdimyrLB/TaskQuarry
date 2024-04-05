@@ -1,31 +1,40 @@
 // App.jsx
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import Login from "./Pages/Login";
-import UserMenuBar from "./Components/UserMenuBar";
-import AdminMenuBar from "./Components/AdminMenuBar";
-import PrivateRoute from "./Components/PrivateRoute";
+import Userpage from "./Pages/UserPage";
+import AdminPage from "./Pages/AdminPage";
+import ProtectedRoute from "./Pages/ProtectedRoute";
 
 function App() {
+  const [user, setUser] = useState(null);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        {/* <Route
-          path="/user/*"
-          element={
-            <PrivateRoute element={<UserMenuBar />} requiredRole="user" />
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <PrivateRoute element={<AdminMenuBar />} requiredRole="admin" />
-          }
-        /> */}
-        {/* Add other routes */}
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<Login setUser={setUser} />} />
+
+      <Route
+        path="/user"
+        element={
+          <ProtectedRoute user={user}>
+            <Userpage user={user} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute user={user}>
+            <AdminPage user={user} />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Error Page path is asterisk */}
+      <Route path="*" element={<Error />} />
+    </Routes>
   );
 }
 
