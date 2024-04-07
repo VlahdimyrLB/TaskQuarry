@@ -1,23 +1,31 @@
+import { useState } from "react";
 import Sidebar from "../Components/Admin/Sidebar";
 import Navbar from "../Components/Shared/Navbar";
+import { Card } from "@material-tailwind/react";
 
 const AdminPage = ({ user }) => {
   return (
-    <div className="relative">
-      <nav className="fixed top-0 left-80 right-0 h-10 bg-white z-10 py-2">
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex flex-col w-full">
         <Navbar />
-      </nav>
-
-      <aside className="fixed top-0 left-0 bottom-0 h-screen w-80 z-10">
-        <Sidebar />
-      </aside>
-
-      <section className="ml-80 mt-10  bg-[#f8fafc] ">
-        {/* Load Pages Here */}
-        <p className="py-96">
-          .............................SECTION..................................................................
-        </p>
-      </section>
+        {/* MAIN CONTENT SECTION */}
+        <section className="bg-gray-100 h-screen text-white p-5">
+          {/* TEST DASHBOARD CONTENT NOTE: NOT YET RESPONSIVE */}
+          <p className="font-bold text-gray-800 mb-4">Dashboard</p>
+          <div className="grid grid-cols-1 gap-4 mt-1 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="p-8 rounded-md h-72 mb-2 md:h-[300px] md:w-[400px]">
+              This is a mf card
+            </Card>
+            <Card className="p-8 rounded-md h-72 mb-2 md:h-[300px] md:w-[400px]">
+              This is a mf card
+            </Card>
+            <Card className="p-8 rounded-md h-72 mb-2 md:h-[300px] md:w-[400px]">
+              This is a mf card
+            </Card>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
