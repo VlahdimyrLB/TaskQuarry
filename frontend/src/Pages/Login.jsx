@@ -43,9 +43,9 @@ const Login = ({ setUser }) => {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <Card className="w-96 mx-auto rounded-md">
-        <CardBody className="mt-4 mx-auto h-[300px]">
-          <div className="flex flex-col w-80">
+      <Card className="w-80 md:w-96 mx-auto rounded-md">
+        <CardBody className="mt-4 mx-auto h-[268px]">
+          <div className="flex flex-col md:w-80">
             <Typography className="text-center uppercase text-lg font-semibold mb-2">
               Login
             </Typography>
@@ -73,9 +73,9 @@ const Login = ({ setUser }) => {
                 onClick={handleViewPassword}
               >
                 {visible ? (
-                  <EyeIcon className="w-5 text-gray-700 hover:text-gray-900 hover:cursor-pointer" />
+                  <EyeIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
                 ) : (
-                  <EyeSlashIcon className="w-5 text-gray-700 hover:text-gray-900 hover:cursor-pointer" />
+                  <EyeSlashIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
                 )}
               </button>
             </div>
