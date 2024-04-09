@@ -34,7 +34,7 @@ const Sidebar = ({ isOpen, close }) => {
 
   return (
     <>
-      {/* TO DO: ADD ANIMATION FOR SIDEBAR CLOSE/OPEN */}
+      {/* TO DO: ADD ANIMATION FOR SIDEBAR CLOSE/OPEN i*/}
       <div
         id="drawer-example"
         className={`h-screen max-w-[16rem] shadow-xl bg-[#1B1B1B] rounded-0 md:block ${
