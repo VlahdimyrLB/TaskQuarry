@@ -14,6 +14,7 @@ const Login = ({ setUser }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
@@ -26,13 +27,12 @@ const Login = ({ setUser }) => {
     const user = users.find(
       (user) => user.username === username && user.password === password
     );
-    console.log(user);
 
-    if (user.role === "user") {
+    if (user && user.role === "user") {
       setIsAuthenticated(true);
       setUser({ username: username, password: password });
       navigate("/user");
-    } else if (user.role === "admin") {
+    } else if (user && user.role === "admin") {
       setIsAuthenticated(true);
       setUser({ username: username, password: password });
       navigate("/admin");
@@ -41,53 +41,62 @@ const Login = ({ setUser }) => {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleLogin();
+  };
+
   return (
     <div className="h-screen flex justify-center items-center">
       <Card className="w-80 md:w-96 mx-auto rounded-md">
         <CardBody className="mt-4 mx-auto h-[268px]">
-          <div className="flex flex-col md:w-80">
-            <Typography className="text-center uppercase text-lg font-semibold mb-2">
-              Login
-            </Typography>
-            <div className="mb-6">
-              <Input
-                variant="standard"
-                id="username"
-                name="username"
-                label="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
+          {/* FORM */}
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col md:w-80">
+              <Typography className="text-center uppercase text-lg font-semibold mb-2">
+                Login
+              </Typography>
+              <div className="mb-6">
+                <Input
+                  variant="standard"
+                  id="username"
+                  name="username"
+                  label="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+              <div className="relative flex w-full max-w-[24rem]">
+                <Input
+                  variant="standard"
+                  type={visible ? "text" : "password"} // Toggle password visibility
+                  label="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-20"
+                />
+                <button
+                  type="button"
+                  className="!absolute right-2 top-3"
+                  onClick={handleViewPassword}
+                >
+                  {visible ? (
+                    <EyeIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
+                  ) : (
+                    <EyeSlashIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
+                  )}
+                </button>
+              </div>
+              <div>
+                <Button
+                  type="submit"
+                  className="w-full mt-5 rounded-sm hover:bg-blue-gray-800"
+                >
+                  LOG IN
+                </Button>
+              </div>
             </div>
-            <div className="relative flex w-full max-w-[24rem]">
-              <Input
-                variant="standard"
-                type={visible ? "text" : "password"} // Toggle password visibility
-                label="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pr-20"
-              />
-              <button
-                className="!absolute right-2 top-3"
-                onClick={handleViewPassword}
-              >
-                {visible ? (
-                  <EyeIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
-                ) : (
-                  <EyeSlashIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
-                )}
-              </button>
-            </div>
-            <div>
-              <Button
-                className="w-full mt-5 rounded-sm hover:bg-blue-gray-800"
-                onClick={handleLogin} //  Handle login button click
-              >
-                LOG IN
-              </Button>
-            </div>
-          </div>
+          </form>
         </CardBody>
       </Card>
     </div>
