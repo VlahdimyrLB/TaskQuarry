@@ -33,6 +33,14 @@ const Sidebar = ({ isOpen, close }) => {
   };
   return (
     <>
+      {/* Dark ovrlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-gray-900 opacity-20 z-40"
+          onClick={close}
+        ></div>
+      )}
+
       {/* TO DO: ADD ANIMATION FOR SIDEBAR CLOSE/OPEN */}
       <div
         id="drawer-example"

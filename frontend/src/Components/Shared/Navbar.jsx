@@ -39,7 +39,7 @@ const Navbar = ({ toggleSidebar }) => {
   return (
     <nav className="sticky top-0 left-0 right-0">
       <div className="flex flex-col flex-1 overflow-y-auto">
-        <div className="flex items-center justify-between h-12 bg-white border-b border-gray-200">
+        <div className="flex items-center justify-between h-14 bg-white border-b border-gray-200 pr-4">
           <div className="flex items-center px-4">
             {/* HAMBURGER TOGGLE */}
             <button
@@ -54,26 +54,27 @@ const Navbar = ({ toggleSidebar }) => {
                 stroke="currentColor"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               </svg>
             </button>
             <p className="font-bold text-gray-800 ml-2.5">Dashboard</p>
           </div>
-          <div className="flex space-x-2">
+
+          <div className="flex  justify-center items-center">
             <Menu
               open={isMenuOpen}
               handler={setIsMenuOpen}
               placement="bottom-end"
             >
               <MenuHandler>
-                <Button
-                  variant="text"
-                  color="blue-gray"
-                  className="flex items-center gap-1 rounded-full py-0.5 pr-2 pl-0.5 lg:ml-auto"
+                <button
+                  // variant="text"
+                  // color="blue-gray"
+                  className="flex items-center rounded-full "
                 >
                   {/* CAUSES ERROR ELEMENT TYPE NOT VALID:
                    <ChevronDownIcon
@@ -82,12 +83,12 @@ const Navbar = ({ toggleSidebar }) => {
                   /> */}
                   <Avatar
                     variant="circular"
-                    size="sm"
+                    // size="md"
                     alt="kim chaewon"
-                    className="border border-gray-800 p-[0.75px] mr-2"
+                    className="border border-gray-800 h-10 w-10 hover:opacity-80"
                     src={userIcon}
                   />
-                </Button>
+                </button>
               </MenuHandler>
               <MenuList className="p-1">
                 {profileMenuItems.map(({ label, icon }, key) => {
