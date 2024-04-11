@@ -2,6 +2,7 @@ import {
   Avatar,
   Button,
   ChevronDownIcon,
+  IconButton,
   Menu,
   MenuItem,
   MenuHandler,
@@ -9,12 +10,15 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import {
+  SunIcon,
+  MoonIcon,
   UserCircleIcon,
   Cog6ToothIcon,
   PowerIcon,
 } from "@heroicons/react/24/solid";
 import { useState, createElement } from "react";
 import userIcon from "../../Assets/icon.jpg";
+import { useDarkMode } from "../../Hooks/useDarkMode";
 
 const profileMenuItems = [
   {
@@ -32,14 +36,29 @@ const profileMenuItems = [
 ];
 
 const Navbar = ({ toggleSidebar }) => {
+  const { darkMode, toggleDarkMode } = useDarkMode();
+  const [isToggled, setToggled] = useState(false);
+
+  const handleToggleDarkMode = () => {
+    setToggled(true);
+    toggleDarkMode();
+    setTimeout(() => setToggled(false), 950);
+  };
+
   // HANDLES MENU STATE OF PROFILE
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const closeMenu = () => setIsMenuOpen(false);
+  // const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <nav className="sticky top-0 left-0 right-0">
       <div className="flex flex-col flex-1 overflow-y-auto">
-        <div className="flex items-center justify-between h-14 bg-white border-b border-gray-200 pr-4">
+        <div
+          className={`flex items-center justify-between h-14  pr-4 ${
+            darkMode
+              ? "bg-dark-200 text-white border-b border-gray-900"
+              : "bg-white text-gray-800 border-b border-gray-300"
+          }`}
+        >
           <div className="flex items-center px-4">
             {/* HAMBURGER TOGGLE */}
             <button
@@ -61,10 +80,24 @@ const Navbar = ({ toggleSidebar }) => {
                 />
               </svg>
             </button>
-            <p className="font-bold text-gray-800 ml-2.5">Dashboard</p>
+            <p className="font-bold ml-2.5 text-sm uppercase md:ml-0">
+              Dashboard
+            </p>
           </div>
 
-          <div className="flex  justify-center items-center">
+          <div className="flex justify-center items-center">
+            <IconButton
+              variant="text"
+              size="sm"
+              onClick={handleToggleDarkMode}
+              className={`rounded-full mr-2 ${isToggled ? "animate-spin" : ""}`}
+            >
+              {darkMode ? (
+                <MoonIcon className="h-5 w-5 text-white" />
+              ) : (
+                <SunIcon className="h-5 w-5" />
+              )}
+            </IconButton>
             <Menu
               open={isMenuOpen}
               handler={setIsMenuOpen}
