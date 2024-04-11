@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../Components/Admin/Sidebar";
 import Navbar from "../Components/Shared/Navbar";
 import Dashboard from "./AdminPages/Dashboard";
+import { useDarkMode } from "../Hooks/useDarkMode";
 
 const AdminPage = ({ user }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,13 +15,19 @@ const AdminPage = ({ user }) => {
     setIsSidebarOpen(false);
   };
 
+  const { darkMode } = useDarkMode();
+
   return (
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
         <Navbar toggleSidebar={toggleSidebar} />
         {/* MAIN CONTENT SECTION */}
-        <section className="bg-gray-100 h-screen text-white p-5">
+        <section
+          className={`h-screen text-white p-5 overflow-auto ${
+            darkMode ? "bg-dark-200" : ""
+          }`}
+        >
           <Dashboard />
         </section>
       </div>

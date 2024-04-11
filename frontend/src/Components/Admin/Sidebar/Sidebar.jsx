@@ -21,10 +21,15 @@ import {
   ChevronDownIcon,
   Bars3Icon,
   XMarkIcon,
+  Cog8ToothIcon,
+  ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { useDarkMode } from "../../../Hooks/useDarkMode";
 
 const Sidebar = ({ isOpen, close }) => {
+  const { darkMode } = useDarkMode();
+
   //HANDLE STATE FOR TASK MANAGEMENT ACCORDION
   const [open, setOpen] = useState(0);
 
@@ -35,33 +40,47 @@ const Sidebar = ({ isOpen, close }) => {
     <>
       {/* Dark ovrlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-gray-900 opacity-20 z-40"
-          onClick={close}
-        ></div>
+        <>
+          <div
+            className="fixed inset-0 bg-gray-900 opacity-30 z-40"
+            onClick={close}
+          ></div>
+        </>
       )}
 
       {/* TO DO: ADD ANIMATION FOR SIDEBAR CLOSE/OPEN */}
       <div
-        id="drawer-example"
-        className={`h-screen max-w-[16rem] shadow-xl bg-[#1B1B1B] rounded-0 md:block ${
+        className={`h-screen max-w-[16rem] shadow-xl rounded-0 md:block ${
           isOpen
             ? "block fixed top-0 left-0 z-50 md:static md:h-auto md:max-h-none"
             : "hidden"
+        } ${
+          darkMode
+            ? "bg-dark-200 text-white border-gray-900 border-r-[1px]"
+            : "bg-white text-gray-800 border-r-gray-300 border-r-[1px]"
         }`}
       >
-        <div className="flex justify-between items-center h-12 bg-[#282828]">
-          <div className="flex ml-[17px]">
-            <p className="text-lg text-white font-bold">TaskQuarry</p>
-          </div>
-          <div className="flex items-center mr-1 md:hidden">
-            <IconButton variant="text" size="md" onClick={close}>
-              <XMarkIcon className="h-7 w-7 stroke-1 text-white" />
-            </IconButton>
+        <div className="flex justify-end h-4">
+          <IconButton
+            variant="text"
+            color="white"
+            size="sm"
+            onClick={close}
+            className="mr-1 mt-1"
+          >
+            <XMarkIcon className="h-7 w-7 stroke-1 md:hidden" />
+          </IconButton>
+        </div>
+        <div className="flex justify-between items-center py-3 px-2">
+          <div className="flex ml-[10px]">
+            <ClipboardDocumentCheckIcon className="h-6 w-6 stroke-2 mr-1.5 mt-0.5" />
+            <p className="text-lg font-bold">TaskQuarry</p>
           </div>
         </div>
-        <div className="p-2 text-white">
-          <List className="text-white text-sm">
+        <div className="p-2">
+          <List
+            className={`text-sm ${darkMode ? "text-white" : "text-gray-800"}`}
+          >
             <ListItem>
               <ListItemPrefix>
                 <HomeIcon className="h-5 w-5 " />
@@ -70,30 +89,53 @@ const Sidebar = ({ isOpen, close }) => {
             </ListItem>
             <Accordion
               open={open === 1}
+              darkMode={darkMode} // Pass darkMode state as prop
               icon={
                 <ChevronDownIcon
                   strokeWidth={2.5}
-                  className={`text-white mx-auto h-4 w-4 transition-transform ${
+                  className={`mx-auto h-4 w-4 transition-transform ${
                     open === 1 ? "rotate-180" : ""
                   }`}
                 />
               }
             >
-              <ListItem className="p-0" selected={open === 1}>
+              <ListItem
+                className={`p-0 ${
+                  darkMode ? "bg-dark-200 text-white" : "bg-white text-gray-800"
+                }`}
+                selected={open === 1}
+              >
                 <AccordionHeader
                   onClick={() => handleOpen(1)}
-                  className="border-b-0 p-3"
+                  className={`border-b-0 p-3  ${
+                    darkMode
+                      ? "text-white hover:text-gray-800"
+                      : "bg-white text-gray-800"
+                  }`}
                 >
                   <ListItemPrefix>
-                    <PresentationChartBarIcon className="text-white h-5 w-5" />
+                    <PresentationChartBarIcon className="h-5 w-5" />
                   </ListItemPrefix>
-                  <Typography color="white" className="mr-auto text-sm">
+                  <Typography
+                    variant="text"
+                    className={`mr-auto text-sm ${
+                      darkMode ? "text-white" : "text-gray-800"
+                    }`}
+                  >
                     Task Management
                   </Typography>
                 </AccordionHeader>
               </ListItem>
-              <AccordionBody className="py-1">
-                <List className="p-0 text-white text-sm">
+              <AccordionBody
+                className={`py-1 ${
+                  darkMode ? "bg-dark-200 text-white" : "bg-white text-gray-800"
+                }`}
+              >
+                <List
+                  className={`p-0 text-sm ${
+                    darkMode ? "text-white" : "text-gray-800"
+                  }`}
+                >
                   <ListItem>
                     <ListItemPrefix>
                       <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
@@ -115,6 +157,7 @@ const Sidebar = ({ isOpen, close }) => {
                 </List>
               </AccordionBody>
             </Accordion>
+
             <ListItem>
               <ListItemPrefix>
                 <UserCircleIcon className="h-5 w-5 " />
