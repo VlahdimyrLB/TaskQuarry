@@ -32,7 +32,7 @@ const AdminPage = ({ user }) => {
         >
           {/* Nested Routes */}
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route index element={<Dashboard />} />
             <Route path="users" element={<Users />} />{" "}
             {/* Add the route for SettingsPage */}
           </Routes>
