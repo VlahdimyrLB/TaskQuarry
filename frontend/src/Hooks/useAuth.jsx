@@ -1,28 +1,32 @@
 import { useState } from "react";
-import { users } from "../data.js";
 
-export const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+// Sample data array (mocking database)
+const users = [
+  { username: "admin", password: "admin", userType: "admin" },
+  { username: "user", password: "user", userType: "user" },
+];
+
+const useAuth = () => {
+  const [user, setUsername] = useState(null);
+  const [error, setError] = useState(null);
 
   const login = (username, password) => {
-    // Find user by username
-    const user = users.find((user) => user.username === username);
-
-    // Check password match
-    if (user && user.password === password) {
-      setIsAuthenticated(true);
-      setUserRole(user.role);
-      return true;
+    const foundUser = users.find(
+      (user) => user.username === username && user.password === password
+    );
+    if (foundUser) {
+      setUsername(foundUser);
+      setError(null);
+    } else {
+      setError("Invalid username or password");
     }
-
-    return false;
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
-    setUserRole(null);
+    setUser(null);
   };
 
-  return { isAuthenticated, userRole, login, logout };
+  return { user, error, login, logout };
 };
+
+export default useAuth;

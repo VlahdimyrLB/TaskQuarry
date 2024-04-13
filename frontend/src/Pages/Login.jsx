@@ -7,49 +7,47 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { users } from "../data";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Login = ({ setUser }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [visible, setVisible] = useState(false);
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-
+  const [visible, setVisible] = useState(false);
   const handleViewPassword = () => {
     setVisible(!visible);
   };
 
-  const handleLogin = () => {
-    // Validate username and password
-    const user = users.find(
-      (user) => user.username === username && user.password === password
-    );
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState("");
 
-    if (user && user.role === "user") {
-      setIsAuthenticated(true);
-      setUser({ username: username, password: password });
-      navigate("/user");
-    } else if (user && user.role === "admin") {
-      setIsAuthenticated(true);
-      setUser({ username: username, password: password });
-      navigate("/admin");
-    } else {
-      alert("Invalid username or password");
-    }
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin();
+    try {
+      const response = await axios.post("/api/v1/login", {
+        username,
+        password,
+      });
+      console.log(response);
+      if (response.data.isAdmin) {
+        setIsAdmin(true);
+        setUser({ username: username, password: password });
+        navigate("/admin");
+      } else {
+        setUser({ username: username, password: password });
+        navigate("/user");
+      }
+    } catch (error) {
+      setError("Invalid Credentials");
+    }
   };
 
   return (
     <div className="h-screen flex justify-center items-center">
       <Card className="w-80 md:w-96 mx-auto rounded-md">
-        <CardBody className="mt-4 mx-auto h-[268px]">
+        <CardBody className="mt-4 mx-auto h-[282px]">
           {/* FORM */}
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col md:w-80">
@@ -86,6 +84,9 @@ const Login = ({ setUser }) => {
                     <EyeSlashIcon className="w-5 text-[#7E94A0] hover:text-gray-900 hover:cursor-pointer" />
                   )}
                 </button>
+              </div>
+              <div className="flex justify-center mt-2">
+                {error && <p className="text-red-600">{error}</p>}
               </div>
               <div>
                 <Button
