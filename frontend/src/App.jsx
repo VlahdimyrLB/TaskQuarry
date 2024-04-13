@@ -7,6 +7,7 @@ import Userpage from "./Pages/UserPage";
 import AdminPage from "./Pages/AdminPage";
 import ProtectedRoute from "./Pages/ProtectedRoute";
 import { DarkModeProvider } from "./Hooks/useDarkMode";
+import Error from "./Pages/Error";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -14,10 +15,11 @@ function App() {
   return (
     <DarkModeProvider>
       <Routes>
+        {/* LOGIN / INDEX PAGE */}
         <Route path="/" element={<Login setUser={setUser} />} />
 
         <Route
-          path="/user"
+          path="user"
           element={
             <ProtectedRoute user={user}>
               <Userpage user={user} />
@@ -25,8 +27,9 @@ function App() {
           }
         />
 
+        {/* ADMIN PROTECTED ROUTES */}
         <Route
-          path="/admin"
+          path="admin/*"
           element={
             <ProtectedRoute user={user}>
               <AdminPage user={user} />
