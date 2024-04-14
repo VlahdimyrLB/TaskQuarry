@@ -26,6 +26,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useDarkMode } from "../../../Hooks/useDarkMode";
+import { Link, NavLink } from "react-router-dom";
 
 const Sidebar = ({ isOpen, close }) => {
   const { darkMode } = useDarkMode();
@@ -60,7 +61,7 @@ const Sidebar = ({ isOpen, close }) => {
             : "bg-white text-gray-800 border-r-gray-300 border-r-[1px]"
         }`}
       >
-        <div className="flex justify-end h-4">
+        <div className="flex justify-end h-4 md:hidden">
           <IconButton
             variant="text"
             color="white"
@@ -81,12 +82,15 @@ const Sidebar = ({ isOpen, close }) => {
           <List
             className={`text-sm ${darkMode ? "text-white" : "text-gray-800"}`}
           >
-            <ListItem>
-              <ListItemPrefix>
-                <HomeIcon className="h-5 w-5 " />
-              </ListItemPrefix>
-              Dashboard
-            </ListItem>
+            <NavLink to="/admin">
+              <ListItem>
+                <ListItemPrefix>
+                  <HomeIcon className="h-5 w-5 " />
+                </ListItemPrefix>
+                Dashboard
+              </ListItem>
+            </NavLink>
+
             <Accordion
               open={open === 1}
               darkMode={darkMode} // Pass darkMode state as prop
@@ -158,12 +162,14 @@ const Sidebar = ({ isOpen, close }) => {
               </AccordionBody>
             </Accordion>
 
-            <ListItem>
-              <ListItemPrefix>
-                <UserCircleIcon className="h-5 w-5 " />
-              </ListItemPrefix>
-              User Management
-            </ListItem>
+            <NavLink to="/admin/users">
+              <ListItem>
+                <ListItemPrefix>
+                  <UserCircleIcon className="h-5 w-5 " />
+                </ListItemPrefix>
+                User Management
+              </ListItem>
+            </NavLink>
             <ListItem>
               <ListItemPrefix>
                 <FolderIcon className="h-5 w-5 " />

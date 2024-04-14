@@ -80,9 +80,7 @@ const Navbar = ({ toggleSidebar }) => {
                 />
               </svg>
             </button>
-            <p className="font-bold ml-2.5 text-sm uppercase md:ml-0">
-              Dashboard
-            </p>
+            <h1 className="font-bold ml-2.5 text-sm md:ml-0">TaskQuarry</h1>
           </div>
 
           <div className="flex justify-center items-center">
