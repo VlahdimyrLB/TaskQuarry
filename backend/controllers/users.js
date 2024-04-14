@@ -37,7 +37,7 @@ const updateUser = async (req, res) => {
       runValidators: true,
     });
     if (!user) {
-      return res.status(404).json({ msg: `No task with id: ${userID}` });
+      return res.status(404).json({ msg: `No user with id: ${userID}` });
     }
     res.status(200).json({ user });
   } catch (error) {
@@ -50,7 +50,7 @@ const deleteUser = async (req, res) => {
     const { id: userID } = req.params;
     const user = await User.findOneAndDelete({ _id: userID });
     if (!user) {
-      return res.status(404).json({ msg: `No task id: ${userID}` });
+      return res.status(404).json({ msg: `No user id: ${userID}` });
     }
     res.status(201).json({ user });
   } catch (error) {

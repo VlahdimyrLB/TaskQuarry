@@ -5,6 +5,9 @@ const ProjectSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, "Must Provide Project Name"],
+    trim: true,
+    unique: true, // not working
+    index: true, // not working
   },
   description: {
     type: String,
@@ -12,6 +15,10 @@ const ProjectSchema = new mongoose.Schema({
   startDate: Date,
   endDate: Date,
   features: [FeatureSchema],
+  isDone: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("Project", ProjectSchema);
