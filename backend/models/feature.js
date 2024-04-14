@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 const TaskSchema = require("./task");
+const Schema = mongoose.Schema;
 
 const FeatureSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Must Provide Project Name"],
+    required: [true, "Must Provide Feature Name"],
   },
   description: {
     type: String,
@@ -12,7 +13,8 @@ const FeatureSchema = new mongoose.Schema({
   startDate: Date,
   endDate: Date,
   assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
-  subTasks: [TaskSchema],
+  tasks: [TaskSchema],
 });
 
-module.exports = mongoose.model("Feature", FeatureSchema);
+module.exports = FeatureSchema;
+// in this setup I need to do this in controller mongoose.model("Feature", FeatureSchema);
