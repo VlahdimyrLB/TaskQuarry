@@ -14,7 +14,6 @@ A simple project management tool using Express.js, React 18 and TailwindCSS.
 - ALWAYS Create or Switch Branch First, Before Add and Commit
 - NPM INSTALL ONLY IN FRONTEND FOLDER / AVOID INSTALLING IN ROOT FOLDER
 
-## Branch Convention
+# NOTE:
 
-- git checkout -b "Name-Feature-SmallConciseDetail"
-- ex. "Dodi-Login-IconState"
+- You need a MONGO_URI, please contact admin or comment for access
