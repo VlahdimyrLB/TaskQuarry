@@ -10,7 +10,7 @@ const {
 
 router.route("/").get(getAllFeatures).post(createFeature);
 router
-  .route("/:")
+  .route("/:id")
   .get(getSingleFeature)
   .patch(updateFeature)
   .delete(deleteFeature);

@@ -40,7 +40,7 @@ app.use("/api/v1/projects", projects);
 app.use("/api/v1/features", features);
 
 // DB Connection and Port
-const PORT = 5000;
+const PORT = 3000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
