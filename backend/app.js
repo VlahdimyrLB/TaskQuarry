@@ -1,15 +1,20 @@
 const express = require("express");
 const app = new express();
+
 const connectDB = require("./db/connect");
-const users = require("./routes/users");
 const User = require("./models/users");
+
 require("dotenv").config();
+
+// routes import
+const users = require("./routes/users");
+const projects = require("./routes/projects");
 
 // middleware
 app.use(express.static("../frontend"));
-app.use(express.json()); // to get req.body
+app.use(express.json()); // middleware to get req.body
 
-// login
+// LOG IN
 app.post("/api/v1/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -26,9 +31,12 @@ app.post("/api/v1/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-// any requests to paths starting with "/api/v1/tasks" will be handled by the routes "tasks"
-app.use("/api/v1/users", users);
 
+// API REQUEST ROUTE HANDLERS
+app.use("/api/v1/users", users); // any requests to paths starting with "/api/v1/users" will be handled by users
+app.use("/api/v1/projects", projects);
+
+// DB Connection and Port
 const PORT = 5000;
 const start = async () => {
   try {
