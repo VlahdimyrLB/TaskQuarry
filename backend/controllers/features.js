@@ -59,10 +59,80 @@ const deleteFeature = async (req, res) => {
   }
 };
 
+// TASKS MANIPULATION
+const createTask = async (req, res) => {
+  try {
+    const { id: featureId } = req.params;
+    const feature = await Feature.findById(featureId);
+
+    if (!feature) {
+      return res.status(404).json({ msg: "Feature not found" });
+    }
+
+    // Create the task object based on the request body
+    const task = {
+      name: req.body.name,
+      description: req.body.description,
+    };
+
+    // Add the task to the tasks array in the feature document
+    feature.tasks.push(task);
+
+    // Save the updated feature document
+    await feature.save();
+
+    res.status(201).json({ msg: "Task created successfully", task });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
+const updateTask = async (req, res) => {
+  try {
+    const { featureId, taskId } = req.params;
+    const { name, isDone } = req.body;
+
+    // Find feature by ID
+    const feature = await Feature.findById(featureId);
+
+    if (!feature) {
+      return res.status(404).json({ msg: "Feature not found" });
+    }
+
+    // Find task by ID within the feature
+    const taskToUpdate = feature.tasks.id(taskId);
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ msg: "Task not found" });
+    }
+
+    // Update the name and isDone fields of task
+    if (name !== undefined) {
+      taskToUpdate.name = name;
+    }
+    if (isDone !== undefined) {
+      taskToUpdate.isDone = isDone;
+    }
+
+    // Save the updated feature document
+    await feature.save();
+
+    res
+      .status(200)
+      .json({ msg: "Task updated successfully", task: taskToUpdate });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
+//TODO DELETIONS OF TASKS
+
 module.exports = {
   getAllFeatures,
   getSingleFeature,
   createFeature,
   updateFeature,
   deleteFeature,
+  createTask,
+  updateTask,
 };
