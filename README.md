@@ -1,19 +1,25 @@
 # TaskQuarry
 
-A simple project management tool using Express.js, React 18 and TailwindCSS.
+A simple project management tool built using Express.js, React 18, MongoDB and Tailwind CSS.
 
 ## Addtional Tools
 
 - Vite
 - Material Tailwind
 - Heroicons
+- Mongoose
 
-## IMPORTANT NOTE
+## IMPORTANT NOTES
 
 - ALWAYS ADD, COMMIT and BRANCH in Root Folder
-- ALWAYS Create or Switch Branch First, Before Add and Commit
-- NPM INSTALL ONLY IN FRONTEND FOLDER / AVOID INSTALLING IN ROOT FOLDER
+- ALWAYS Create or switch Branch First, Before Add and Commit
+- You need a MONGO_URI to run the project, please contact owner or comment for access
+- NPM INSTALL
+    - Install in Backend Folder
+    - Instal in Frontent Folder
+    - Install in Root Folder
+    - NPM Start
 
-# NOTE:
 
-- You need a MONGO_URI, please contact admin or comment for access
+
+

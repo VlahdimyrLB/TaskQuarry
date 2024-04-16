@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
-const TaskSchema = require("./task");
-const Schema = mongoose.Schema;
+const { Schema } = mongoose; // Destructure Schema from mongoose
 
-const FeatureSchema = new mongoose.Schema({
+const FeatureSchema = new Schema({
   name: {
     type: String,
     required: [true, "Must Provide Feature Name"],
@@ -12,9 +11,8 @@ const FeatureSchema = new mongoose.Schema({
   },
   startDate: Date,
   endDate: Date,
-  assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
-  tasks: [TaskSchema],
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Use mongoose.Schema.Types.ObjectId
+  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }], // Reference to Task model
 });
 
-module.exports = FeatureSchema;
-// in this setup I need to do this in controller mongoose.model("Feature", FeatureSchema);
+module.exports = mongoose.model("Feature", FeatureSchema);
