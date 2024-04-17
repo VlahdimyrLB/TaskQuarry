@@ -9,10 +9,23 @@ const FeatureSchema = new Schema({
   description: {
     type: String,
   },
+  isDone: {
+    type: Boolean,
+    default: false,
+  },
   startDate: Date,
   endDate: Date,
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Use mongoose.Schema.Types.ObjectId
-  tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }], // Reference to Task model
+  tasks: [
+    {
+      name: String,
+      description: String,
+      isDone: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Feature", FeatureSchema);
