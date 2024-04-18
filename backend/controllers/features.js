@@ -1,4 +1,5 @@
 const Feature = require("../models/feature");
+const Project = require("../models/project");
 
 const getAllFeatures = async (req, res) => {
   try {
@@ -19,9 +20,29 @@ const getSingleFeature = async (req, res) => {
   }
 };
 
+// const createFeature = async (req, res) => {
+//   try {
+//     const feature = await Feature.create(req.body);
+//     res.status(201).json({ feature });
+//   } catch (error) {
+//     res.status(500).json({ msg: error });
+//   }
+// };
+
 const createFeature = async (req, res) => {
   try {
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
+
     const feature = await Feature.create(req.body);
+    project.features.push(feature);
+
+    await project.save();
+
     res.status(201).json({ feature });
   } catch (error) {
     res.status(500).json({ msg: error });

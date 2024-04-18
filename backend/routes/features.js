@@ -10,7 +10,8 @@ const {
   updateTask,
 } = require("../controllers/features");
 
-router.route("/").get(getAllFeatures).post(createFeature);
+router.route("/").get(getAllFeatures);
+router.route("/:projectId").post(createFeature); // create features
 router
   .route("/:id")
   .get(getSingleFeature)
