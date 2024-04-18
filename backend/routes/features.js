@@ -8,6 +8,7 @@ const {
   deleteFeature,
   createTask,
   updateTask,
+  deleteTask,
 } = require("../controllers/features");
 
 router.route("/").get(getAllFeatures);
@@ -18,6 +19,6 @@ router
   .patch(updateFeature)
   .delete(deleteFeature)
   .post(createTask);
-router.route("/:featureId/tasks/:taskId").patch(updateTask);
+router.route("/:featureId/tasks/:taskId").patch(updateTask).delete(deleteTask);
 
 module.exports = router;
