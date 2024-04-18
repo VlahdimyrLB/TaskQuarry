@@ -1,4 +1,5 @@
 const Feature = require("../models/feature");
+const Project = require("../models/project");
 
 const getAllFeatures = async (req, res) => {
   try {
@@ -19,9 +20,29 @@ const getSingleFeature = async (req, res) => {
   }
 };
 
+// const createFeature = async (req, res) => {
+//   try {
+//     const feature = await Feature.create(req.body);
+//     res.status(201).json({ feature });
+//   } catch (error) {
+//     res.status(500).json({ msg: error });
+//   }
+// };
+
 const createFeature = async (req, res) => {
   try {
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
+
     const feature = await Feature.create(req.body);
+    project.features.push(feature);
+
+    await project.save();
+
     res.status(201).json({ feature });
   } catch (error) {
     res.status(500).json({ msg: error });
@@ -125,7 +146,38 @@ const updateTask = async (req, res) => {
   }
 };
 
-//TODO DELETIONS OF TASKS
+const deleteTask = async (req, res) => {
+  try {
+    const { featureId, taskId } = req.params;
+
+    // Find feature by ID
+    const feature = await Feature.findById(featureId);
+
+    if (!feature) {
+      return res.status(404).json({ msg: "Feature not found" });
+    }
+
+    // Find index of the task in the tasks array
+    const taskIndex = feature.tasks.findIndex((task) =>
+      task._id.equals(taskId)
+    );
+
+    // Check if task exists
+    if (taskIndex === -1) {
+      return res.status(404).json({ msg: "Task not found" });
+    }
+
+    // Remove the task from the tasks array
+    feature.tasks.splice(taskIndex, 1);
+
+    // Save the updated feature document
+    await feature.save();
+
+    res.status(200).json({ msg: "Task deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
 
 module.exports = {
   getAllFeatures,
@@ -135,4 +187,5 @@ module.exports = {
   deleteFeature,
   createTask,
   updateTask,
+  deleteTask,
 };

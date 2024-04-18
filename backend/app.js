@@ -39,8 +39,8 @@ app.use("/api/v1/users", users);
 app.use("/api/v1/projects", projects);
 app.use("/api/v1/features", features);
 
-// DB Connection and Port
-const PORT = 3000;
+// DB Connection and Port - NOTE: YOU NEED MONGO_URI and PORT(optional) from owner
+const PORT = process.env.PORT || 3000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
