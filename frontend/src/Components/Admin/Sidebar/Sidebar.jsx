@@ -91,7 +91,7 @@ const Sidebar = ({ isOpen, close }) => {
               </ListItem>
             </NavLink>
 
-            <Accordion
+            {/* <Accordion
               open={open === 1}
               darkMode={darkMode} // Pass darkMode state as prop
               icon={
@@ -126,7 +126,7 @@ const Sidebar = ({ isOpen, close }) => {
                       darkMode ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    Task Management
+                    Project Management
                   </Typography>
                 </AccordionHeader>
               </ListItem>
@@ -160,7 +160,16 @@ const Sidebar = ({ isOpen, close }) => {
                   </ListItem>
                 </List>
               </AccordionBody>
-            </Accordion>
+            </Accordion> */}
+
+            <NavLink to="/admin/projects">
+              <ListItem>
+                <ListItemPrefix>
+                  <PresentationChartBarIcon className="h-5 w-5" />
+                </ListItemPrefix>
+                Projects
+              </ListItem>
+            </NavLink>
 
             <NavLink to="/admin/users">
               <ListItem>
@@ -170,18 +179,24 @@ const Sidebar = ({ isOpen, close }) => {
                 User Management
               </ListItem>
             </NavLink>
-            <ListItem>
-              <ListItemPrefix>
-                <FolderIcon className="h-5 w-5 " />
-              </ListItemPrefix>
-              Reports
-            </ListItem>
-            <ListItem>
-              <ListItemPrefix>
-                <ClockIcon className="h-5 w-5 " />
-              </ListItemPrefix>
-              History
-            </ListItem>
+
+            <NavLink to="/admin/reports">
+              <ListItem>
+                <ListItemPrefix>
+                  <FolderIcon className="h-5 w-5 " />
+                </ListItemPrefix>
+                Summary Reports
+              </ListItem>
+            </NavLink>
+
+            <NavLink to="/admin/history">
+              <ListItem>
+                <ListItemPrefix>
+                  <ClockIcon className="h-5 w-5 " />
+                </ListItemPrefix>
+                History and Logs
+              </ListItem>
+            </NavLink>
           </List>
         </div>
       </div>
