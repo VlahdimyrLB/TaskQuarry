@@ -17,8 +17,9 @@ import {
   PowerIcon,
 } from "@heroicons/react/24/solid";
 import { useState, createElement } from "react";
-import userIcon from "../../Assets/icon.jpg";
 import { useDarkMode } from "../../Hooks/useDarkMode";
+
+import userIcon from "../../Assets/images/icon.jpg";
 
 const profileMenuItems = [
   {
@@ -35,7 +36,7 @@ const profileMenuItems = [
   },
 ];
 
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar, loggedUser }) => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const [isToggled, setToggled] = useState(false);
 
@@ -80,10 +81,15 @@ const Navbar = ({ toggleSidebar }) => {
                 />
               </svg>
             </button>
-            <h1 className="font-bold ml-2.5 text-sm md:ml-0">TaskQuarry</h1>
+            <h1 className="font-bold ml-2.5 text-sm md:ml-0">
+              TaskQuarry Icon Here
+            </h1>
           </div>
 
           <div className="flex justify-center items-center">
+            <Typography className="mr-4 text-[16px]">
+              Good Day! {loggedUser.name}
+            </Typography>
             <IconButton
               variant="text"
               size="sm"
