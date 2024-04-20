@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  image: {
+    data: Buffer, // Storing image data as Buffer
+    contentType: String, // Storing content type of the image
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

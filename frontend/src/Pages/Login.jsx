@@ -10,9 +10,9 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Login = ({ setUser }) => {
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
+const Login = ({ setLoggedUser }) => {
   const navigate = useNavigate();
+
   const [visible, setVisible] = useState(false);
   const handleViewPassword = () => {
     setVisible(!visible);
@@ -30,13 +30,17 @@ const Login = ({ setUser }) => {
         username,
         password,
       });
-      console.log(response);
+      console.log(
+        "response data:",
+        response.data,
+        "response user:",
+        response.data.user
+      );
+      setLoggedUser(response.data.user); // Store the entire user object to loggedUser
       if (response.data.isAdmin) {
         setIsAdmin(true);
-        setUser({ username: username, password: password });
         navigate("/admin");
       } else {
-        setUser({ username: username, password: password });
         navigate("/user");
       }
     } catch (error) {

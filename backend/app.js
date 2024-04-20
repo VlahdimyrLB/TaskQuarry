@@ -23,10 +23,8 @@ app.post("/api/v1/login", async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    if (user.isAdmin) {
-      return res.json({ isAdmin: true });
-    }
-    return res.json({ isAdmin: false });
+    // Return the entire user object along with isAdmin flag
+    return res.status(200).json({ user, isAdmin: user.isAdmin });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

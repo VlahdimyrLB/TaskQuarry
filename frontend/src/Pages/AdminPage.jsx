@@ -14,8 +14,9 @@ import Projects from "./AdminPages/Projects";
 import Users from "./AdminPages/Users";
 import Reports from "./AdminPages/Reports";
 import History from "./AdminPages/History";
+import ErrorPage from "./Error";
 
-const AdminPage = ({ user }) => {
+const AdminPage = ({ loggedUser }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -32,7 +33,7 @@ const AdminPage = ({ user }) => {
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
-        <Navbar toggleSidebar={toggleSidebar} />
+        <Navbar toggleSidebar={toggleSidebar} loggedUser={loggedUser} />
         {/* MAIN CONTENT SECTION */}
         <section
           className={`h-screen text-dark p-5 overflow-auto ${
@@ -46,6 +47,8 @@ const AdminPage = ({ user }) => {
             <Route path="users" element={<Users />} />
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
+
+            <Route path="*" element={<ErrorPage />} />
           </Routes>
           <Outlet /> {/* This is where the child routes will render */}
         </section>
