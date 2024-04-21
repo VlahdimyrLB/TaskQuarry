@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 
-// Custom Hook for Dark Mode
-import { useDarkMode } from "../Hooks/useDarkMode";
-
 // Shared Component throughout the system (always there)
 import Sidebar from "../Components/Admin/Sidebar";
 import Navbar from "../Components/Shared/Navbar";
@@ -27,19 +24,13 @@ const AdminPage = ({ loggedUser }) => {
     setIsSidebarOpen(false);
   };
 
-  const { darkMode } = useDarkMode();
-
   return (
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
         <Navbar toggleSidebar={toggleSidebar} loggedUser={loggedUser} />
         {/* MAIN CONTENT SECTION */}
-        <section
-          className={`h-screen text-dark p-5 overflow-auto ${
-            darkMode ? "bg-dark-200 text-white" : ""
-          }`}
-        >
+        <section className="h-screen text-dark p-5 overflow-auto dark:bg-dark-primary">
           {/* Nested Routes */}
           <Routes>
             <Route index element={<Dashboard />} />

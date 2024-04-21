@@ -1,10 +1,10 @@
 import { useState } from "react";
 import useDarkMode from "../Hooks/useDarkMode";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
-import { IconButton } from "@material-tailwind/react";
+import { Button, IconButton } from "@material-tailwind/react";
 export default function Switcher() {
   const [colorTheme, setTheme] = useDarkMode();
-  const [darkMode, setDarkSide] = useState(
+  const [darkMode, setDarkMode] = useState(
     colorTheme === "light" ? true : false
   );
 
@@ -13,13 +13,13 @@ export default function Switcher() {
   const handleToggleDarkMode = () => {
     setToggled(true);
     setTheme(colorTheme);
-    setDarkSide(true);
+    setDarkMode(true);
     setTimeout(() => setToggled(false), 950);
   };
   return (
     <>
       <IconButton
-        variant="text"
+        variant="filled"
         size="sm"
         onClick={handleToggleDarkMode}
         className={`rounded-full mr-2 ${isToggled ? "animate-spin" : ""}`}

@@ -10,42 +10,37 @@ import Userpage from "./Pages/UserPage";
 import ProtectedRoute from "./Pages/ProtectedRoute";
 import Error from "./Pages/Error";
 
-// Custom Hook
-import { DarkModeProvider } from "./Hooks/useDarkMode";
-
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
 
   return (
-    <DarkModeProvider>
-      <Routes>
-        {/* LOGIN / INDEX PAGE */}
-        <Route path="/" element={<Login setLoggedUser={setLoggedUser} />} />
+    <Routes>
+      {/* LOGIN / INDEX PAGE */}
+      <Route path="/" element={<Login setLoggedUser={setLoggedUser} />} />
 
-        {/* USER PROTECTED ROUTES */}
-        <Route
-          path="user/*"
-          element={
-            <ProtectedRoute loggedUser={loggedUser}>
-              <Userpage loggedUser={loggedUser} />
-            </ProtectedRoute>
-          }
-        />
+      {/* USER PROTECTED ROUTES */}
+      <Route
+        path="user/*"
+        element={
+          <ProtectedRoute loggedUser={loggedUser}>
+            <Userpage loggedUser={loggedUser} />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* ADMIN PROTECTED ROUTES */}
-        <Route
-          path="admin/*"
-          element={
-            <ProtectedRoute loggedUser={loggedUser}>
-              <AdminPage loggedUser={loggedUser} />
-            </ProtectedRoute>
-          }
-        />
+      {/* ADMIN PROTECTED ROUTES */}
+      <Route
+        path="admin/*"
+        element={
+          <ProtectedRoute loggedUser={loggedUser}>
+            <AdminPage loggedUser={loggedUser} />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Error Page path is asterisk */}
-        <Route path="*" element={<Error />} />
-      </Routes>
-    </DarkModeProvider>
+      {/* Error Page path is asterisk */}
+      <Route path="*" element={<Error />} />
+    </Routes>
   );
 }
 

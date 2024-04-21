@@ -25,12 +25,9 @@ import {
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useDarkMode } from "../../../Hooks/useDarkMode";
 import { Link, NavLink } from "react-router-dom";
 
 const Sidebar = ({ isOpen, close }) => {
-  const { darkMode } = useDarkMode();
-
   //HANDLE STATE FOR TASK MANAGEMENT ACCORDION
   const [open, setOpen] = useState(0);
 
@@ -51,14 +48,10 @@ const Sidebar = ({ isOpen, close }) => {
 
       {/* TO DO: ADD ANIMATION FOR SIDEBAR CLOSE/OPEN */}
       <div
-        className={`h-screen max-w-[16rem] shadow-xl rounded-0 md:block ${
+        className={`h-screen max-w-[16rem] shadow-xl rounded-0 bg-white text-gray-800 border-r-gray-300 border-r-[1px] md:block dark:bg-dark-secondary dark:border-r-gray-900  ${
           isOpen
             ? "block fixed top-0 left-0 z-50 md:static md:h-auto md:max-h-none"
             : "hidden"
-        } ${
-          darkMode
-            ? "bg-dark-200 text-white border-gray-900 border-r-[1px]"
-            : "bg-white text-gray-800 border-r-gray-300 border-r-[1px]"
         }`}
       >
         <div className="flex justify-end h-4 md:hidden">
@@ -73,15 +66,13 @@ const Sidebar = ({ isOpen, close }) => {
           </IconButton>
         </div>
         <div className="flex justify-between items-center py-3 px-2">
-          <div className="flex ml-[10px]">
+          <div className="flex ml-[10px] dark:text-white">
             <ClipboardDocumentCheckIcon className="h-6 w-6 stroke-2 mr-1.5 mt-0.5" />
             <p className="text-lg font-bold">TaskQuarry</p>
           </div>
         </div>
         <div className="p-2">
-          <List
-            className={`text-sm ${darkMode ? "text-white" : "text-gray-800"}`}
-          >
+          <List className="text-sm text-gray-800 dark:bg-dark-secondary dark:text-white">
             <NavLink to="/admin">
               <ListItem>
                 <ListItemPrefix>
