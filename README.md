@@ -1,6 +1,6 @@
 # TaskQuarry
 
-A simple project management tool built using Express.js, React 18, MongoDB and Tailwind CSS.
+A collaborative project management tool built using MERN Stack and Tailwind CSS.
 
 ## Addtional Tools
 
@@ -13,12 +13,12 @@ A simple project management tool built using Express.js, React 18, MongoDB and T
 
 - ALWAYS ADD, COMMIT and BRANCH in Root Folder
 - ALWAYS Create or switch Branch First, Before Add and Commit
-- You need a MONGO_URI to run the project, please contact owner or comment for access
+- You need a MONGO_URI to run the project, please contact owner for access
 - NPM INSTALL
     - Install in Backend Folder
-    - Instal in Frontent Folder
+    - Install in Frontent Folder
     - Install in Root Folder
-    - NPM Start
+    - NPM Start in Root Folder for Parallel Run
 
 
 
