@@ -7,6 +7,12 @@ const Dashboard = () => {
         <Card className="p-8 rounded-md h-72 w-auto mb-2 md:h-[300px] dark:bg-dark-secondary dark:text-white">
           This is a mf card
         </Card>
+        <Card className="p-8 rounded-md h-72 w-auto mb-2 md:h-[300px] dark:bg-dark-secondary dark:text-white">
+          This is a mf card
+        </Card>
+        <Card className="p-8 rounded-md h-72 w-auto mb-2 md:h-[300px] dark:bg-dark-secondary dark:text-white">
+          This is a mf card
+        </Card>
       </div>
     </>
   );
