@@ -109,62 +109,62 @@ const Users = () => {
   };
 
   return (
-    <div>
-      <Card className="w-full h-auto rounded-md">
-        <CardHeader floated={false} shadow={false} className="rounded-none">
-          <div className="flex flex-col justify-between space-y-3 space-x-4 md:flex-row">
-            <div>
-              <Button
-                icon={<PlusIcon />}
-                className="bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm"
-              >
-                Create New User
-              </Button>
-            </div>
-            <div className="flex w-full shrink-0 gap-2 md:w-max">
-              <Input label="Search here..." icon={<MagnifyingGlassIcon />} />
-            </div>
+    <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-white">
+      <div className="p-4">
+        <div className="flex flex-col justify-between space-x-0 md:flex-row md:space-x-4">
+          <div>
+            <Button
+              icon={<PlusIcon />}
+              className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-white"
+            >
+              Create New User
+            </Button>
           </div>
-        </CardHeader>
-        <CardBody className="bg-white px-0">
-          <table className="w-full text-left min-w-max table-auto">
-            <thead>
-              <tr className="border-y border-blue-gray-100 bg-blue-gray-50/50">
-                <th className="p-3">Name</th>
-                <th className="p-3">Username</th>
-                <th className="p-3">Password</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Actions</th>
+          <div className="w-full shrink-0 md:w-1/4">
+            <Input
+              className="mb-3 dark:text-white dark:border border-white"
+              label="Search here..."
+              icon={<MagnifyingGlassIcon />}
+            />
+          </div>
+        </div>
+        <table className="w-full text-left min-w-max table-auto">
+          <thead>
+            <tr className="border-y border-blue-gray-100 bg-blue-gray-50/50 dark:bg-gray-900">
+              <th className="p-3">Name</th>
+              <th className="p-3">Username</th>
+              <th className="p-3">Password</th>
+              <th className="p-3">Type</th>
+              <th className="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id} className="border-y ">
+                <td className="p-3">{user.name}</td>
+                <td className="p-3">{user.username}</td>
+                <td>{user.password}</td>
+                <td>{user.isAdmin ? "Admin" : "User"}</td>
+                <td className="">
+                  <IconButton
+                    variant="text"
+                    onClick={() => handleDelete(user._id)}
+                  >
+                    <TrashIcon className="h-4 w-4 text-gray-800 dark:text-white" />
+                  </IconButton>
+                  <IconButton
+                    variant="text"
+                    onClick={() => handleUpdate(user._id)}
+                  >
+                    <PencilIcon className="h-4 w-4 text-gray-800 dark:text-white" />
+                  </IconButton>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id} className="border-y ">
-                  <td className="p-3">{user.name}</td>
-                  <td className="p-3">{user.username}</td>
-                  <td>{user.password}</td>
-                  <td>{user.isAdmin ? "Admin" : "User"}</td>
-                  <td className="">
-                    <IconButton
-                      variant="text"
-                      onClick={() => handleDelete(user._id)}
-                    >
-                      <TrashIcon className="h-4 w-4 text-gray-800" />
-                    </IconButton>
-                    <IconButton
-                      variant="text"
-                      onClick={() => handleUpdate(user._id)}
-                    >
-                      <PencilIcon className="h-4 w-4 text-gray-800" />
-                    </IconButton>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardBody>
-      </Card>
-    </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
   );
 };
 

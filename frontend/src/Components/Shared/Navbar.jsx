@@ -17,8 +17,7 @@ import {
   PowerIcon,
 } from "@heroicons/react/24/solid";
 import { useState, createElement } from "react";
-import { useDarkMode } from "../../Hooks/useDarkMode";
-
+import Switcher from "../Switcher";
 import userIcon from "../../Assets/images/icon.jpg";
 
 const profileMenuItems = [
@@ -37,15 +36,6 @@ const profileMenuItems = [
 ];
 
 const Navbar = ({ toggleSidebar, loggedUser }) => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
-  const [isToggled, setToggled] = useState(false);
-
-  const handleToggleDarkMode = () => {
-    setToggled(true);
-    toggleDarkMode();
-    setTimeout(() => setToggled(false), 950);
-  };
-
   // HANDLES MENU STATE OF PROFILE
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // const closeMenu = () => setIsMenuOpen(false);
@@ -54,11 +44,8 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
     <nav className="sticky top-0 left-0 right-0">
       <div className="flex flex-col flex-1 overflow-y-auto">
         <div
-          className={`flex items-center justify-between h-14  pr-4 ${
-            darkMode
-              ? "bg-dark-200 text-white border-b border-gray-900"
-              : "bg-white text-gray-800 border-b border-gray-300"
-          }`}
+          className="flex items-center justify-between h-14 pr-4 bg-white border-b-gray-3 00 border-b-[1px]
+         dark:bg-dark-secondary dark:border-b-gray-900 dark:text-white"
         >
           <div className="flex items-center px-4">
             {/* HAMBURGER TOGGLE */}
@@ -90,7 +77,8 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
             <Typography className="mr-4 text-[16px]">
               Good Day! {loggedUser.name}
             </Typography>
-            <IconButton
+            <Switcher />
+            {/* <IconButton
               variant="text"
               size="sm"
               onClick={handleToggleDarkMode}
@@ -101,7 +89,7 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
               ) : (
                 <SunIcon className="h-5 w-5" />
               )}
-            </IconButton>
+            </IconButton> */}
             <Menu
               open={isMenuOpen}
               handler={setIsMenuOpen}
