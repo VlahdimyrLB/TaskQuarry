@@ -1,35 +1,23 @@
 import { useState } from "react";
 import useDarkMode from "../Hooks/useDarkMode";
-import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
-import { Button, IconButton } from "@material-tailwind/react";
+// import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
+import { IconButton } from "@material-tailwind/react";
+import { DarkModeSwitch } from "react-toggle-dark-mode";
+
 export default function Switcher() {
   const [colorTheme, setTheme] = useDarkMode();
-  const [darkMode, setDarkMode] = useState(
+  const [darkSide, setDarkSide] = useState(
     colorTheme === "light" ? true : false
   );
 
-  const [isToggled, setToggled] = useState(false);
-
-  const handleToggleDarkMode = () => {
-    setToggled(true);
+  const toggleDarkMode = (checked) => {
     setTheme(colorTheme);
-    setDarkMode(true);
-    setTimeout(() => setToggled(false), 950);
+    setDarkSide(checked);
   };
+
   return (
-    <>
-      <IconButton
-        variant="filled"
-        size="sm"
-        onClick={handleToggleDarkMode}
-        className={`rounded-full mr-2 ${isToggled ? "animate-spin" : ""}`}
-      >
-        {darkMode ? (
-          <MoonIcon className="h-5 w-5 text-white" />
-        ) : (
-          <SunIcon className="h-5 w-5" />
-        )}
-      </IconButton>
-    </>
+    <IconButton variant="text" size="small" className="rounded-full mr-2">
+      <DarkModeSwitch checked={darkSide} onChange={toggleDarkMode} size={20} />
+    </IconButton>
   );
 }
