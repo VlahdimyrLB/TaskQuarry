@@ -45,7 +45,7 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
       <div className="flex flex-col flex-1 overflow-y-auto">
         <div
           className="flex items-center justify-between h-14 pr-4 bg-white border-b-gray-3 00 border-b-[1px]
-         dark:bg-dark-secondary dark:border-b-gray-900 dark:text-white"
+         dark:bg-dark-secondary dark:border-b-gray-900 dark:text-[#E6EDF3]"
         >
           <div className="flex items-center px-4">
             {/* HAMBURGER TOGGLE */}

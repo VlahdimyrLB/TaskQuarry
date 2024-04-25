@@ -111,20 +111,20 @@ const Users = () => {
   };
 
   return (
-    <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-white">
+    <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-[#E6EDF3]">
       <div className="p-4">
         <div className="flex flex-col justify-between space-x-0 md:flex-row md:space-x-4">
           <div>
             <Button
               icon={<PlusIcon />}
-              className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-white"
+              className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-[#E6EDF3]"
             >
               Create New User
             </Button>
           </div>
           <div className="w-full shrink-0 md:w-1/4">
             <Input
-              className="mb-3 dark:text-white dark:border border-white"
+              className="mb-3 dark:text-[#E6EDF3] dark:border border-white"
               label="Search here..."
               icon={<MagnifyingGlassIcon />}
             />
@@ -152,13 +152,13 @@ const Users = () => {
                     variant="text"
                     onClick={() => handleDelete(user._id)}
                   >
-                    <TrashIcon className="h-4 w-4 text-gray-800 dark:text-white" />
+                    <TrashIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
                   </IconButton>
                   <IconButton
                     variant="text"
                     onClick={() => handleUpdate(user._id)}
                   >
-                    <PencilIcon className="h-4 w-4 text-gray-800 dark:text-white" />
+                    <PencilIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
                   </IconButton>
                 </td>
               </tr>
