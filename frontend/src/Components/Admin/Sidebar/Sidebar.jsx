@@ -66,13 +66,13 @@ const Sidebar = ({ isOpen, close }) => {
           </IconButton>
         </div>
         <div className="flex justify-between items-center py-3 px-2">
-          <div className="flex ml-[10px] dark:text-white">
+          <div className="flex ml-[10px] dark:text-[#E6EDF3]">
             <ClipboardDocumentCheckIcon className="h-6 w-6 stroke-2 mr-1.5 mt-0.5" />
             <p className="text-lg font-bold">TaskQuarry</p>
           </div>
         </div>
         <div className="p-2">
-          <List className="text-sm text-gray-800 dark:bg-dark-secondary dark:text-white">
+          <List className="text-sm text-gray-800 dark:bg-dark-secondary dark:text-[#E6EDF3]">
             <NavLink to="/admin">
               <ListItem>
                 <ListItemPrefix>
