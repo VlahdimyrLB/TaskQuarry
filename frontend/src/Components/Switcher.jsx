@@ -16,7 +16,7 @@ export default function Switcher() {
   };
 
   return (
-    <IconButton variant="text" size="small" className="rounded-full mr-2">
+    <IconButton variant="text" size="sm" className="rounded-full mr-2">
       <DarkModeSwitch checked={darkSide} onChange={toggleDarkMode} size={20} />
     </IconButton>
   );

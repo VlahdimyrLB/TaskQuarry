@@ -74,7 +74,7 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
           </div>
 
           <div className="flex justify-center items-center">
-            <Typography className="mr-4 text-[16px]">
+            <Typography className="mr-4 text-[16px] hidden md:block">
               Good Day! {loggedUser.name}
             </Typography>
             <Switcher />

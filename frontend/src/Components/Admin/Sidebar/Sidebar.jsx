@@ -25,15 +25,18 @@ import {
   ClipboardDocumentCheckIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const Sidebar = ({ isOpen, close }) => {
+  const location = useLocation();
+
   //HANDLE STATE FOR TASK MANAGEMENT ACCORDION
   const [open, setOpen] = useState(0);
 
   const handleOpen = (value) => {
     setOpen(open === value ? 0 : value);
   };
+
   return (
     <>
       {/* Dark ovrlay */}
@@ -73,7 +76,15 @@ const Sidebar = ({ isOpen, close }) => {
         </div>
         <div className="p-2">
           <List className="text-sm text-gray-800 dark:bg-dark-secondary dark:text-[#E6EDF3]">
-            <NavLink to="/admin">
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
+              }
+              end
+            >
               <ListItem>
                 <ListItemPrefix>
                   <HomeIcon className="h-5 w-5 " />
@@ -82,78 +93,15 @@ const Sidebar = ({ isOpen, close }) => {
               </ListItem>
             </NavLink>
 
-            {/* <Accordion
-              open={open === 1}
-              darkMode={darkMode} // Pass darkMode state as prop
-              icon={
-                <ChevronDownIcon
-                  strokeWidth={2.5}
-                  className={`mx-auto h-4 w-4 transition-transform ${
-                    open === 1 ? "rotate-180" : ""
-                  }`}
-                />
+            <NavLink
+              to="/admin/projects"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
               }
+              end
             >
-              <ListItem
-                className={`p-0 ${
-                  darkMode ? "bg-dark-200 text-white" : "bg-white text-gray-800"
-                }`}
-                selected={open === 1}
-              >
-                <AccordionHeader
-                  onClick={() => handleOpen(1)}
-                  className={`border-b-0 p-3  ${
-                    darkMode
-                      ? "text-white hover:text-gray-800"
-                      : "bg-white text-gray-800"
-                  }`}
-                >
-                  <ListItemPrefix>
-                    <PresentationChartBarIcon className="h-5 w-5" />
-                  </ListItemPrefix>
-                  <Typography
-                    variant="text"
-                    className={`mr-auto text-sm ${
-                      darkMode ? "text-white" : "text-gray-800"
-                    }`}
-                  >
-                    Project Management
-                  </Typography>
-                </AccordionHeader>
-              </ListItem>
-              <AccordionBody
-                className={`py-1 ${
-                  darkMode ? "bg-dark-200 text-white" : "bg-white text-gray-800"
-                }`}
-              >
-                <List
-                  className={`p-0 text-sm ${
-                    darkMode ? "text-white" : "text-gray-800"
-                  }`}
-                >
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Create Task
-                  </ListItem>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Task List
-                  </ListItem>
-                  <ListItem>
-                    <ListItemPrefix>
-                      <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Contributors
-                  </ListItem>
-                </List>
-              </AccordionBody>
-            </Accordion> */}
-
-            <NavLink to="/admin/projects">
               <ListItem>
                 <ListItemPrefix>
                   <PresentationChartBarIcon className="h-5 w-5" />
@@ -162,7 +110,15 @@ const Sidebar = ({ isOpen, close }) => {
               </ListItem>
             </NavLink>
 
-            <NavLink to="/admin/users">
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
+              }
+              end
+            >
               <ListItem>
                 <ListItemPrefix>
                   <UserCircleIcon className="h-5 w-5 " />
@@ -171,7 +127,15 @@ const Sidebar = ({ isOpen, close }) => {
               </ListItem>
             </NavLink>
 
-            <NavLink to="/admin/reports">
+            <NavLink
+              to="/admin/reports"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
+              }
+              end
+            >
               <ListItem>
                 <ListItemPrefix>
                   <FolderIcon className="h-5 w-5 " />
@@ -180,7 +144,15 @@ const Sidebar = ({ isOpen, close }) => {
               </ListItem>
             </NavLink>
 
-            <NavLink to="/admin/history">
+            <NavLink
+              to="/admin/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
+              }
+              end
+            >
               <ListItem>
                 <ListItemPrefix>
                   <ClockIcon className="h-5 w-5 " />

@@ -111,13 +111,13 @@ const Users = () => {
   };
 
   return (
-    <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-[#E6EDF3]">
+    <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
       <div className="p-4">
         <div className="flex flex-col justify-between space-x-0 md:flex-row md:space-x-4">
           <div>
             <Button
               icon={<PlusIcon />}
-              className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-[#E6EDF3]"
+              className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-[#E6EDF3] dark:shadow-white-sm"
             >
               Create New User
             </Button>
