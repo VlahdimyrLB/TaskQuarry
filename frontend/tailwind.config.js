@@ -10,6 +10,8 @@ module.exports = withMT({
         primary: "#191D1F",
         secondary: "#15171A",
       },
+
+      lightWhite: "#E6EDF3" //for text
     },
   },
   plugins: [],
