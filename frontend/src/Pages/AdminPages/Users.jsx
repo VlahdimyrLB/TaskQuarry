@@ -190,32 +190,58 @@ const Users = () => {
 
       {/* CREATE NEW USER DIALOG */}
       <Dialog open={open} handler={handleOpen} size="sm" className="p-3">
-        <DialogHeader className="text-md text-gray-800 uppercase">
-          Create New User
-        </DialogHeader>
-        <DialogBody className="flex flex-col gap-7">
-          <Input label="Enter first name" variant="standard" size="md" />
-          <Input label="Enter last name" variant="standard" size="md" />
-          <Input label="Enter username" variant="standard" size="md" />
-          <Input label="Enter password" variant="standard" size="md" />
-          <Input label="Confirm password" variant="standard" size="md" />
-          <Select variant="standard" label="Choose role">
-            <Option>Administrator</Option>
-            <Option>User</Option>
-          </Select>
-        </DialogBody>
-        <DialogFooter className="space-x-2">
-          <Button
-            variant="outlined"
-            onClick={handleOpen}
-            className="rounded-md"
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="filled" onClick={handleOpen} className="rounded-md">
-            <span>Create</span>
-          </Button>
-        </DialogFooter>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader className="text-md text-gray-800 uppercase">
+            Create New User
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-7">
+            <Input
+              label="Enter Full Name"
+              variant="standard"
+              size="md"
+              value={newUser.name}
+              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+            />
+            <Input
+              label="Enter Username"
+              variant="standard"
+              size="md"
+              value={newUser.username}
+              onChange={(e) =>
+                setNewUser({ ...newUser, username: e.target.value })
+              }
+            />
+            <Input
+              label="Enter Password"
+              variant="standard"
+              size="md"
+              value={newUser.password}
+              onChange={(e) =>
+                setNewUser({ ...newUser, password: e.target.value })
+              }
+            />
+            <Select
+              variant="standard"
+              label="Automatically Selected to User Only"
+            >
+              <Option value="User" disabled>
+                User Only Access
+              </Option>
+            </Select>
+          </DialogBody>
+          <DialogFooter className="space-x-2">
+            <Button
+              variant="outlined"
+              onClick={handleOpen}
+              className="rounded-md"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button variant="filled" type="submit" className="rounded-md">
+              <span>Create</span>
+            </Button>
+          </DialogFooter>
+        </form>
       </Dialog>
 
       {/* UPDATE USER DIALOG */}
