@@ -30,6 +30,8 @@ import {
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [isNameDuplicate, setIsNameDuplicate] = useState(false);
+  const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -61,17 +63,38 @@ const Users = () => {
       ...prevUser,
       [name]: value,
     }));
+    // Reset duplicate indicators when user updates the input
+    setIsNameDuplicate(false);
+    setIsUsernameDuplicate(false);
   };
 
   // CREATE
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check if the new user's name or username already exists
+      const existingNameUser = users.find((user) => user.name === newUser.name);
+      const existingUsernameUser = users.find(
+        (user) => user.username === newUser.username
+      );
+
+      if (existingNameUser) {
+        setIsNameDuplicate(true);
+        return;
+      }
+
+      if (existingUsernameUser) {
+        setIsUsernameDuplicate(true);
+        return;
+      }
+
+      // If no duplicate user is found, proceed with creating the new user
       await axios.post("/api/v1/users", newUser, {
         headers: {
           "Content-Type": "application/json",
         },
       });
+
       fetchUsers(); // Pang refresh ito
       setNewUser({
         // Clear form
@@ -201,6 +224,8 @@ const Users = () => {
               size="md"
               value={newUser.name}
               onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              error={isNameDuplicate ? true : false}
+              className={isNameDuplicate ? "text-red-500" : ""}
             />
             <Input
               label="Enter Username"
@@ -210,6 +235,8 @@ const Users = () => {
               onChange={(e) =>
                 setNewUser({ ...newUser, username: e.target.value })
               }
+              error={isNameDuplicate ? true : false}
+              className={isNameDuplicate ? "text-red-500" : ""}
             />
             <Input
               label="Enter Password"
@@ -228,16 +255,24 @@ const Users = () => {
                 User Only Access
               </Option>
             </Select>
+
+            <p className="text-red-700 text-center">
+              {isNameDuplicate ? "Name or Username Duplicate" : ""}
+            </p>
           </DialogBody>
           <DialogFooter className="space-x-2">
             <Button
               variant="outlined"
               onClick={handleOpen}
-              className="rounded-md"
+              className="rounded-md hover:text-red-700 hover:border-red-700"
             >
               <span>Cancel</span>
             </Button>
-            <Button variant="filled" type="submit" className="rounded-md">
+            <Button
+              variant="filled"
+              type="submit"
+              className="rounded-md hover:opacity-75"
+            >
               <span>Create</span>
             </Button>
           </DialogFooter>
