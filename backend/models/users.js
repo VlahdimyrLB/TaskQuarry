@@ -26,8 +26,8 @@ const UserSchema = new mongoose.Schema({
     default: false,
   },
   image: {
-    data: Buffer, // Storing image data as Buffer
-    contentType: String, // Storing content type of the image
+    data: { type: String, required: true },
+    contentType: { type: String, required: true },
   },
 });
 

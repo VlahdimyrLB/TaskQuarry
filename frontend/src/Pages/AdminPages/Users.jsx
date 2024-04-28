@@ -28,11 +28,20 @@ import {
   Option,
 } from "@material-tailwind/react";
 
+import userIcon from "../../Assets/images/icon.jpg";
+
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
-  const [toUpdateUser, setToUpdateUser] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const [toUpdateUser, setToUpdateUser] = useState({
+    name: "",
+    username: "",
+    password: "",
+    isAdmin: false,
+  });
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -58,51 +67,55 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setNewUser((prevUser) => ({
-  //     ...prevUser,
-  //     [name]: value,
-  //   }));
-  //   // Reset duplicate indicators when user updates the input
-  //   setIsNameDuplicate(false);
-  //   setIsUsernameDuplicate(false);
-  // };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewUser((prevUser) => ({
+      ...prevUser,
+      [name]: value,
+    }));
+    // Reset duplicate indicators when user updates the input
+    setIsNameDuplicate(false);
+    setIsUsernameDuplicate(false);
+  };
+
+  // Image
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setPreviewImage(reader.result);
+      setNewUser({ ...newUser, image: file });
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
 
   // CREATE
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Check if the new user's name or username already exists
-      const existingNameUser = users.find((user) => user.name === newUser.name);
-      const existingUsernameUser = users.find(
-        (user) => user.username === newUser.username
-      );
+      const formData = new FormData();
+      formData.append("name", newUser.name);
+      formData.append("username", newUser.username);
+      formData.append("password", newUser.password);
+      formData.append("image", newUser.image);
 
-      if (existingNameUser) {
-        setIsNameDuplicate(true);
-        return;
-      }
-
-      if (existingUsernameUser) {
-        setIsUsernameDuplicate(true);
-        return;
-      }
-
-      // If no duplicate user is found, proceed with creating the new user
-      await axios.post("/api/v1/users", newUser, {
+      await axios.post("/api/v1/users", formData, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      fetchUsers(); // Pang refresh ito
+      fetchUsers();
       setNewUser({
-        // Clear form
         name: "",
         username: "",
         password: "",
         isAdmin: false,
+        image: "",
       });
     } catch (error) {
       console.log(error);
@@ -190,7 +203,17 @@ const Users = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user._id} className="border-y">
-                  <td className="p-3">{user.name}</td>
+                  <td className="p-3">
+                    {user.image ? (
+                      <Avatar
+                        src={`data:image/jpeg;base64,${user.image.data}`}
+                        alt={user.name}
+                      />
+                    ) : (
+                      <Avatar src={userIcon} alt={user.name} />
+                    )}
+                    {user.name}
+                  </td>
                   <td className="p-3">{user.username}</td>
                   <td>{user.password}</td>
                   <td>{user.isAdmin ? "Admin" : "User"}</td>
@@ -222,6 +245,16 @@ const Users = () => {
             Create New User
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
+            <Input type="file" onChange={handleImageChange} />
+
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="preview-image w-20"
+              />
+            )}
+
             <Input
               label="Enter Full Name"
               variant="standard"
@@ -230,6 +263,7 @@ const Users = () => {
               onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
               error={isNameDuplicate ? true : false}
               className={isNameDuplicate ? "text-red-500" : ""}
+              required
             />
             <Input
               label="Enter Username"
@@ -241,6 +275,7 @@ const Users = () => {
               }
               error={isNameDuplicate ? true : false}
               className={isNameDuplicate ? "text-red-500" : ""}
+              required
             />
             <Input
               label="Enter Password"
@@ -250,6 +285,7 @@ const Users = () => {
               onChange={(e) =>
                 setNewUser({ ...newUser, password: e.target.value })
               }
+              required
             />
             <Select
               variant="standard"
