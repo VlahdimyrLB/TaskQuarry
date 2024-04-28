@@ -30,6 +30,9 @@ import {
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [isNameDuplicate, setIsNameDuplicate] = useState(false);
+  const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
+  const [toUpdateUser, setToUpdateUser] = useState(null);
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -55,23 +58,44 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setNewUser((prevUser) => ({
+  //     ...prevUser,
+  //     [name]: value,
+  //   }));
+  //   // Reset duplicate indicators when user updates the input
+  //   setIsNameDuplicate(false);
+  //   setIsUsernameDuplicate(false);
+  // };
 
   // CREATE
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Check if the new user's name or username already exists
+      const existingNameUser = users.find((user) => user.name === newUser.name);
+      const existingUsernameUser = users.find(
+        (user) => user.username === newUser.username
+      );
+
+      if (existingNameUser) {
+        setIsNameDuplicate(true);
+        return;
+      }
+
+      if (existingUsernameUser) {
+        setIsUsernameDuplicate(true);
+        return;
+      }
+
+      // If no duplicate user is found, proceed with creating the new user
       await axios.post("/api/v1/users", newUser, {
         headers: {
           "Content-Type": "application/json",
         },
       });
+
       fetchUsers(); // Pang refresh ito
       setNewUser({
         // Clear form
@@ -96,7 +120,7 @@ const Users = () => {
       });
       fetchUsers(); // Pang refresh ito
     } catch (error) {
-      console.log(error);
+      console.log("Error updating user:", error);
     }
   };
 
@@ -121,10 +145,13 @@ const Users = () => {
     setOpen(!open);
   };
 
-  //OPEN UPDATE USER DIALOG
+  //OPEN UPDATE USER DIALOG added id in params to get the clciked user
   const [openUpdate, setOpenUpdate] = useState(false);
-  const handleOpenUpdate = () => {
+  const handleOpenUpdate = (id) => {
     setOpenUpdate(!openUpdate);
+    const userToUpdate = users.find((user) => user._id === id);
+    console.log("User:", userToUpdate);
+    setToUpdateUser(userToUpdate);
   };
 
   return (
@@ -176,7 +203,7 @@ const Users = () => {
                     </IconButton>
                     <IconButton
                       variant="text"
-                      onClick={() => handleUpdate(user._id)}
+                      onClick={() => handleOpenUpdate(user._id)}
                     >
                       <PencilIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
                     </IconButton>
@@ -190,32 +217,68 @@ const Users = () => {
 
       {/* CREATE NEW USER DIALOG */}
       <Dialog open={open} handler={handleOpen} size="sm" className="p-3">
-        <DialogHeader className="text-md text-gray-800 uppercase">
-          Create New User
-        </DialogHeader>
-        <DialogBody className="flex flex-col gap-7">
-          <Input label="Enter first name" variant="standard" size="md" />
-          <Input label="Enter last name" variant="standard" size="md" />
-          <Input label="Enter username" variant="standard" size="md" />
-          <Input label="Enter password" variant="standard" size="md" />
-          <Input label="Confirm password" variant="standard" size="md" />
-          <Select variant="standard" label="Choose role">
-            <Option>Administrator</Option>
-            <Option>User</Option>
-          </Select>
-        </DialogBody>
-        <DialogFooter className="space-x-2">
-          <Button
-            variant="outlined"
-            onClick={handleOpen}
-            className="rounded-md"
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="filled" onClick={handleOpen} className="rounded-md">
-            <span>Create</span>
-          </Button>
-        </DialogFooter>
+        <form onSubmit={handleSubmit}>
+          <DialogHeader className="text-md text-gray-800 uppercase">
+            Create New User
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-7">
+            <Input
+              label="Enter Full Name"
+              variant="standard"
+              size="md"
+              value={newUser.name}
+              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              error={isNameDuplicate ? true : false}
+              className={isNameDuplicate ? "text-red-500" : ""}
+            />
+            <Input
+              label="Enter Username"
+              variant="standard"
+              size="md"
+              value={newUser.username}
+              onChange={(e) =>
+                setNewUser({ ...newUser, username: e.target.value })
+              }
+              error={isNameDuplicate ? true : false}
+              className={isNameDuplicate ? "text-red-500" : ""}
+            />
+            <Input
+              label="Enter Password"
+              variant="standard"
+              size="md"
+              value={newUser.password}
+              onChange={(e) =>
+                setNewUser({ ...newUser, password: e.target.value })
+              }
+            />
+            <Select
+              variant="standard"
+              label="Automatically Selected to User Only"
+            >
+              <Option disabled>User Only Access</Option>
+            </Select>
+
+            <p className="text-red-700 text-center">
+              {isNameDuplicate ? "Name or Username Duplicate" : ""}
+            </p>
+          </DialogBody>
+          <DialogFooter className="space-x-2">
+            <Button
+              variant="outlined"
+              onClick={handleOpen}
+              className="rounded-md hover:text-red-700 hover:border-red-700"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              variant="filled"
+              type="submit"
+              className="rounded-md hover:opacity-75"
+            >
+              <span>Create</span>
+            </Button>
+          </DialogFooter>
+        </form>
       </Dialog>
 
       {/* UPDATE USER DIALOG */}
@@ -228,33 +291,85 @@ const Users = () => {
         <DialogHeader className="text-md text-gray-800 uppercase">
           Update User
         </DialogHeader>
-        <DialogBody className="flex flex-col gap-7">
-          <Input value="Enter first name" variant="standard" size="md" />
-          <Input label="Enter last name" variant="standard" size="md" />
-          <Input label="Enter username" variant="standard" size="md" />
-          <Input label="Enter password" variant="standard" size="md" />
-          <Input label="Confirm password" variant="standard" size="md" />
-          <Select variant="standard" label="Choose role">
-            <Option>Administrator</Option>
-            <Option>User</Option>
-          </Select>
-        </DialogBody>
-        <DialogFooter className="space-x-2">
-          <Button
-            variant="outlined"
-            onClick={handleOpenUpdate}
-            className="rounded-md"
+        {toUpdateUser ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUpdate(toUpdateUser._id);
+            }}
           >
-            <span>Cancel</span>
-          </Button>
-          <Button
-            variant="filled"
-            onClick={handleOpenUpdate}
-            className="rounded-md"
-          >
-            <span>Save</span>
-          </Button>
-        </DialogFooter>
+            <DialogBody className="flex flex-col gap-7">
+              <Input
+                label="Enter Full Name"
+                variant="standard"
+                size="md"
+                value={toUpdateUser.name}
+                onChange={(e) =>
+                  setToUpdateUser({ ...toUpdateUser, name: e.target.value })
+                }
+                error={isNameDuplicate ? true : false}
+                className={isNameDuplicate ? "text-red-500" : ""}
+              />
+              <Input
+                label="Enter Username"
+                variant="standard"
+                size="md"
+                value={toUpdateUser.username}
+                onChange={(e) =>
+                  setToUpdateUser({ ...toUpdateUser, username: e.target.value })
+                }
+                error={isNameDuplicate ? true : false}
+                className={isNameDuplicate ? "text-red-500" : ""}
+              />
+              <Input
+                label="Enter Password"
+                variant="standard"
+                size="md"
+                value={toUpdateUser.password}
+                onChange={(e) =>
+                  setToUpdateUser({ ...toUpdateUser, password: e.target.value })
+                }
+              />
+
+              <Select
+                variant="standard"
+                label="Automatically Selected to User Only"
+                value={toUpdateUser.isAdmin ? "Admin" : "User"}
+                onChange={(e) =>
+                  setToUpdateUser({
+                    ...toUpdateUser,
+                    isAdmin: e.target.value === "Admin",
+                  })
+                }
+              >
+                <Option value="User">User Only Access</Option>
+                <Option value="Admin">Admin Access</Option>
+              </Select>
+
+              <p className="text-red-700 text-center">
+                {isNameDuplicate ? "Name or Username Duplicate" : ""}
+              </p>
+            </DialogBody>
+            <DialogFooter className="space-x-2">
+              <Button
+                variant="outlined"
+                onClick={handleOpenUpdate}
+                className="rounded-md hover:text-red-700 hover:border-red-700"
+              >
+                <span>Cancel</span>
+              </Button>
+              <Button
+                variant="filled"
+                type="submit"
+                className="rounded-md hover:opacity-75"
+              >
+                <span>Save</span>
+              </Button>
+            </DialogFooter>
+          </form>
+        ) : (
+          <p>User not found</p>
+        )}
       </Dialog>
     </>
   );
