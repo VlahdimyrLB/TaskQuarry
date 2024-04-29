@@ -19,28 +19,23 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [priority, setPriority] = useState("Medium");
-  // Open Add Feature Modal
   const [open, setOpen] = useState(false);
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    priority: "Medium",
+    isDone: false,
+  });
 
   const handleOpen = () => {
     setOpen(!open);
   };
 
-  // Open Add Feature Modal
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const handleChange = (e) => {};
-
   const fetchProjects = async () => {
     try {
-      const { data } = await axios.get("/api/v1/projects", {
-        headers: {
-          Accept: "application/json",
-        },
-      });
+      const { data } = await axios.get("/api/v1/projects");
       setProjects(data.projects);
     } catch (error) {
       console.log(error);
@@ -51,8 +46,41 @@ const Projects = () => {
     fetchProjects();
   }, []);
 
-  const handlePriorityChange = (e) => {
-    setPriority(e.target.value);
+  const handlePriorityChange = (value) => {
+    setPriority(value);
+  };
+
+  const handleChange = (e) => {
+    setNewProject({ ...newProject, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log(newProject);
+
+    try {
+      await axios.post("/api/v1/projects", newProject, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      fetchProjects();
+      // Reset the form fields after successful submission
+      setNewProject({
+        name: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+        priority: "Medium",
+        isDone: false,
+      });
+
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -71,7 +99,7 @@ const Projects = () => {
           <p>Search Bar Diteys</p>
         </div>
       </div>
-      <div className="flex space-x-2 mt-5">
+      <div className="grid grid-cols-4 gap-4 mt-4">
         {projects.map((project) => {
           return (
             <Link key={project._id} to={`/admin/projects/${project._id}`}>
@@ -82,7 +110,22 @@ const Projects = () => {
                 </Typography>
                 <p>Description: {project.description}</p>
                 <p>Status: {project.isDone === false ? "Ongoing" : "Done"}</p>
-                <p>Priority: {project.priority}</p>
+                <p>
+                  Priority:{" "}
+                  <span
+                    className={`text-${
+                      project.priority === "Urgent"
+                        ? "red-900"
+                        : project.priority === "Important"
+                        ? "deep-orange-500"
+                        : project.priority === "Medium"
+                        ? "blue-900"
+                        : "green-900"
+                    }`}
+                  >
+                    {project.priority}
+                  </span>
+                </p>
               </Card>
             </Link>
           );
@@ -91,16 +134,25 @@ const Projects = () => {
 
       {/* CREATE NEW PROJECT */}
       <Dialog open={open} handler={handleOpen} size="sm" className="p-3">
-        <form>
+        <form onSubmit={handleSubmit}>
           <DialogHeader className="text-md text-gray-800 uppercase">
             Create New Project
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
-            <Input label="Project Name" variant="standard" size="md" required />
+            <Input
+              label="Project Name"
+              variant="standard"
+              size="md"
+              name="name"
+              onChange={handleChange}
+              required
+            />
             <Input
               label="Project Description"
               variant="standard"
               size="md"
+              name="description"
+              onChange={handleChange}
               required
             />
             <div className="flex space-x-2">
@@ -109,6 +161,8 @@ const Projects = () => {
                 type="date"
                 variant="standard"
                 size="md"
+                name="startDate"
+                onChange={handleChange}
                 required
               />
               <Input
@@ -116,15 +170,18 @@ const Projects = () => {
                 type="date"
                 variant="standard"
                 size="md"
+                name="endDate"
+                onChange={handleChange}
                 required
               />
             </div>
+            // Inside the Select component
             <Select
               variant="standard"
               label="Select Priority Level"
               name="priority"
-              value={priority}
-              onChange={handlePriorityChange}
+              value={priority} // Set directly to the state variable
+              onChange={(value) => handlePriorityChange(value)} // Pass the selected value directly
               className={`text-${
                 priority === "Urgent"
                   ? "red-900"

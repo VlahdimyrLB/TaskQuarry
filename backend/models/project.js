@@ -16,7 +16,7 @@ const ProjectSchema = new mongoose.Schema({
   endDate: Date,
   priority: {
     type: String,
-    enum: ["urgent", "important", "medium", "low"],
+    enum: ["Urgent", "Important", "Medium", "Low"],
     default: "medium",
   },
   isDone: {
