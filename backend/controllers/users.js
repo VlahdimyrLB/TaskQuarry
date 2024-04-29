@@ -34,7 +34,7 @@ const createUser = async (req, res) => {
       name,
       username,
       password,
-      isAdmin: Boolean(isAdmin),
+      isAdmin,
       image: {
         data: base64Image,
         contentType: req.file.mimetype,
