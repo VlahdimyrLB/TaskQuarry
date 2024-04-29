@@ -11,6 +11,7 @@ import Projects from "./AdminPages/Projects";
 import Users from "./AdminPages/Users";
 import Reports from "./AdminPages/Reports";
 import History from "./AdminPages/History";
+import SingleProject from "./AdminPages/SingleProject";
 import ErrorPage from "./Error";
 
 const AdminPage = ({ loggedUser }) => {
@@ -39,9 +40,14 @@ const AdminPage = ({ loggedUser }) => {
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
 
+            {/* ROUTE FOR SPECIFIC PROJECT */}
+            <Route path="projects/:projectID" element={<SingleProject />} />
+
             <Route path="*" element={<ErrorPage />} />
           </Routes>
-          <Outlet /> {/* This is where the child routes will render */}
+
+          {/* This is where the child routes will render */}
+          <Outlet />
         </section>
       </div>
     </div>

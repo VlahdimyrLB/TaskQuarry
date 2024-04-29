@@ -11,6 +11,12 @@ const {
   deleteTask,
 } = require("../controllers/features");
 
+const { getAllFeaturesOfProject } = require("../controllers/features");
+
+// Route to get all features of a specific project
+router.get("/project/:projectId", getAllFeaturesOfProject);
+
+// Routes for other feature-related operations
 router.route("/").get(getAllFeatures);
 router.route("/:projectId").post(createFeature); // create features
 router

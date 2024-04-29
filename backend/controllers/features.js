@@ -10,6 +10,24 @@ const getAllFeatures = async (req, res) => {
   }
 };
 
+const getAllFeaturesOfProject = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+
+    // Find the project by ID
+    const project = await Project.findById(projectId).populate("features");
+
+    if (!project) {
+      return res.status(404).json({ msg: "Project not found" });
+    }
+
+    // Return the features of the project
+    res.status(200).json({ features: project.features });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
 const getSingleFeature = async (req, res) => {
   try {
     const { id: featureID } = req.params;
@@ -188,4 +206,5 @@ module.exports = {
   createTask,
   updateTask,
   deleteTask,
+  getAllFeaturesOfProject,
 };

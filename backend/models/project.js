@@ -7,6 +7,7 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: [true, "Must Provide Project Name"],
     trim: true,
+    unique: true, // Ensures uniqueness of name
   },
   description: {
     type: String,
