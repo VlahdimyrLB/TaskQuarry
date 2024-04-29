@@ -7,6 +7,7 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: [true, "Must Provide Project Name"],
     trim: true,
+    unique: true, // Ensures uniqueness of name
   },
   description: {
     type: String,
@@ -15,7 +16,7 @@ const ProjectSchema = new mongoose.Schema({
   endDate: Date,
   priority: {
     type: String,
-    enum: ["urgent", "important", "medium", "low"],
+    enum: ["Urgent", "Important", "Medium", "Low"],
     default: "medium",
   },
   isDone: {
