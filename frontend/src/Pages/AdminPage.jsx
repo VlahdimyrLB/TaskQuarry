@@ -30,7 +30,7 @@ const AdminPage = ({ loggedUser }) => {
       <div className="flex flex-col w-full">
         <Navbar toggleSidebar={toggleSidebar} loggedUser={loggedUser} />
         {/* MAIN CONTENT SECTION */}
-        <section className="h-screen text-dark p-5 overflow-auto dark:bg-dark-primary">
+        <section className=" text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
           {/* Nested Routes */}
           <Routes>
             <Route index element={<Dashboard />} />

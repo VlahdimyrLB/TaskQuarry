@@ -49,66 +49,11 @@ const TABS = [
 
 const TABLE_HEAD = ["Name", "Username", "Password", "Type", ""];
 
-const TABLE_ROWS = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    email: "john@creative-tim.com",
-    job: "Manager",
-    org: "Organization",
-    online: true,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    email: "alexa@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: false,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    email: "laurent@creative-tim.com",
-    job: "Executive",
-    org: "Projects",
-    online: false,
-    date: "19/09/17",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-    name: "Michael Levi",
-    email: "michael@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: true,
-    date: "24/12/08",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-    name: "Richard Gran",
-    email: "richard@creative-tim.com",
-    job: "Manager",
-    org: "Executive",
-    online: false,
-    date: "04/10/21",
-  },
-];
-
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
-
-  const [toUpdateUser, setToUpdateUser] = useState({
-    name: "",
-    username: "",
-    password: "",
-    isAdmin: false,
-  });
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -134,17 +79,6 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
-    // Reset duplicate indicators when user updates the input
-    setIsNameDuplicate(false);
-    setIsUsernameDuplicate(false);
-  };
-
   // Image
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -160,7 +94,14 @@ const Users = () => {
     }
   };
 
-  // CREATE
+  //OPEN CREATE NEW USER DIALOG
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(!open);
+  };
+
+  // CREATE/ADD HANDLER
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -189,16 +130,48 @@ const Users = () => {
     }
   };
 
-  // UPDATE
-  const handleUpdate = async (userId) => {
+  // OPEN UPDATE DIALOG
+  const [toUpdateUser, setToUpdateUser] = useState(null);
+  const handleOpenUpdate = (id) => {
+    const userToUpdate = users.find((user) => user._id === id);
+    setToUpdateUser(userToUpdate);
+  };
+
+  // HANDLE CHANGE
+  const handleChangeUpdate = (e) => {
+    const { name, value } = e.target;
+    setToUpdateUser((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  // HANDLE UPDATE TO DB
+  const handleUpdate = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+
+    // Check for duplicate name or username
+    const isDuplicateName = users.some(
+      (user) => user.name === toUpdateUser.name && user._id !== toUpdateUser._id
+    );
+    const isDuplicateUsername = users.some(
+      (user) =>
+        user.username === toUpdateUser.username && user._id !== toUpdateUser._id
+    );
+
+    if (isDuplicateName || isDuplicateUsername) {
+      // Handle duplicate name or username
+      console.log("Duplicate name or username detected");
+      return;
+    }
+
     try {
-      const updatedUser = users.find((user) => user._id === userId);
-      await axios.patch(`/api/v1/users/${userId}`, updatedUser, {
+      await axios.patch(`/api/v1/users/${toUpdateUser._id}`, toUpdateUser, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      fetchUsers(); // Pang refresh ito
+      fetchUsers(); // Refresh user data
     } catch (error) {
       console.log("Error updating user:", error);
     }
@@ -219,23 +192,9 @@ const Users = () => {
     }
   };
 
-  //OPEN CREATE NEW USER DIALOG
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(!open);
-  };
-
-  //OPEN UPDATE USER DIALOG added id in params to get the clciked user
-  const [openUpdate, setOpenUpdate] = useState(false);
-  const handleOpenUpdate = (id) => {
-    setOpenUpdate(!openUpdate);
-    const userToUpdate = users.find((user) => user._id === id);
-    console.log("User:", userToUpdate);
-    setToUpdateUser(userToUpdate);
-  };
   return (
     <>
-      <Card className="w-full dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
+      <Card className="w-full shadow-lg dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
         <CardHeader
           floated={false}
           shadow={false}
@@ -294,7 +253,7 @@ const Users = () => {
                       color="blue-gray"
                       className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
                     >
-                      {head}{" "}
+                      {head}
                       {index !== TABLE_HEAD.length - 1 && (
                         <ChevronUpDownIcon
                           strokeWidth={2}
@@ -308,7 +267,7 @@ const Users = () => {
             </thead>
             <tbody>
               {users.map((user, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
+                const isLast = index === users.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -453,8 +412,8 @@ const Users = () => {
               onChange={(e) =>
                 setNewUser({ ...newUser, username: e.target.value })
               }
-              error={isNameDuplicate ? true : false}
-              className={isNameDuplicate ? "text-red-500" : ""}
+              error={isUsernameDuplicate ? true : false}
+              className={isUsernameDuplicate ? "text-red-500" : ""}
               required
             />
             <Input
@@ -475,7 +434,7 @@ const Users = () => {
             </Select>
 
             <p className="text-red-700 text-center">
-              {isNameDuplicate ? "Name or Username Duplicate" : ""}
+              {isNameDuplicate ? "Duplicate Data Entry" : ""}
             </p>
           </DialogBody>
           <DialogFooter className="space-x-2">
@@ -499,8 +458,8 @@ const Users = () => {
 
       {/* UPDATE USER DIALOG */}
       <Dialog
-        open={openUpdate}
-        handler={handleOpenUpdate}
+        open={!!toUpdateUser}
+        handler={() => setToUpdateUser(null)}
         size="sm"
         className="p-3"
       >
@@ -508,78 +467,64 @@ const Users = () => {
           Update User
         </DialogHeader>
         {toUpdateUser ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleUpdate(toUpdateUser._id);
-            }}
-          >
-            <DialogBody className="flex flex-col gap-7">
-              <Input
-                label="Enter Full Name"
-                variant="standard"
-                size="md"
-                value={toUpdateUser.name}
-                onChange={(e) =>
-                  setToUpdateUser({ ...toUpdateUser, name: e.target.value })
-                }
-                error={isNameDuplicate ? true : false}
-                className={isNameDuplicate ? "text-red-500" : ""}
-              />
-              <Input
-                label="Enter Username"
-                variant="standard"
-                size="md"
-                value={toUpdateUser.username}
-                onChange={(e) =>
-                  setToUpdateUser({ ...toUpdateUser, username: e.target.value })
-                }
-                error={isNameDuplicate ? true : false}
-                className={isNameDuplicate ? "text-red-500" : ""}
-              />
-              <Input
-                label="Enter Password"
-                variant="standard"
-                size="md"
-                value={toUpdateUser.password}
-                onChange={(e) =>
-                  setToUpdateUser({ ...toUpdateUser, password: e.target.value })
-                }
-              />
+          <form onSubmit={handleUpdate}>
+            {toUpdateUser ? (
+              <DialogBody className="flex flex-col gap-7">
+                <Input
+                  label="Enter Full Name"
+                  variant="standard"
+                  size="md"
+                  name="name"
+                  value={toUpdateUser.name}
+                  onChange={handleChangeUpdate}
+                  error={isNameDuplicate ? true : false}
+                  className={isNameDuplicate ? "text-red-500" : ""}
+                />
+                <Input
+                  label="Enter Username"
+                  variant="standard"
+                  size="md"
+                  name="username"
+                  value={toUpdateUser.username}
+                  onChange={handleChangeUpdate}
+                  error={isNameDuplicate ? true : false}
+                  className={isNameDuplicate ? "text-red-500" : ""}
+                />
+                <Input
+                  label="Enter Password"
+                  variant="standard"
+                  size="md"
+                  name="password"
+                  value={toUpdateUser.password}
+                  onChange={handleChangeUpdate}
+                />
 
-              <Select
-                variant="standard"
-                label="Automatically Selected to User Only"
-                value={toUpdateUser.isAdmin ? "Admin" : "User"}
-                onChange={(e) =>
-                  setToUpdateUser({
-                    ...toUpdateUser,
-                    isAdmin: e.target.value === "Admin",
-                  })
-                }
-              >
-                <Option value="User">User Only Access</Option>
-                <Option value="Admin">Admin Access</Option>
-              </Select>
-
-              <p className="text-red-700 text-center">
-                {isNameDuplicate ? "Name or Username Duplicate" : ""}
-              </p>
-            </DialogBody>
+                <Select
+                  variant="standard"
+                  label="User Type"
+                  name="isAdmin"
+                  value={toUpdateUser.isAdmin ? "Admin" : "User"}
+                  onChange={handleChangeUpdate}
+                >
+                  <Option value="User">User Only Access</Option>
+                  <Option value="Admin">Admin Access</Option>
+                </Select>
+              </DialogBody>
+            ) : null}
             <DialogFooter className="space-x-2">
               <Button
                 variant="outlined"
-                onClick={handleOpenUpdate}
+                onClick={() => setToUpdateUser(null)}
                 className="rounded-md hover:text-red-700 hover:border-red-700"
               >
-                <span>Cancel</span>
+                Cancel
               </Button>
               <Button
                 variant="filled"
                 type="submit"
                 className="rounded-md hover:opacity-75"
               >
-                <span>Save</span>
+                Save
               </Button>
             </DialogFooter>
           </form>
