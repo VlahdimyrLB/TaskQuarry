@@ -55,13 +55,6 @@ const Users = () => {
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
-  const [newUser, setNewUser] = useState({
-    name: "",
-    username: "",
-    password: "",
-    isAdmin: false,
-  });
-
   const fetchUsers = async () => {
     try {
       const { data } = await axios.get("/api/v1/users", {
@@ -102,6 +95,14 @@ const Users = () => {
   };
 
   // CREATE/ADD HANDLER
+  const [newUser, setNewUser] = useState({
+    name: "",
+    username: "",
+    password: "",
+    isAdmin: false,
+    image: "",
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -117,7 +118,7 @@ const Users = () => {
         },
       });
 
-      fetchUsers();
+      fetchUsers(); // refreh table
       setNewUser({
         name: "",
         username: "",
@@ -426,11 +427,10 @@ const Users = () => {
               }
               required
             />
-            <Select
-              variant="standard"
-              label="Automatically Selected to User Only"
-            >
-              <Option disabled>User Only Access</Option>
+            <Select variant="standard" label="Automatically User Only Access">
+              <Option value="User" aria-selected>
+                User Only Access
+              </Option>
             </Select>
 
             <p className="text-red-700 text-center">
