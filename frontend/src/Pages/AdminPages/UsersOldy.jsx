@@ -1,22 +1,20 @@
 import axios from "axios";
-
+import { useState, useEffect } from "react";
 import {
+  ArrowDownTrayIcon,
   MagnifyingGlassIcon,
-  ChevronUpDownIcon,
-} from "@heroicons/react/24/outline";
-import { PencilIcon, UserPlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+  PencilIcon,
+  TrashIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
 import {
   Card,
   CardHeader,
-  Input,
   Typography,
   Button,
   CardBody,
   Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Avatar,
   IconButton,
   Tooltip,
@@ -24,78 +22,14 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Input,
   Checkbox,
   Select,
   Option,
+  IconButton,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
 
 import userIcon from "../../Assets/images/icon.jpg";
-
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Admin",
-    value: "admin",
-  },
-  {
-    label: "User",
-    value: "User",
-  },
-];
-
-const TABLE_HEAD = ["Name", "Username", "Password", "Type", ""];
-
-const TABLE_ROWS = [
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
-    name: "John Michael",
-    email: "john@creative-tim.com",
-    job: "Manager",
-    org: "Organization",
-    online: true,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-2.jpg",
-    name: "Alexa Liras",
-    email: "alexa@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: false,
-    date: "23/04/18",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
-    name: "Laurent Perrier",
-    email: "laurent@creative-tim.com",
-    job: "Executive",
-    org: "Projects",
-    online: false,
-    date: "19/09/17",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
-    name: "Michael Levi",
-    email: "michael@creative-tim.com",
-    job: "Programator",
-    org: "Developer",
-    online: true,
-    date: "24/12/08",
-  },
-  {
-    img: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-5.jpg",
-    name: "Richard Gran",
-    email: "richard@creative-tim.com",
-    job: "Manager",
-    org: "Executive",
-    online: false,
-    date: "04/10/21",
-  },
-];
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -233,189 +167,76 @@ const Users = () => {
     console.log("User:", userToUpdate);
     setToUpdateUser(userToUpdate);
   };
+
   return (
     <>
-      <Card className="w-full dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
-        <CardHeader
-          floated={false}
-          shadow={false}
-          className="rounded-none dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm"
-        >
-          <div className="mb-8 flex items-center justify-between gap-8">
+      <Card className="w-full h-auto rounded-md dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
+        <div className="p-4">
+          <div className="flex flex-col justify-between space-x-0 md:flex-row md:space-x-4">
             <div>
-              <Typography variant="h5" color="blue-gray">
-                Users list
-              </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
-                See information about all users
-              </Typography>
-            </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
               <Button
-                className="flex items-center gap-3"
-                size="sm"
                 onClick={handleOpen}
+                icon={<PlusIcon />}
+                className="mb-3 bg-white border border-gray-300 text-gray-800 rounded-md shadow-sm dark:bg-dark-primary dark:text-[#E6EDF3] dark:shadow-white-sm"
               >
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Create New
-                User
+                Create New User
               </Button>
             </div>
-          </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
+            <div className="w-full shrink-0 mb-3 md:w-1/4 md:mb-0">
               <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                variant="standard"
+                className="mb-3 dark:text-white"
+                label="Search here..."
+                icon={<MagnifyingGlassIcon />}
               />
             </div>
           </div>
-        </CardHeader>
-
-        <CardBody className="overflow-scroll px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+          <table className="w-full text-left min-w-min table-auto text-sm">
             <thead>
-              <tr>
-                {TABLE_HEAD.map((head, index) => (
-                  <th
-                    key={head}
-                    className="cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
-                    >
-                      {head}{" "}
-                      {index !== TABLE_HEAD.length - 1 && (
-                        <ChevronUpDownIcon
-                          strokeWidth={2}
-                          className="h-4 w-4"
-                        />
-                      )}
-                    </Typography>
-                  </th>
-                ))}
+              <tr className="border-y border-blue-gray-100 bg-blue-gray-50/50 uppercase dark:bg-blue-gray-900">
+                <th className="p-3">Name</th>
+                <th className="p-3">Username</th>
+                <th className="p-3">Password</th>
+                <th className="p-3">Type</th>
+                <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
-
-                return (
-                  <tr key={user._id}>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        {user.image ? (
-                          <Avatar
-                            src={`data:image/jpeg;base64,${user.image.data}`}
-                            alt={user.name}
-                          />
-                        ) : (
-                          <Avatar src={userIcon} alt={user.name} />
-                        )}
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {user.name}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.isAdmin ? "Admin" : "User"}
-                          </Typography>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td className={classes}>
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {user.username}
-                        </Typography>
-                      </div>
-                    </td>
-
-                    <td className={classes}>
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {user.password}
-                        </Typography>
-                      </div>
-                    </td>
-
-                    <td className={classes}>
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={user.isAdmin ? "Admin" : "User"}
-                          color={user.isAdmin ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
-
-                    <td className={classes}>
-                      <Tooltip content="Delete User">
-                        <IconButton
-                          variant="text"
-                          onClick={() => handleDelete(user._id)}
-                        >
-                          <TrashIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip content="Edit User">
-                        <IconButton
-                          variant="text"
-                          onClick={() => handleOpenUpdate(user._id)}
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              })}
+              {users.map((user) => (
+                <tr key={user._id} className="border-y">
+                  <td className="p-3 flex items-center">
+                    {user.image ? (
+                      <Avatar
+                        src={`data:image/jpeg;base64,${user.image.data}`}
+                        alt={user.name}
+                      />
+                    ) : (
+                      <Avatar src={userIcon} alt={user.name} />
+                    )}
+                    <Typography>{user.name}</Typography>
+                  </td>
+                  <td className="p-3">{user.username}</td>
+                  <td>{user.password}</td>
+                  <td>{user.isAdmin ? "Admin" : "User"}</td>
+                  <td className="">
+                    <IconButton
+                      variant="text"
+                      onClick={() => handleDelete(user._id)}
+                    >
+                      <TrashIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
+                    </IconButton>
+                    <IconButton
+                      variant="text"
+                      onClick={() => handleOpenUpdate(user._id)}
+                    >
+                      <PencilIcon className="h-4 w-4 text-gray-800 dark:text-[#E6EDF3]" />
+                    </IconButton>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
-        </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 10
-          </Typography>
-          <div className="flex gap-2">
-            <Button variant="outlined" size="sm">
-              Previous
-            </Button>
-            <Button variant="outlined" size="sm">
-              Next
-            </Button>
-          </div>
-        </CardFooter>
+        </div>
       </Card>
 
       {/* CREATE NEW USER DIALOG */}

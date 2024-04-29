@@ -21,10 +21,32 @@ const getSingleUser = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const { name, username, password, isAdmin } = req.body;
+
+    // Extract buffer of uploaded image
+    const { buffer } = req.file;
+
+    // Convert image buffer to base64 encoded string
+    const base64Image = buffer.toString("base64");
+
+    // Create new user object with image data
+    const user = new User({
+      name,
+      username,
+      password,
+      isAdmin: Boolean(isAdmin),
+      image: {
+        data: base64Image,
+        contentType: req.file.mimetype,
+      },
+    });
+
+    // Save user to database
+    await user.save();
     res.status(201).json({ user });
   } catch (error) {
-    res.status(500).json(error);
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
