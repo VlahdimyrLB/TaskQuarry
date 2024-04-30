@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useDarkMode from "../Hooks/useDarkMode";
+import useDarkMode from "../../Hooks/useDarkMode";
 // import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 import { IconButton } from "@material-tailwind/react";
 import { DarkModeSwitch } from "react-toggle-dark-mode";

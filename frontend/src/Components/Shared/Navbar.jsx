@@ -17,7 +17,7 @@ import {
   PowerIcon,
 } from "@heroicons/react/24/solid";
 import { useState, createElement } from "react";
-import Switcher from "../Switcher";
+import Switcher from "./Switcher";
 import userIcon from "../../Assets/images/icon.jpg";
 
 const profileMenuItems = [
