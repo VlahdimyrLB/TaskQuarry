@@ -20,6 +20,7 @@ const SingleProject = () => {
   const { projectID } = useParams(); // get the ID in url parameter
   const [singleProject, setSingleProject] = useState(null);
   const [features, setFeatures] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -53,9 +54,20 @@ const SingleProject = () => {
     }
   };
 
+  const fetchUsers = async () => {
+    try {
+      const { data } = await axios.get(`/api/v1/users`);
+      setUsers(data.user);
+      console.log(data.user);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchProject();
     fetchFeatures();
+    fetchUsers();
   }, [projectID]);
 
   if (loading) {
@@ -68,7 +80,18 @@ const SingleProject = () => {
 
   return (
     <div>
-      <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+      <div className="flex flex-col">
+        <Card className="p-4">
+          <Typography>Project: {singleProject.name}</Typography>
+          <Typography>Description: {singleProject.description}</Typography>
+          <Typography>
+            Status: {singleProject.isDone ? "Done" : "Ongoing"}
+          </Typography>
+          <Typography>Priority: {singleProject.priority}</Typography>
+        </Card>
+      </div>
+
+      <div className="flex shrink-0 flex-col gap-2 my-4  sm:flex-row ">
         <Button
           className="flex items-center gap-3"
           size="sm"
@@ -77,25 +100,19 @@ const SingleProject = () => {
           <PlusIcon strokeWidth={2} className="h-5 w-5" /> ADD A FEATURE
         </Button>
       </div>
-      <div>
-        <p>Project: {singleProject.name}</p>
-        <p>Description: {singleProject.description}</p>
-        <p>Status: {singleProject.isDone ? "Done" : "Ongoing"}</p>
-        <p>Priority: {singleProject.priority}</p>
-      </div>
 
       <div>
-        <h2>Features</h2>
+        <h1 className="text-xl font-bold">List of Features</h1>
 
         {features.length > 0 ? (
-          <table className="table-auto">
+          <table className="w-full table-auto">
             <thead>
               <tr>
-                <th>Features</th>
+                <th>Feature Name</th>
                 <th>Description</th>
                 <th>Status</th>
-                <th>Assignee</th>
-                <th>Related Task</th>
+                <th>Due Date</th>
+                <th>Assigned To</th>
               </tr>
             </thead>
             <tbody>
@@ -107,7 +124,12 @@ const SingleProject = () => {
                 >
                   <td>{feature.name}</td>
                   <td>{feature.description}</td>
-                  <td>{feature.isDone ? "Done" : "Ongoing"}</td>
+                  <td>{feature.status}</td>
+                  <td>
+                    {feature.dueDate
+                      ? new Date(feature.dueDate).toLocaleDateString()
+                      : "No Due"}
+                  </td>
                   <td>
                     {feature.assignedTo ? feature.assignedTo : "Not Assigned"}
                   </td>
@@ -116,11 +138,11 @@ const SingleProject = () => {
             </tbody>
           </table>
         ) : (
-          <p>No Features Yet</p>
+          <p className="text-center">No Features Yet</p>
         )}
       </div>
 
-      {/* CREATE NEW PROJECT */}
+      {/* UPDATE FEATURE */}
       <Dialog
         open={openUpdate}
         handler={handleOpenUpdate}
@@ -145,7 +167,7 @@ const SingleProject = () => {
               type="submit"
               className="rounded-md hover:opacity-75"
             >
-              <span>Create</span>
+              <span>Update</span>
             </Button>
           </DialogFooter>
         </form>
