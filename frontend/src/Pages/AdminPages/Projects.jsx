@@ -57,6 +57,7 @@ const Projects = () => {
         ))}
       </div>
       <NewProjectDialog
+        projects={projects}
         isOpen={isDialogOpen}
         onClose={handleDialogToggle}
         onProjectCreated={handleProjectCreated}

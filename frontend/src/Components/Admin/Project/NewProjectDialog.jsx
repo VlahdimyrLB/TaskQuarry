@@ -12,7 +12,7 @@ import {
   Button,
 } from "@material-tailwind/react";
 
-const NewProjectDialog = ({ isOpen, onClose, onProjectCreated }) => {
+const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
   const [newProjectData, setNewProjectData] = useState({
     name: "",
     description: "",
@@ -124,6 +124,15 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated }) => {
             onChange={(value) =>
               setNewProjectData({ ...newProjectData, priority: value })
             }
+            className={`text-${
+              newProjectData.priority === "Urgent"
+                ? "red-900"
+                : newProjectData.priority === "Important"
+                ? "deep-orange-500"
+                : newProjectData.priority === "Medium"
+                ? "blue-900"
+                : "light-green-800"
+            }`}
           >
             <Option value="Urgent" className="text-red-900">
               Urgent
@@ -140,7 +149,9 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated }) => {
           </Select>
 
           {duplicate && (
-            <p className="text-red-700">Project Name Already Exists</p>
+            <p className="text-red-700 text-center">
+              Project Name Already Exists
+            </p>
           )}
         </DialogBody>
         <DialogFooter className="space-x-2">
