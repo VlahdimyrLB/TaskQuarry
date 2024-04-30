@@ -197,6 +197,30 @@ const deleteTask = async (req, res) => {
   }
 };
 
+// const assignUserToFeature = async (req, res) => {
+//   try {
+//     const { featureId } = req.params;
+//     const { assignedTo } = req.body;
+
+//     // Find the feature by ID and update the assignedTo field
+//     const feature = await Feature.findByIdAndUpdate(
+//       featureId,
+//       { assignedTo },
+//       { new: true }
+//     );
+
+//     if (!feature) {
+//       return res.status(404).json({ msg: "Feature not found" });
+//     }
+
+//     res
+//       .status(200)
+//       .json({ msg: "User assigned to feature successfully", feature });
+//   } catch (error) {
+//     res.status(500).json({ msg: error.message });
+//   }
+// };
+
 module.exports = {
   getAllFeatures,
   getSingleFeature,
@@ -207,4 +231,5 @@ module.exports = {
   updateTask,
   deleteTask,
   getAllFeaturesOfProject,
+  // assignUserToFeature,
 };

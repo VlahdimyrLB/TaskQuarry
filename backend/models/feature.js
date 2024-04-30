@@ -9,12 +9,15 @@ const FeatureSchema = new Schema({
   description: {
     type: String,
   },
-  isDone: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
+    enum: ["Not Yet Started", "Ongoing", "Done"],
+    default: "Not Yet Started",
   },
-  startDate: Date,
-  endDate: Date,
+  dueDate: {
+    type: Date,
+    default: null,
+  },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Use mongoose.Schema.Types.ObjectId
   tasks: [
     {
