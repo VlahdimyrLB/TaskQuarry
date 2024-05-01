@@ -28,9 +28,9 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
-
-import userIcon from "../../Assets/images/icon.jpg";
+import { useEffect, useState, useRef } from "react";
+import { useReactTable } from "@tanstack/react-table";
+import defaultUserIcon from "../../Assets/images/icon.jpg";
 
 const TABS = [
   {
@@ -49,11 +49,19 @@ const TABS = [
 
 const TABLE_HEAD = ["Name", "Username", "Password", "Type", ""];
 
+const columns = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+];
+
 const Users = () => {
   const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
+  // const [previewImage, setPreviewImage] = useState(null);
+  const [userIcon, setUserIcon] = useState(defaultUserIcon);
 
   const fetchUsers = async () => {
     try {
@@ -72,13 +80,19 @@ const Users = () => {
     fetchUsers();
   }, []);
 
+  //TANSTACK TABLE
+  const table = useReactTable({
+    columns,
+  });
+
   // Image
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const imageUploadRef = useRef();
+  const handleImageChange = async () => {
+    const file = imageUploadRef.current.files[0];
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      setPreviewImage(reader.result);
+      setUserIcon(reader.result);
       setNewUser({ ...newUser, image: file });
     };
 
@@ -87,11 +101,18 @@ const Users = () => {
     }
   };
 
+  const handleUploadClick = (e) => {
+    e.preventDefault();
+    imageUploadRef.current.click();
+  };
+
   //OPEN CREATE NEW USER DIALOG
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
     setOpen(!open);
+    //prevent keeping the uploaded image in preview without submission (suggest other approach)
+    setUserIcon(defaultUserIcon);
   };
 
   // CREATE/ADD HANDLER
@@ -126,6 +147,10 @@ const Users = () => {
         isAdmin: false,
         image: "",
       });
+
+      //revert to default user icon and handle open dialog state
+      setUserIcon(defaultUserIcon);
+      handleOpen();
     } catch (error) {
       console.log(error);
     }
@@ -196,49 +221,43 @@ const Users = () => {
   return (
     <>
       <Card className="w-full shadow-lg dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
-        <CardHeader
-          floated={false}
-          shadow={false}
-          className="rounded-none dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm"
-        >
-          <div className="mb-8 flex items-center justify-between gap-8">
-            <div>
-              <Typography variant="h5" color="blue-gray">
-                Users list
-              </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
-                See information about all users
-              </Typography>
-            </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button
-                className="flex items-center gap-3"
-                size="sm"
-                onClick={handleOpen}
-              >
-                <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Create New
-                User
-              </Button>
-            </div>
+        <div className="mb-8 flex items-center justify-between gap-8 px-4 mt-5">
+          <div>
+            <Typography variant="h5" color="blue-gray">
+              Users list
+            </Typography>
+            <Typography color="gray" className="mt-1 font-normal">
+              See information about all users
+            </Typography>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <Button
+              className="flex items-center gap-3"
+              size="sm"
+              onClick={handleOpen}
+            >
+              <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Create New
+              User
+            </Button>
           </div>
-        </CardHeader>
+        </div>
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row px-4 mb-2">
+          <Tabs value="all" className="w-full md:w-max">
+            <TabsHeader>
+              {TABS.map(({ label, value }) => (
+                <Tab key={value} value={value}>
+                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
+                </Tab>
+              ))}
+            </TabsHeader>
+          </Tabs>
+          <div className="w-full md:w-72">
+            <Input
+              label="Search"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+            />
+          </div>
+        </div>
 
         <CardBody className="overflow-scroll px-0">
           <table className="mt-4 w-full min-w-max table-auto text-left">
@@ -283,7 +302,7 @@ const Users = () => {
                             alt={user.name}
                           />
                         ) : (
-                          <Avatar src={userIcon} alt={user.name} />
+                          <Avatar src={defaultUserIcon} alt={user.name} />
                         )}
                         <div className="flex flex-col">
                           <Typography
@@ -381,20 +400,33 @@ const Users = () => {
       {/* CREATE NEW USER DIALOG */}
       <Dialog open={open} handler={handleOpen} size="sm" className="p-3">
         <form onSubmit={handleSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase">
+          <DialogHeader className="text-md text-gray-800 uppercase mt-2">
             Create New User
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
-            <Input type="file" onChange={handleImageChange} />
-
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="preview-image w-20"
-              />
-            )}
-
+            <div className="flex justify-center items-center">
+              <div className="relative inline-block">
+                <img
+                  src={userIcon}
+                  className="h-44 w-44 rounded-full"
+                  alt="User Icon"
+                />
+                <Tooltip content="Upload an image">
+                  <span
+                    onClick={handleUploadClick}
+                    className="absolute flex bottom-0 right-0 bg-dark-secondary text-white h-10 w-10 border-4 border-white rounded-full cursor-pointer items-center justify-center"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </span>
+                </Tooltip>
+              </div>
+            </div>
+            <input
+              type="file"
+              onChange={handleImageChange}
+              ref={imageUploadRef}
+              hidden
+            />
             <Input
               label="Enter Full Name"
               variant="standard"
