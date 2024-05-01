@@ -313,7 +313,7 @@ const Assigned = ({ loggedUser }) => {
             Close
           </Button>
           <Button onClick={handleUpdateStatus} className="hover:opacity-80">
-            Update
+            Update Status
           </Button>
         </DialogFooter>
       </Dialog>

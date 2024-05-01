@@ -15,7 +15,7 @@ import SingleProject from "./AdminPages/SingleProject";
 import Assigned from "./AdminPages/Assigned";
 import ErrorPage from "./Error";
 
-const AdminPage = ({ loggedUser }) => {
+const AdminPage = ({ loggedUser, setLoggedUser }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -30,7 +30,11 @@ const AdminPage = ({ loggedUser }) => {
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
-        <Navbar toggleSidebar={toggleSidebar} loggedUser={loggedUser} />
+        <Navbar
+          toggleSidebar={toggleSidebar}
+          loggedUser={loggedUser}
+          setLoggedUser={setLoggedUser}
+        />
         {/* MAIN CONTENT SECTION */}
         <section className="h-screen text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
           {/* Nested Routes */}
