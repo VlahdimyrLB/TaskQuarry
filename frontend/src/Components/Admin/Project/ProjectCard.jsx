@@ -5,7 +5,7 @@ const ProjectCard = ({ project }) => {
   return (
     <>
       {project.isDone ? null : (
-        <Card className="rounded-md">
+        <Card className="rounded-md hover:bg-blue-gray-50">
           <div className="p-4">
             <Typography>
               <span className="font-bold uppercase">{project.name}</span>

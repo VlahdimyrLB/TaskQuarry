@@ -100,6 +100,27 @@ const updateFeature = async (req, res) => {
   }
 };
 
+const updateFeatureStatus = async (req, res) => {
+  try {
+    const { id: featureID } = req.params;
+    const { status } = req.body;
+
+    const feature = await Feature.findByIdAndUpdate(
+      featureID,
+      { status: status },
+      { new: true, runValidators: true }
+    );
+
+    if (!feature) {
+      return res.status(404).json({ msg: `No feature with id: ${featureID}` });
+    }
+
+    res.status(200).json({ feature });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
 // TODO: ADD PROPER VALIDATION it should not be deleted if feature has tasks
 const deleteFeature = async (req, res) => {
   try {
@@ -117,7 +138,7 @@ const deleteFeature = async (req, res) => {
 // TASKS MANIPULATION
 const createTask = async (req, res) => {
   try {
-    const { id: featureId } = req.params;
+    const { featureId } = req.params;
     const feature = await Feature.findById(featureId);
 
     if (!feature) {
@@ -138,7 +159,7 @@ const createTask = async (req, res) => {
 
     res.status(201).json({ msg: "Task created successfully", task });
   } catch (error) {
-    res.status(500).json({ msg: error });
+    res.status(500).json({ msg: error.message });
   }
 };
 
@@ -237,6 +258,19 @@ const deleteTask = async (req, res) => {
 //   }
 // };
 
+const getFeaturesByAssignedUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find features assigned to the specified user ID
+    const features = await Feature.find({ assignedTo: userId });
+
+    res.status(200).json({ features });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
 module.exports = {
   getAllFeatures,
   getSingleFeature,
@@ -248,4 +282,6 @@ module.exports = {
   deleteTask,
   getAllFeaturesOfProject,
   // assignUserToFeature,
+  getFeaturesByAssignedUser,
+  updateFeatureStatus,
 };
