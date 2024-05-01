@@ -11,7 +11,7 @@ const FeatureSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["Not Yet Started", "Ongoing", "Done"],
+    enum: ["Not Yet Started", "In Progress", "Done"],
     default: "Not Yet Started",
   },
   dueDate: {

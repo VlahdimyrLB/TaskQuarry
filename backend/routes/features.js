@@ -10,7 +10,8 @@ const {
   updateTask,
   deleteTask,
   getAllFeaturesOfProject,
-  getFeaturesByAssignedUser, // Import the new controller function
+  getFeaturesByAssignedUser,
+  updateFeatureStatus,
 } = require("../controllers/features");
 
 // Route to get all features of a specific project
@@ -26,8 +27,11 @@ router
   .route("/:id")
   .get(getSingleFeature)
   .patch(updateFeature)
-  .delete(deleteFeature)
-  .post(createTask);
+  .delete(deleteFeature);
+router.route("/:featureId/tasks").post(createTask); // create taskss
 router.route("/:featureId/tasks/:taskId").patch(updateTask).delete(deleteTask);
+
+// New route for updating feature status
+router.route("/update-status/:id").patch(updateFeatureStatus);
 
 module.exports = router;
