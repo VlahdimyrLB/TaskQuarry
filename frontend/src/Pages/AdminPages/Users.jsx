@@ -30,7 +30,7 @@ import {
 } from "@material-tailwind/react";
 import { useEffect, useState, useRef } from "react";
 import { useReactTable } from "@tanstack/react-table";
-import defaultUserIcon from "../../Assets/images/icon.jpg";
+import defaultUserIcon from "../../Assets/images/user.png";
 
 const TABS = [
   {
@@ -47,7 +47,7 @@ const TABS = [
   },
 ];
 
-const TABLE_HEAD = ["Name", "Username", "Password", "Type", ""];
+const TABLE_HEAD = ["Name", "Username", "Password", "Type", "Actions"];
 
 const columns = [
   {
@@ -60,8 +60,7 @@ const Users = () => {
   const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
-  // const [previewImage, setPreviewImage] = useState(null);
-  const [userIcon, setUserIcon] = useState(defaultUserIcon);
+  // const [userIcon, setUserIcon] = useState(defaultUserIcon);
 
   const fetchUsers = async () => {
     try {
@@ -80,39 +79,16 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  //TANSTACK TABLE
-  const table = useReactTable({
-    columns,
-  });
-
-  // Image
-  const imageUploadRef = useRef();
-  const handleImageChange = async () => {
-    const file = imageUploadRef.current.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      setUserIcon(reader.result);
-      setNewUser({ ...newUser, image: file });
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleUploadClick = (e) => {
-    e.preventDefault();
-    imageUploadRef.current.click();
-  };
-
   //OPEN CREATE NEW USER DIALOG
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => {
     setOpen(!open);
     //prevent keeping the uploaded image in preview without submission (suggest other approach)
-    setUserIcon(defaultUserIcon);
+    // setUserIcon(defaultUserIcon);
+    setIsNameDuplicate(false);
+    setIsUsernameDuplicate(false);
+    setNewUser(!newUser);
   };
 
   // CREATE/ADD HANDLER
@@ -120,36 +96,50 @@ const Users = () => {
     name: "",
     username: "",
     password: "",
-    isAdmin: false,
-    image: "",
+    isAdmin: "User",
   });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewUser({ ...newUser, [name]: value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { name, username } = newUser;
+
+    if (!name.trim() || !username.trim()) {
+      // Validation: Name and Username are required
+      return;
+    }
+
+    // Check for duplicate name
+    const isNameDuplicate = users.some((user) => user.name === name);
+    if (isNameDuplicate) {
+      setIsNameDuplicate(true);
+      return;
+    }
+
+    // Check for duplicate username
+    const isDuplicateUsername = users.some(
+      (user) => user.username === username
+    );
+    if (isDuplicateUsername) {
+      setIsUsernameDuplicate(true);
+      return;
+    }
+
     try {
-      const formData = new FormData();
-      formData.append("name", newUser.name);
-      formData.append("username", newUser.username);
-      formData.append("password", newUser.password);
-      formData.append("image", newUser.image);
-
-      await axios.post("/api/v1/users", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      fetchUsers(); // refreh table
+      await axios.post("/api/v1/users", newUser);
+      fetchUsers();
       setNewUser({
         name: "",
         username: "",
         password: "",
-        isAdmin: false,
-        image: "",
+        isAdmin: "User",
       });
 
-      //revert to default user icon and handle open dialog state
-      setUserIcon(defaultUserIcon);
       handleOpen();
     } catch (error) {
       console.log(error);
@@ -158,46 +148,67 @@ const Users = () => {
 
   // OPEN UPDATE DIALOG
   const [toUpdateUser, setToUpdateUser] = useState(null);
+
   const handleOpenUpdate = (id) => {
     const userToUpdate = users.find((user) => user._id === id);
     setToUpdateUser(userToUpdate);
+    setIsNameDuplicate(false);
+    setIsUsernameDuplicate(false);
   };
 
-  // HANDLE CHANGE
+  // HANDLE CHANGE UPDATE
   const handleChangeUpdate = (e) => {
     const { name, value } = e.target;
-    setToUpdateUser((prevState) => ({
-      ...prevState,
+    setToUpdateUser((prevUser) => ({
+      ...prevUser,
       [name]: value,
     }));
   };
 
-  // HANDLE UPDATE TO DB
+  const handleSelect = (value) => {
+    setToUpdateUser((prevUser) => ({
+      ...prevUser,
+      isAdmin: value,
+    }));
+  };
+
   const handleUpdate = async (e) => {
-    e.preventDefault(); // Prevent page refresh
+    e.preventDefault();
 
-    // Check for duplicate name or username
-    const isDuplicateName = users.some(
-      (user) => user.name === toUpdateUser.name && user._id !== toUpdateUser._id
+    const { _id, name, username, password, isAdmin } = toUpdateUser;
+
+    if (!name.trim() || !username.trim()) {
+      // Validation: Name and Username are required
+      return;
+    }
+
+    // Check for duplicate name
+    const isNameDuplicate = users.some(
+      (user) => user.name === name && user._id !== _id
     );
+    if (isNameDuplicate) {
+      setIsNameDuplicate(true);
+      return;
+    }
+
+    // Check for duplicate username
     const isDuplicateUsername = users.some(
-      (user) =>
-        user.username === toUpdateUser.username && user._id !== toUpdateUser._id
+      (user) => user.username === username && user._id !== _id
     );
-
-    if (isDuplicateName || isDuplicateUsername) {
-      // Handle duplicate name or username
-      console.log("Duplicate name or username detected");
+    if (isDuplicateUsername) {
+      setIsUsernameDuplicate(true);
       return;
     }
 
     try {
-      await axios.patch(`/api/v1/users/${toUpdateUser._id}`, toUpdateUser, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await axios.patch(`/api/v1/users/${_id}`, {
+        name,
+        username,
+        password,
+        isAdmin: toUpdateUser.isAdmin,
       });
-      fetchUsers(); // Refresh user data
+      fetchUsers();
+      setToUpdateUser(null);
     } catch (error) {
       console.log("Error updating user:", error);
     }
@@ -296,14 +307,7 @@ const Users = () => {
                   <tr key={user._id}>
                     <td className={classes}>
                       <div className="flex items-center gap-3">
-                        {user.image ? (
-                          <Avatar
-                            src={`data:image/jpeg;base64,${user.image.data}`}
-                            alt={user.name}
-                          />
-                        ) : (
-                          <Avatar src={defaultUserIcon} alt={user.name} />
-                        )}
+                        <Avatar src={defaultUserIcon} alt={user.name} />
                         <div className="flex flex-col">
                           <Typography
                             variant="small"
@@ -352,8 +356,10 @@ const Users = () => {
                         <Chip
                           variant="ghost"
                           size="sm"
-                          value={user.isAdmin ? "Admin" : "User"}
-                          color={user.isAdmin ? "green" : "blue-gray"}
+                          value={user.isAdmin === "Admin" ? "Admin" : "User"}
+                          color={
+                            user.isAdmin === "Admin" ? "green" : "blue-gray"
+                          }
                         />
                       </div>
                     </td>
@@ -404,35 +410,36 @@ const Users = () => {
             Create New User
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
-            <div className="flex justify-center items-center">
-              <div className="relative inline-block">
-                <img
-                  src={userIcon}
-                  className="h-44 w-44 rounded-full"
-                  alt="User Icon"
-                />
-                <Tooltip content="Upload an image">
-                  <span
-                    onClick={handleUploadClick}
-                    className="absolute flex bottom-0 right-0 bg-dark-secondary text-white h-10 w-10 border-4 border-white rounded-full cursor-pointer items-center justify-center"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </span>
-                </Tooltip>
+            {/* <div className="flex justify-center items-center">
+                <div className="relative inline-block">
+                  <img
+                    src={userIcon}
+                    className="h-44 w-44 rounded-full"
+                    alt="User Icon"
+                  />
+                  <Tooltip content="Upload an image">
+                    <span
+                      onClick={handleUploadClick}
+                      className="absolute flex bottom-0 right-0 bg-dark-secondary text-white h-10 w-10 border-4 border-white rounded-full cursor-pointer items-center justify-center"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </span>
+                  </Tooltip>
+                </div>
               </div>
-            </div>
-            <input
-              type="file"
-              onChange={handleImageChange}
-              ref={imageUploadRef}
-              hidden
-            />
+              <input
+                type="file"
+                onChange={handleImageChange}
+                ref={imageUploadRef}
+                hidden
+              /> */}
             <Input
               label="Enter Full Name"
               variant="standard"
               size="md"
+              name="name"
               value={newUser.name}
-              onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+              onChange={handleChange}
               error={isNameDuplicate ? true : false}
               className={isNameDuplicate ? "text-red-500" : ""}
               required
@@ -441,10 +448,9 @@ const Users = () => {
               label="Enter Username"
               variant="standard"
               size="md"
+              name="username"
               value={newUser.username}
-              onChange={(e) =>
-                setNewUser({ ...newUser, username: e.target.value })
-              }
+              onChange={handleChange}
               error={isUsernameDuplicate ? true : false}
               className={isUsernameDuplicate ? "text-red-500" : ""}
               required
@@ -453,20 +459,32 @@ const Users = () => {
               label="Enter Password"
               variant="standard"
               size="md"
+              name="password"
               value={newUser.password}
-              onChange={(e) =>
-                setNewUser({ ...newUser, password: e.target.value })
-              }
+              onChange={handleChange}
               required
             />
-            <Select variant="standard" label="Automatically User Only Access">
-              <Option value="User" aria-selected>
-                User Only Access
-              </Option>
+
+            <Select
+              variant="standard"
+              label="Automatically User Only Access"
+              name="isAdmin"
+              value={newUser.isAdmin} // Reflect the state value here
+              onChange={(e) =>
+                setNewUser((prevState) => ({
+                  ...prevState,
+                  isAdmin: e.target.value,
+                }))
+              }
+            >
+              <Option value="User">User Only Access</Option>
+              <Option value="Admin">Admin Access</Option>
             </Select>
 
             <p className="text-red-700 text-center">
-              {isNameDuplicate ? "Duplicate Data Entry" : ""}
+              {isNameDuplicate || isUsernameDuplicate
+                ? "Duplicate Data Entry"
+                : ""}
             </p>
           </DialogBody>
           <DialogFooter className="space-x-2">
@@ -519,8 +537,8 @@ const Users = () => {
                   name="username"
                   value={toUpdateUser.username}
                   onChange={handleChangeUpdate}
-                  error={isNameDuplicate ? true : false}
-                  className={isNameDuplicate ? "text-red-500" : ""}
+                  error={isUsernameDuplicate ? true : false}
+                  className={isUsernameDuplicate ? "text-red-500" : ""}
                 />
                 <Input
                   label="Enter Password"
@@ -535,12 +553,18 @@ const Users = () => {
                   variant="standard"
                   label="User Type"
                   name="isAdmin"
-                  value={toUpdateUser.isAdmin ? "Admin" : "User"}
-                  onChange={handleChangeUpdate}
+                  value={toUpdateUser.isAdmin}
+                  onChange={handleSelect}
                 >
                   <Option value="User">User Only Access</Option>
                   <Option value="Admin">Admin Access</Option>
                 </Select>
+
+                <p className="text-red-700 text-center">
+                  {isNameDuplicate || isUsernameDuplicate
+                    ? "Duplicate Data Entry"
+                    : ""}
+                </p>
               </DialogBody>
             ) : null}
             <DialogFooter className="space-x-2">

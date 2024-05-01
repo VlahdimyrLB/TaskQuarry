@@ -21,28 +21,27 @@ const getSingleUser = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, username, password, isAdmin } = req.body;
+    const user = await User.create(req.body);
 
-    // Extract buffer of uploaded image
-    const { buffer } = req.file;
+    // const { name, username, password, isAdmin } = req.body;
+    // // Extract buffer of uploaded image
+    // const { buffer } = req.file;
+    // // Convert image buffer to base64 encoded string
+    // const base64Image = buffer.toString("base64");
+    // // Create new user object with image data
+    // const user = new User({
+    //   name,
+    //   username,
+    //   password,
+    //   isAdmin,
+    //   image: {
+    //     data: base64Image,
+    //     contentType: req.file.mimetype,
+    //   },
+    // });
+    // // Save user to database
+    // await user.save();
 
-    // Convert image buffer to base64 encoded string
-    const base64Image = buffer.toString("base64");
-
-    // Create new user object with image data
-    const user = new User({
-      name,
-      username,
-      password,
-      isAdmin,
-      image: {
-        data: base64Image,
-        contentType: req.file.mimetype,
-      },
-    });
-
-    // Save user to database
-    await user.save();
     res.status(201).json({ user });
   } catch (error) {
     console.error(error);

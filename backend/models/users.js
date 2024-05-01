@@ -22,13 +22,14 @@ const UserSchema = new mongoose.Schema({
     // maxlength: [20, "Password must be less than or equal 20 characters"],
   },
   isAdmin: {
-    type: Boolean,
-    default: false,
+    type: String,
+    enum: ["Admin", "User"],
+    default: "User",
   },
-  image: {
-    data: { type: String, required: true },
-    contentType: { type: String, required: true },
-  },
+  // image: {
+  //   data: { type: String, required: true },
+  //   contentType: { type: String, required: true },
+  // },
 });
 
 module.exports = mongoose.model("User", UserSchema);
