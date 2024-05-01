@@ -33,7 +33,7 @@ function App() {
         path="admin/*"
         element={
           <ProtectedRoute loggedUser={loggedUser}>
-            <AdminPage loggedUser={loggedUser} />
+            <AdminPage loggedUser={loggedUser} setLoggedUser={setLoggedUser} />
           </ProtectedRoute>
         }
       />
