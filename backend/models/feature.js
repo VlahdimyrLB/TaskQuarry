@@ -18,7 +18,11 @@ const FeatureSchema = new Schema({
     type: Date,
     default: null,
   },
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Use mongoose.Schema.Types.ObjectId
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  }, // Use mongoose.Schema.Types.ObjectId
   tasks: [
     {
       name: String,
