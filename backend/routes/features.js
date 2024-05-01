@@ -9,12 +9,15 @@ const {
   createTask,
   updateTask,
   deleteTask,
+  getAllFeaturesOfProject,
+  getFeaturesByAssignedUser, // Import the new controller function
 } = require("../controllers/features");
-
-const { getAllFeaturesOfProject } = require("../controllers/features");
 
 // Route to get all features of a specific project
 router.get("/project/:projectId", getAllFeaturesOfProject);
+
+// New route to get features by assigned user ID
+router.get("/assigned/:userId", getFeaturesByAssignedUser);
 
 // Routes for other feature-related operations
 router.route("/").get(getAllFeatures);

@@ -237,6 +237,19 @@ const deleteTask = async (req, res) => {
 //   }
 // };
 
+const getFeaturesByAssignedUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find features assigned to the specified user ID
+    const features = await Feature.find({ assignedTo: userId });
+
+    res.status(200).json({ features });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
 module.exports = {
   getAllFeatures,
   getSingleFeature,
@@ -248,4 +261,5 @@ module.exports = {
   deleteTask,
   getAllFeaturesOfProject,
   // assignUserToFeature,
+  getFeaturesByAssignedUser,
 };

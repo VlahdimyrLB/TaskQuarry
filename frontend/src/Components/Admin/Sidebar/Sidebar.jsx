@@ -23,6 +23,7 @@ import {
   XMarkIcon,
   Cog8ToothIcon,
   ClipboardDocumentCheckIcon,
+  BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
@@ -90,6 +91,23 @@ const Sidebar = ({ isOpen, close }) => {
                   <HomeIcon className="h-5 w-5 " />
                 </ListItemPrefix>
                 Dashboard
+              </ListItem>
+            </NavLink>
+
+            <NavLink
+              to="/admin/assigned"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
+                  : ""
+              }
+              end
+            >
+              <ListItem>
+                <ListItemPrefix>
+                  <BriefcaseIcon className="h-5 w-5 " />
+                </ListItemPrefix>
+                Assigned Work
               </ListItem>
             </NavLink>
 
