@@ -40,7 +40,18 @@ const getSingleFeature = async (req, res) => {
 
 // const createFeature = async (req, res) => {
 //   try {
+//     const { projectId } = req.params;
+
+//     const project = await Project.findById(projectId);
+//     if (!project) {
+//       return res.status(404).json({ msg: "Project not found" });
+//     }
+
 //     const feature = await Feature.create(req.body);
+//     project.features.push(feature);
+
+//     await project.save();
+
 //     res.status(201).json({ feature });
 //   } catch (error) {
 //     res.status(500).json({ msg: error });
@@ -58,8 +69,13 @@ const createFeature = async (req, res) => {
 
     const feature = await Feature.create(req.body);
     project.features.push(feature);
+    if (req.body.assignedTo) {
+      // Assuming you're passing the user ID in req.body.assignedTo
+      feature.assignedTo = req.body.assignedTo;
+    }
 
     await project.save();
+    await feature.save();
 
     res.status(201).json({ feature });
   } catch (error) {

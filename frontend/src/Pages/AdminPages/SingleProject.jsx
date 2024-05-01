@@ -58,7 +58,6 @@ const SingleProject = () => {
     try {
       const { data } = await axios.get(`/api/v1/users`);
       setUsers(data.user);
-      console.log(data.user);
     } catch (error) {
       setError(error.message);
     }
@@ -69,6 +68,47 @@ const SingleProject = () => {
     fetchFeatures();
     fetchUsers();
   }, [projectID]);
+
+  // CREATE/ADD HANDLER
+  const [newFeature, setNewFeature] = useState({
+    name: "",
+    description: "",
+    status: "Not Yet Started",
+    dueDate: null,
+    assignedTo: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewFeature((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelect = (value) => {
+    setNewFeature((prevUser) => ({
+      ...prevUser,
+      assignedTo: value,
+    }));
+
+    console.log(value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `/api/v1/features/${projectID}`,
+        newFeature
+      );
+
+      setOpen(false);
+      fetchFeatures();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -120,7 +160,7 @@ const SingleProject = () => {
                 <tr
                   key={feature._id}
                   onClick={handleOpenUpdate}
-                  className="hover:cursor-pointer"
+                  className="hover:cursor-pointer hover:bg-blue-gray-50"
                 >
                   <td>{feature.name}</td>
                   <td>{feature.description}</td>
@@ -141,6 +181,80 @@ const SingleProject = () => {
           <p className="text-center">No Features Yet</p>
         )}
       </div>
+
+      {/* ADD FEATURE */}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        size="sm"
+        className="p-3"
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogHeader className="text-md text-gray-800 uppercase">
+            Add New Feature
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-7">
+            <Input
+              label="Enter Feature Name"
+              variant="standard"
+              size="md"
+              name="name"
+              value={newFeature.name || ""}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Enter Feature Description"
+              variant="standard"
+              size="md"
+              name="description"
+              value={newFeature.description || ""}
+              onChange={handleChange}
+              required
+            />
+            <Input
+              label="Enter Due Date"
+              type="date"
+              variant="standard"
+              size="md"
+              name="dueDate"
+              value={newFeature.dueDate || ""}
+              onChange={handleChange}
+            />
+            <Select
+              label="Assign To"
+              variant="standard"
+              size="md"
+              name="assignedTo"
+              value={newFeature.assignedTo || ""}
+              onChange={handleSelect}
+              required
+            >
+              {users.map((user) => (
+                <Option key={user._id} value={user._id}>
+                  {user.name}
+                </Option>
+              ))}
+            </Select>
+          </DialogBody>
+          <DialogFooter className="space-x-2">
+            <Button
+              variant="outlined"
+              onClick={() => setOpen(false)}
+              className="rounded-md hover:text-red-700 hover:border-red-700"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              variant="filled"
+              type="submit"
+              className="rounded-md hover:opacity-75"
+            >
+              <span>Create</span>
+            </Button>
+          </DialogFooter>
+        </form>
+      </Dialog>
 
       {/* UPDATE FEATURE */}
       <Dialog
