@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { useState, createElement } from "react";
 import Switcher from "./Switcher";
-import userIcon from "../../Assets/images/icon.jpg";
+import userIcon from "../../Assets/images/user.png";
 
 const profileMenuItems = [
   {
@@ -109,8 +109,8 @@ const Navbar = ({ toggleSidebar, loggedUser }) => {
                   <Avatar
                     variant="circular"
                     // size="md"
-                    alt="kim chaewon"
-                    className="border border-gray-800 h-10 w-10 hover:opacity-80"
+                    alt="User"
+                    className="h-10 w-10 hover:opacity-80"
                     src={userIcon}
                   />
                 </button>
