@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import DataTable from "react-data-table-component";
 
 import {
   Card,
@@ -58,6 +59,40 @@ const SingleProject = () => {
 
     setOpenUpdate(true);
   };
+
+  //DATA TABLE
+  const columns = [
+    {
+      name: "FEATURE",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "DESCRIPTION",
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    {
+      name: "STATUS",
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: "DUE DATE",
+      selector: (row) => row.dueDate,
+      sortable: true,
+      format: (row) =>
+        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
+    },
+    {
+      // sort causes error for this column
+      name: "ASSIGNED TO",
+      selector: "assignedTo",
+      // sortable: true,
+      format: (row) =>
+        row.assignedTo ? row.assignedTo.name || "Not Assigned" : "Not Assigned",
+    },
+  ];
 
   const fetchProject = async () => {
     try {
@@ -191,7 +226,7 @@ const SingleProject = () => {
   return (
     <div>
       <div className="flex flex-col">
-        <Card className="p-4">
+        <Card className="p-4 rounded-md">
           <Typography>Project: {singleProject.name}</Typography>
           <Typography>Description: {singleProject.description}</Typography>
           <Typography>
@@ -201,59 +236,39 @@ const SingleProject = () => {
         </Card>
       </div>
 
-      <div className="flex shrink-0 flex-col gap-2 my-4  sm:flex-row ">
-        <Button
-          className="flex items-center gap-3"
-          size="sm"
-          onClick={handleOpen}
-        >
-          <PlusIcon strokeWidth={2} className="h-5 w-5" /> ADD A FEATURE
-        </Button>
-      </div>
-
-      <div>
-        <h1 className="text-xl font-bold">List of Features</h1>
-
-        {features.length > 0 ? (
-          <table className="w-full table-auto">
-            <thead>
-              <tr>
-                <th>Feature Name</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Due Date</th>
-                <th>Assigned To</th>
-              </tr>
-            </thead>
-            <tbody>
-              {features.map((feature) => (
-                <tr
-                  key={feature._id}
-                  onClick={() => handleOpenUpdate(feature._id)}
-                  className="hover:cursor-pointer hover:bg-blue-gray-50"
-                >
-                  <td>{feature.name}</td>
-                  <td>{feature.description}</td>
-                  <td>{feature.status}</td>
-                  <td>
-                    {feature.dueDate
-                      ? new Date(feature.dueDate).toLocaleDateString()
-                      : "No Due"}
-                  </td>
-                  <td>
-                    {feature.assignedTo
-                      ? users.find((user) => user._id === feature.assignedTo)
-                          ?.name || "Not Assigned"
-                      : "Not Assigned"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-center">No Features Yet</p>
-        )}
-      </div>
+      <Card className="rounded-md mt-4">
+        <div className="p-2">
+          <div className="flex shrink-0 flex-col gap-2 py-5 px-3 justify-between sm:flex-row ">
+            <div>
+              <p className="font-semibold uppercase text-xl">
+                List of Features
+              </p>
+            </div>
+            <div>
+              <Button
+                className="flex items-center gap-3"
+                size="sm"
+                onClick={handleOpen}
+              >
+                <PlusIcon strokeWidth={2} className="h-5 w-5" /> ADD A FEATURE
+              </Button>
+            </div>
+          </div>
+          {features.length > 0 ? (
+            <DataTable
+              columns={columns}
+              data={features}
+              highlightOnHover
+              pointerOnHover
+              pagination
+              fixedHeader
+              onRowClicked={(row) => handleOpenUpdate(row._id)}
+            />
+          ) : (
+            <p className="text-center">No Features Yet</p>
+          )}
+        </div>
+      </Card>
 
       {/* ADD FEATURE */}
       <Dialog
