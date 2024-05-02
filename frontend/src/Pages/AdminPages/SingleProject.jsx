@@ -591,7 +591,6 @@ const SingleProject = () => {
               onChange={handleUpdateProjectChange}
               required
             />
-            // Inside the return statement, update the Select for Priority:
             <Select
               label="Priority"
               variant="standard"
