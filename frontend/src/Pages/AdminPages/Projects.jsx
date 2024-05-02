@@ -35,8 +35,8 @@ const Projects = () => {
 
   return (
     <>
-      <div className="flex">
-        <div className="flex-1">
+      <div className="flex justify-between">
+        <div>
           <SearchBar />
         </div>
         <div>
@@ -49,7 +49,7 @@ const Projects = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-5 mt-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-5 mt-4 xl:grid-cols-3">
         {projects.map((project) => (
           <Link key={project._id} to={`/admin/projects/${project._id}`}>
             <ProjectCard project={project} />
