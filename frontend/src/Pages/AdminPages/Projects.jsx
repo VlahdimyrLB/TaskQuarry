@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import ProjectCard from "../../Components/Admin/Project/ProjectCard";
 import NewProjectDialog from "../../Components/Admin/Project/NewProjectDialog";
 import SearchBar from "../../Components/Admin/Project/SearchBar";
-import { Button } from "@material-tailwind/react";
+import { Button, Card } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 const Projects = () => {
@@ -36,9 +36,7 @@ const Projects = () => {
   return (
     <>
       <div className="flex justify-between">
-        <div>
-          <SearchBar />
-        </div>
+        <p className="text-xl text-gray-800 font-semibold">Projects</p>
         <div>
           <Button
             onClick={handleDialogToggle}
