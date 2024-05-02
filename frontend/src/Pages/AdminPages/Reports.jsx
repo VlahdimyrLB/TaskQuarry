@@ -1,4 +1,4 @@
 const Reports = () => {
-  return <div>Reports</div>;
+  return <div>Comming Soon :)</div>;
 };
 export default Reports;

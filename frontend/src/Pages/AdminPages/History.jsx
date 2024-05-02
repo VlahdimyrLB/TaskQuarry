@@ -1,4 +1,4 @@
 const History = () => {
-  return <div>History</div>;
+  return <div>Comming Soon :)</div>;
 };
 export default History;
