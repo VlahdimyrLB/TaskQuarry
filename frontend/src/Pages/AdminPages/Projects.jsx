@@ -49,7 +49,7 @@ const Projects = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-4 mt-4">
+      <div className="grid grid-cols-2 gap-5 mt-4 lg:grid-cols-3">
         {projects.map((project) => (
           <Link key={project._id} to={`/admin/projects/${project._id}`}>
             <ProjectCard project={project} />
