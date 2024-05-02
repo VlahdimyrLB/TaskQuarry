@@ -21,7 +21,6 @@ import {
   XMarkIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
-
 } from "@heroicons/react/24/solid";
 import { useTable, useSortBy, usePagination } from "react-table";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
@@ -327,14 +326,13 @@ const Assigned = ({ loggedUser }) => {
           >
             {/* Table Headers */}
             <thead className="bg-blue-gray-50">
-
-//               <tr>
+              {/* //               <tr>
 //                 {TABLE_HEAD.map((head) => (
 //                   <td style={customTableStyles.headCells.style} key={head}>
 //                     {head}
 //                   </td>
 //                 ))}
-//               </tr>
+//               </tr> */}
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
@@ -364,7 +362,6 @@ const Assigned = ({ loggedUser }) => {
                     onClick={() => handleOpen(row.original)}
                     style={{ ...CustomTableStyles.rows.style }}
                     className="hover:cursor-pointer hover:bg-blue-gray-50 border-b-2"
-
                   >
                     {row.cells.map((cell) => {
                       return (
