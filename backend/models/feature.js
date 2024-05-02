@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose; // Destructure Schema from mongoose
+const { Schema } = mongoose;
 
 const FeatureSchema = new Schema({
   name: {
@@ -22,7 +22,11 @@ const FeatureSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     default: null,
-  }, // Use mongoose.Schema.Types.ObjectId
+  },
+  parentProject: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project", // Reference to the Project model
+  },
   tasks: [
     {
       name: String,
