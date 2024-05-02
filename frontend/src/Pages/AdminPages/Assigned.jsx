@@ -449,7 +449,7 @@ const Assigned = ({ loggedUser }) => {
                     {selectedFeature.tasks.map((task) => (
                       <div
                         key={task._id}
-                        class="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
+                        className="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
                       >
                         <Checkbox
                           className="my-3 h-4 w-4 rounded-full hover:shadow-none"
@@ -488,10 +488,10 @@ const Assigned = ({ loggedUser }) => {
             </div>
           </div>
           <div className="">
-            <p>Tasks to Accomplish</p>
+            {/* <p>Tasks to Accomplish</p> */}
 
             {/* List of tasks */}
-            <div className="overflow-y-auto w-full scroll-m-1 h-40">
+            {/* <div className="overflow-y-auto w-full scroll-m-1 h-40">
               <div>
                 {selectedFeature?.tasks.length > 0 ? (
                   <div className="space-y-3">
@@ -534,7 +534,7 @@ const Assigned = ({ loggedUser }) => {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             {/* <div className="overflow-y-auto scroll-m-1 h-36 bg-gray-300">
               {selectedFeature?.tasks.length > 0 ? (
                 <ul>
