@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-
+import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
 import {
   Card,
   Typography,
@@ -63,30 +63,30 @@ const SingleProject = () => {
   //DATA TABLE
   const columns = [
     {
-      name: "FEATURE",
+      name: "Feature",
       selector: (row) => row.name,
       sortable: true,
     },
     {
-      name: "DESCRIPTION",
+      name: "Description",
       selector: (row) => row.description,
       sortable: true,
     },
     {
-      name: "STATUS",
+      name: "Status",
       selector: (row) => row.status,
       sortable: true,
     },
     {
-      name: "DUE DATE",
+      name: "Due Date",
       selector: (row) => row.dueDate,
       sortable: true,
       format: (row) =>
         row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
     },
     {
-      // sort causes error for this column
-      name: "ASSIGNED TO",
+      // sort causes error to this column for some reason
+      name: "Assigned To",
       selector: "assignedTo",
       // sortable: true,
       format: (row) =>
@@ -240,9 +240,7 @@ const SingleProject = () => {
         <div className="p-2">
           <div className="flex shrink-0 flex-col gap-2 py-5 px-3 justify-between sm:flex-row ">
             <div>
-              <p className="font-semibold uppercase text-xl">
-                List of Features
-              </p>
+              <p className="text-xl">Project Features</p>
             </div>
             <div>
               <Button
@@ -258,6 +256,7 @@ const SingleProject = () => {
             <DataTable
               columns={columns}
               data={features}
+              customStyles={CustomTableStyles}
               highlightOnHover
               pointerOnHover
               pagination
