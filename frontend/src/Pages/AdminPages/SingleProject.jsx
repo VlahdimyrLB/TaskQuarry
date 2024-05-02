@@ -15,10 +15,12 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
 const SingleProject = () => {
   const { projectID } = useParams(); // get the ID in url parameter
+  const navigate = useNavigate();
   const [singleProject, setSingleProject] = useState(null);
   const [features, setFeatures] = useState([]);
   const [users, setUsers] = useState([]);
@@ -59,40 +61,6 @@ const SingleProject = () => {
 
     setOpenUpdate(true);
   };
-
-  //DATA TABLE
-  const columns = [
-    {
-      name: "Feature",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    {
-      name: "Status",
-      selector: (row) => row.status,
-      sortable: true,
-    },
-    {
-      name: "Due Date",
-      selector: (row) => row.dueDate,
-      sortable: true,
-      format: (row) =>
-        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
-    },
-    {
-      // sort causes error to this column for some reason
-      name: "Assigned To",
-      selector: "assignedTo",
-      // sortable: true,
-      format: (row) =>
-        row.assignedTo ? row.assignedTo.name || "Not Assigned" : "Not Assigned",
-    },
-  ];
 
   const fetchProject = async () => {
     try {
@@ -158,10 +126,10 @@ const SingleProject = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `/api/v1/features/${projectID}`,
-        newFeature
-      );
+      const { data } = await axios.post(`/api/v1/features/${projectID}`, {
+        ...newFeature,
+        parentProject: projectID, // Assign the parent project ID to the feature
+      });
       console.log("New Feature Created:", data.feature);
 
       setOpen(false);
@@ -201,7 +169,10 @@ const SingleProject = () => {
     try {
       const { data } = await axios.patch(
         `/api/v1/features/${featureToUpdate._id}`,
-        updatedFeature // Use updatedFeature here
+        {
+          ...updatedFeature,
+          parentProject: featureToUpdate.parentProject, // Maintain the parent project ID
+        }
       );
       console.log("Feature Updated:", data.feature);
       setOpenUpdate(false);
@@ -215,7 +186,150 @@ const SingleProject = () => {
     }
   };
 
-  if (loading) {
+  const handleDeleteFeature = async () => {
+    const confirmation = window.confirm(
+      "Are you sure you want to delete this feature?"
+    );
+    if (confirmation) {
+      try {
+        await axios.delete(`/api/v1/features/${featureToUpdate._id}`);
+        setFeatures((prevFeatures) =>
+          prevFeatures.filter((feature) => feature._id !== featureToUpdate._id)
+        );
+        setFeatureToUpdate(null);
+        setOpenUpdate(false);
+        fetchFeatures();
+      } catch (error) {
+        setError(error.message);
+      }
+    }
+  };
+
+  const getAssignedToName = (assignedToId) => {
+    const user = users.find((user) => user._id === assignedToId);
+    return user ? user.name : "Not Assigned";
+  };
+
+  const columns = [
+    {
+      name: "Feature",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: "Due Date",
+      selector: (row) => row.dueDate,
+      sortable: true,
+      format: (row) =>
+        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
+    },
+    {
+      name: "Assigned To",
+      selector: (row) => row.assignedTo,
+      format: (row) => getAssignedToName(row.assignedTo),
+      sortable: true,
+    },
+  ];
+
+  const handleDeleteProject = async () => {
+    if (features.length > 0) {
+      const confirmation = window.confirm(
+        "This project has associated features. Deleting this project will also delete its features. Are you sure you want to proceed?"
+      );
+      if (confirmation) {
+        try {
+          await Promise.all(
+            features.map((feature) =>
+              axios.delete(`/api/v1/features/${feature._id}`)
+            )
+          );
+          await axios.delete(`/api/v1/projects/${projectID}`);
+          navigate("../projects");
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+    } else {
+      const confirmation = window.confirm(
+        "Are you sure you want to delete this project?"
+      );
+      if (confirmation) {
+        try {
+          await axios.delete(`/api/v1/projects/${projectID}`);
+          navigate("../projects");
+        } catch (error) {
+          setError(error.message);
+        }
+      }
+    }
+  };
+
+  // State and handlers for updating project
+  const [project, setProject] = useState(null);
+  const [openUpdateProject, setOpenUpdateProject] = useState(false);
+  const [updatedProject, setUpdatedProject] = useState({
+    name: "",
+    description: "",
+    priority: "",
+    isDone: false,
+  });
+
+  const handleOpenUpdateProject = () => {
+    setUpdatedProject({
+      name: singleProject.name,
+      description: singleProject.description,
+      priority: singleProject.priority,
+      isDone: singleProject.isDone,
+    });
+    setOpenUpdateProject(true);
+  };
+
+  const handleCloseUpdateProject = () => {
+    setOpenUpdateProject(false);
+  };
+
+  const handleUpdateSelectProject = (name, value) => {
+    setUpdatedProject((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateProjectChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedProject((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateProjectSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.patch(
+        `/api/v1/projects/${projectID}`,
+        updatedProject
+      );
+      setProject(data.project);
+      setOpenUpdateProject(false);
+
+      fetchProject();
+    } catch (error) {
+      console.error("Error updating project:", error.message);
+    }
+  };
+
+  if (loading || users.length === 0) {
     return <div>Loading...</div>;
   }
 
@@ -234,6 +348,11 @@ const SingleProject = () => {
           </Typography>
           <Typography>Priority: {singleProject.priority}</Typography>
         </Card>
+
+        <div>
+          <Button onClick={handleDeleteProject}>Delete</Button>
+          <Button onClick={handleOpenUpdateProject}>Update</Button>
+        </div>
       </div>
 
       <Card className="rounded-md mt-4">
@@ -354,8 +473,14 @@ const SingleProject = () => {
         className="p-3"
       >
         <form onSubmit={handleUpdateSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase">
-            Update Feature
+          <DialogHeader className="text-md text-gray-800 uppercase flex justify-between">
+            <p>Update Feature</p>
+            <button onClick={handleDeleteFeature}>
+              <TrashIcon
+                strokeWidth={2}
+                className="h-6 w-6 text-red-600 hover:text-red-900 hover:cursor-pointer"
+              />
+            </button>
           </DialogHeader>
           <DialogBody className="flex flex-col gap-7">
             <Input
@@ -421,6 +546,87 @@ const SingleProject = () => {
                 setFeatureToUpdate(null);
                 setOpenUpdate(false);
               }}
+              className="rounded-md hover:text-red-700 hover:border-red-700"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button
+              variant="filled"
+              type="submit"
+              className="rounded-md hover:opacity-75"
+            >
+              <span>Update</span>
+            </Button>
+          </DialogFooter>
+        </form>
+      </Dialog>
+
+      {/* UPDATE PROJECT DIALOG */}
+      <Dialog
+        open={openUpdateProject}
+        handler={handleCloseUpdateProject}
+        size="sm"
+        className="p-3"
+      >
+        <form onSubmit={handleUpdateProjectSubmit}>
+          <DialogHeader className="text-md text-gray-800 uppercase">
+            Update Project
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-7">
+            <Input
+              label="Project Name"
+              variant="standard"
+              size="md"
+              name="name"
+              value={updatedProject.name}
+              onChange={handleUpdateProjectChange}
+              required
+            />
+            <Input
+              label="Description"
+              variant="standard"
+              size="md"
+              name="description"
+              value={updatedProject.description}
+              onChange={handleUpdateProjectChange}
+              required
+            />
+            <Select
+              label="Priority"
+              variant="standard"
+              size="md"
+              name="priority"
+              value={updatedProject.priority}
+              onChange={(value) => handleUpdateSelectProject("priority", value)} // Directly pass name and value
+              required
+            >
+              <Option value="Urgent">Urgent</Option>
+              <Option value="High">High</Option>
+              <Option value="Medium">Medium</Option>
+              <Option value="Low">Low</Option>
+            </Select>
+            <Select
+              label="Status"
+              variant="standard"
+              size="md"
+              name="isDone"
+              value={updatedProject.isDone ? "Done" : "Ongoing"}
+              onChange={(value) =>
+                setUpdatedProject((prev) => ({
+                  ...prev,
+                  isDone: value === "Done",
+                }))
+              }
+              required
+            >
+              <Option value="Ongoing">Ongoing</Option>
+              <Option value="Done">Done</Option>
+            </Select>
+          </DialogBody>
+          <DialogFooter className="space-x-2">
+            <Button
+              variant="outlined"
+              onClick={handleCloseUpdateProject}
               className="rounded-md hover:text-red-700 hover:border-red-700"
             >
               <span>Cancel</span>

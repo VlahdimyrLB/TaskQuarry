@@ -58,6 +58,8 @@ const getSingleFeature = async (req, res) => {
 //   }
 // };
 
+//
+
 const createFeature = async (req, res) => {
   try {
     const { projectId } = req.params;
@@ -67,10 +69,13 @@ const createFeature = async (req, res) => {
       return res.status(404).json({ msg: "Project not found" });
     }
 
-    const feature = await Feature.create(req.body);
+    const feature = await Feature.create({
+      ...req.body,
+      parentProject: projectId, // Assign the parent project ID to the feature
+    });
+
     project.features.push(feature);
     if (req.body.assignedTo) {
-      // Assuming you're passing the user ID in req.body.assignedTo
       feature.assignedTo = req.body.assignedTo;
     }
 
