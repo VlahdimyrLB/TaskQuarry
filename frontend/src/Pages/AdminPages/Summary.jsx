@@ -1,4 +1,4 @@
 const Summary = () => {
-  return <div>Summary Here</div>;
+  return <div>Comming Soon :)</div>;
 };
 export default Summary;

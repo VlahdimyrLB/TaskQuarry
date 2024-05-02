@@ -73,7 +73,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
                 />
               </svg>
             </button>
-            <h1 className="font-bold ml-2.5 text-sm md:ml-0">
+            <h1 className="font-bold ml-2.5 text-lg text-gray-800 md:ml-0">
               {/* <Avatar src={TQ} className="w-9 h-9" /> */}
               TaskQuarry
             </h1>
@@ -83,7 +83,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
             <Typography className="mr-4 text-[16px] hidden md:block">
               Good Day! {loggedUser.name}
             </Typography>
-            <Switcher />
+            {/* <Switcher /> */}
             {/* <IconButton
               variant="text"
               size="sm"
@@ -122,7 +122,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
                 </button>
               </MenuHandler>
               <MenuList className="p-1">
-                <MenuItem
+                {/* <MenuItem
                   onClick={handleOpen}
                   className="flex items-center gap-2 rounded text-gray-700"
                 >
@@ -130,7 +130,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
                   <Typography as="span" variant="small">
                     My Profile
                   </Typography>
-                </MenuItem>
+                </MenuItem> */}
 
                 <MenuItem
                   onClick={handleSignOut}
@@ -147,7 +147,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
         </div>
       </div>
 
-      <Dialog open={open} handler={handleOpen}>
+      {/* <Dialog open={open} handler={handleOpen}>
         <DialogHeader>My Profile</DialogHeader>
         <DialogBody>
           <Input
@@ -192,7 +192,7 @@ const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
             <span>Confirm</span>
           </Button>
         </DialogFooter>
-      </Dialog>
+      </Dialog> */}
     </nav>
   );
 };
