@@ -35,6 +35,36 @@ const Assigned = ({ loggedUser }) => {
     fetchFeatures();
   }, [loggedUser._id]);
 
+  // const fetchFeatures = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `/api/v1/features/assigned/${loggedUser._id}`
+  //     );
+  //     const featuresWithParentProject = await Promise.all(
+  //       response.data.features.map(async (feature) => {
+  //         const featureWithParentProject = { ...feature };
+  //         const parentProject = await axios.get(
+  //           `/api/v1/projects/${feature.parentProject}`
+  //         );
+  //         featureWithParentProject.parentProjectName =
+  //           parentProject.data.project.name;
+  //         featureWithParentProject.parentProjectDescription =
+  //           parentProject.data.project.description;
+  //         featureWithParentProject.parentProjectPriority =
+  //           parentProject.data.project.priority;
+  //         featureWithParentProject.parentProjectStatus = parentProject.data
+  //           .project.isDone
+  //           ? "Done"
+  //           : "Ongoing";
+  //         return featureWithParentProject;
+  //       })
+  //     );
+  //     setFeatures(featuresWithParentProject);
+  //   } catch (error) {
+  //     console.error("Error fetching features:", error);
+  //   }
+  // };
+
   const fetchFeatures = async () => {
     try {
       const response = await axios.get(
@@ -46,10 +76,11 @@ const Assigned = ({ loggedUser }) => {
           const parentProject = await axios.get(
             `/api/v1/projects/${feature.parentProject}`
           );
-          featureWithParentProject.parentProjectName =
-            parentProject.data.project.name;
-          featureWithParentProject.parentProjectDescription =
-            parentProject.data.project.description;
+          featureWithParentProject.parentProject = {
+            name: parentProject.data.project.name,
+            description: parentProject.data.project.description,
+            priority: parentProject.data.project.priority,
+          };
           featureWithParentProject.parentProjectPriority =
             parentProject.data.project.priority;
           featureWithParentProject.parentProjectStatus = parentProject.data
@@ -197,7 +228,19 @@ const Assigned = ({ loggedUser }) => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Name",
+        Header: "Parent Project",
+        accessor: "parentProject", // Accessor for the parent project object
+        Cell: ({ value }) => (
+          <div className="flex flex-col">
+            <span className="text-lg font-bold">{value.name}</span>
+            <span className="text-sm">
+              Priority: <span className="b">{value.priority}</span>{" "}
+            </span>
+          </div>
+        ),
+      },
+      {
+        Header: "Feature Name",
         accessor: "name",
       },
       {
@@ -239,10 +282,6 @@ const Assigned = ({ loggedUser }) => {
             </ul>
           );
         },
-      },
-      {
-        Header: "Parent Project",
-        accessor: "parentProjectName", // Accessor for the parent project name
       },
     ],
     []
@@ -340,13 +379,17 @@ const Assigned = ({ loggedUser }) => {
       {/* Task Modal */}
       <Dialog open={open} handler={handleClose} size="sm" className="p-5">
         <div className="flex flex-col justify-start items-start">
-          <p className="text-sm uppercase">Feature</p>
+          <p className="text-sm uppercase">Feature Name</p>
           <p className="text-lg font-semibold">{selectedFeature?.name}</p>
         </div>
         <div className="mt-4 space-y-6">
           <div>
             <p>Description</p>
-            <Input variant="standard" value={selectedFeature?.description} />
+            <Input
+              variant="standard"
+              value={selectedFeature?.description}
+              readOnly
+            />
           </div>
           <div className="grid grid-cols-2 gap-5">
             <div>
@@ -354,6 +397,7 @@ const Assigned = ({ loggedUser }) => {
               <Input
                 variant="standard"
                 value={formatDate(selectedFeature?.dueDate)}
+                readOnly
               />
             </div>
             <div>
@@ -373,7 +417,7 @@ const Assigned = ({ loggedUser }) => {
             <p>Tasks to Accomplish</p>
 
             {/* List of tasks */}
-            <div class="overflow-y-auto w-full scroll-m-1 h-40">
+            <div className="overflow-y-auto w-full scroll-m-1 h-40">
               <div>
                 {selectedFeature?.tasks.length > 0 ? (
                   <div className="space-y-3">
