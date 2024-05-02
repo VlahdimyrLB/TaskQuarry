@@ -30,6 +30,7 @@ import {
 import { useEffect, useState, useRef } from "react";
 // import { useReactTable } from "@tanstack/react-table";
 import DataTable from "react-data-table-component";
+import { createTheme } from "react-data-table-component";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
 import defaultUserIcon from "../../Assets/images/user.png";
 import ActionsCell from "../../Components/Admin/UserManagement/ActionsCell";
@@ -52,8 +53,12 @@ const TABS = [
 ];
 
 const TABLE_HEAD = ["Name", "Username", "Password", "Type", "Actions"];
-
-const Users = () => {
+createTheme("custom", {
+  background: {
+    default: "transparent",
+  },
+});
+const Users = ({ loggedUser, setLoggedUser }) => {
   const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
@@ -74,6 +79,8 @@ const Users = () => {
 
   useEffect(() => {
     fetchUsers();
+
+    console.log(loggedUser);
   }, []);
 
   //OPEN CREATE NEW USER DIALOG
@@ -249,7 +256,15 @@ const Users = () => {
       const confirmed = window.confirm(
         "Are you sure you want to delete this user?"
       );
+
       if (confirmed) {
+        // Check if the user being deleted is the same as the logged-in user
+        if (userId === loggedUser._id) {
+          // Display a message or prevent deletion
+          alert("You cannot delete your own account.");
+          return;
+        }
+
         await axios.delete(`/api/v1/users/${userId}`);
         fetchUsers(); // Pang refresh ito
       }
@@ -257,6 +272,21 @@ const Users = () => {
       console.log(error);
     }
   };
+
+  const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
+  const [filteredUsers, setFilteredUsers] = useState([]); // State to hold filtered users
+
+  // Function to filter users based on search term
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  useEffect(() => {
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [searchTerm, users]);
 
   return (
     <>
@@ -286,16 +316,18 @@ const Users = () => {
             <Input
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              onChange={handleSearch}
             />
           </div>
         </div>
         <DataTable
           className="overflow-hidden"
           columns={columns}
-          data={users}
+          data={filteredUsers} // Use filteredUsers instead of users
           customStyles={CustomTableStyles}
           pagination
           fixedHeader
+          theme="custom" // Apply custom theme to fix background color issue
         />
       </Card>
 

@@ -364,7 +364,7 @@ const SingleProject = () => {
                   singleProject.isDone ? "text-green-600" : "text-blue-600"
                 }`}
               >
-                {singleProject.isDone ? "Done" : "In Progress"}
+                {singleProject.isDone ? "Done" : "Ongoing"}
               </Typography>
             </div>
             <div>

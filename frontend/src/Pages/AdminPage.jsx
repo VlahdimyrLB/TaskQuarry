@@ -41,7 +41,12 @@ const AdminPage = ({ loggedUser, setLoggedUser }) => {
           <Routes>
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
-            <Route path="users" element={<Users />} />
+            <Route
+              path="users"
+              element={
+                <Users loggedUser={loggedUser} setLoggedUser={setLoggedUser} />
+              }
+            />
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
             <Route
