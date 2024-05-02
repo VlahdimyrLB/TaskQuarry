@@ -16,6 +16,9 @@ import {
   PlusIcon,
   TrashIcon,
   CheckCircleIcon,
+  ClockIcon,
+  XCircleIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { useTable, useSortBy, usePagination } from "react-table";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
@@ -216,15 +219,21 @@ const Assigned = ({ loggedUser }) => {
           return (
             <ul>
               {value.map((task) => (
-                <li key={task._id} className="flex items-center">
-                  {task.name}
+                <li key={task._id} className="flex items-center border-b-2 p-1">
                   <span>
                     {task.isDone === true ? (
-                      <CheckCircleIcon strokeWidth={2} className="h-4 w-4" />
+                      <CheckCircleIcon
+                        strokeWidth={2}
+                        className="h-4 w-4 mr-2 text-green-800"
+                      />
                     ) : (
-                      ""
+                      <XCircleIcon
+                        strokeWidth={2}
+                        className="h-4 w-4 mr-2 text-red-500"
+                      />
                     )}
                   </span>
+                  {task.name}
                 </li>
               ))}
             </ul>
@@ -329,45 +338,86 @@ const Assigned = ({ loggedUser }) => {
       </div>
 
       {/* Task Modal */}
-      <Dialog open={open} handler={handleClose} size="sm" className="p-3">
-        <DialogHeader className="text-md text-gray-800 uppercase">
-          Feature Info
-        </DialogHeader>
-        <DialogBody className="flex flex-col">
-          <p>Name: {selectedFeature?.name}</p>
-          <p>Description: {selectedFeature?.description}</p>
-          <p>Due Date: {formatDate(selectedFeature?.dueDate)}</p>
-          <Select label="Status" value={status || ""} onChange={handleSelect}>
-            <Option value="Not Yet Started">Not Yet Started</Option>
-            <Option value="In Progress">In Progress</Option>
-            <Option value="Done">Done</Option>
-          </Select>
-
-          <div className="mt-2">
-            <p>Tasks to Accomplish</p>
-            <div className="relative flex w-full">
+      <Dialog open={open} handler={handleClose} size="sm" className="p-5">
+        <div className="flex flex-col justify-start items-start">
+          <p className="text-sm uppercase">Feature</p>
+          <p className="text-lg font-semibold">{selectedFeature?.name}</p>
+        </div>
+        <div className="mt-4 space-y-6">
+          <div>
+            <p>Description</p>
+            <Input variant="standard" value={selectedFeature?.description} />
+          </div>
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <p>Due Date</p>
               <Input
-                type="text"
-                label="Add Task"
-                value={newTaskName}
-                onChange={(e) => setNewTaskName(e.target.value)}
-                className="pr-20"
-                containerProps={{
-                  className: "min-w-0",
-                }}
+                variant="standard"
+                value={formatDate(selectedFeature?.dueDate)}
               />
-              <Button
-                variant="outlined"
-                onClick={handleAddTask}
-                size="sm"
-                className="!absolute right-1 top-1 rounded hover:bg-black hover:text-white"
-              >
-                <PlusIcon strokeWidth={2} className="h-4 w-4" />
-              </Button>
             </div>
+            <div>
+              <p>Status</p>
+              <Select
+                variant="standard"
+                value={status || ""}
+                onChange={handleSelect}
+              >
+                <Option value="Not Yet Started">Not Yet Started</Option>
+                <Option value="In Progress">In Progress</Option>
+                <Option value="Done">Done</Option>
+              </Select>
+            </div>
+          </div>
+          <div className="">
+            <p>Tasks to Accomplish</p>
 
             {/* List of tasks */}
-            <div className="overflow-y-auto scroll-m-1 h-36">
+            <div class="overflow-y-auto w-full scroll-m-1 h-40">
+              <div>
+                {selectedFeature?.tasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedFeature.tasks.map((task) => (
+                      <div
+                        key={task._id}
+                        class="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
+                      >
+                        <Checkbox
+                          className="my-3 h-4 w-4 rounded-full hover:shadow-none"
+                          type="checkbox"
+                          size="sm"
+                          checked={task.isDone}
+                          onChange={(e) =>
+                            handleTaskDoneChange(task._id, e.target.checked)
+                          }
+                        />
+                        <Input
+                          type="text"
+                          variant="standard"
+                          size="md"
+                          value={taskUpdates[task._id] || task.name}
+                          onChange={(e) =>
+                            handleTaskInputChange(task._id, e.target.value)
+                          }
+                          onBlur={() => handleUpdateTask(task._id)}
+                        />
+                        <button onClick={() => handleDeleteTask(task._id)}>
+                          <TrashIcon
+                            strokeWidth={1}
+                            className="h-5 w-5 text-gray-600 hover:text-red-600"
+                          />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-12 font-semibold">
+                    <p>No tasks added</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* <div className="overflow-y-auto scroll-m-1 h-36 bg-gray-300">
               {selectedFeature?.tasks.length > 0 ? (
                 <ul>
                   {selectedFeature.tasks.map((task) => (
@@ -402,13 +452,35 @@ const Assigned = ({ loggedUser }) => {
               ) : (
                 "No tasks added"
               )}
+            </div> */}
+            <div className="relative flex w-full mt-4">
+              <Input
+                type="text"
+                label="Add Task"
+                variant="standard"
+                value={newTaskName}
+                onChange={(e) => setNewTaskName(e.target.value)}
+                className="pr-20"
+                containerProps={{
+                  className: "min-w-0",
+                }}
+              />
+              <Button
+                variant="outlined"
+                onClick={handleAddTask}
+                size="sm"
+                className="!absolute right-1 top-1 rounded hover:bg-black hover:text-white"
+              >
+                <PlusIcon strokeWidth={2} className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-        </DialogBody>
+        </div>
         <DialogFooter className="space-x-2">
           <Button
             onClick={handleClose}
             variant="outlined"
+            color="gray"
             className="rounded-md hover:text-red-700 hover:border-red-700"
           >
             Close
