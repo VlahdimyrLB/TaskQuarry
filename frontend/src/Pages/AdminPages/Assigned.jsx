@@ -19,6 +19,9 @@ import {
   ClockIcon,
   XCircleIcon,
   XMarkIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+
 } from "@heroicons/react/24/solid";
 import { useTable, useSortBy, usePagination } from "react-table";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
@@ -167,6 +170,7 @@ const Assigned = ({ loggedUser }) => {
       const updatedFeature = updatedFeatureResponse.data.feature;
       // Update the selected feature state
       setSelectedFeature(updatedFeature);
+      fetchFeatures();
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -260,9 +264,12 @@ const Assigned = ({ loggedUser }) => {
             return <span>No Task Yet</span>;
           }
           return (
-            <ul>
+            <ul className="space-y-2">
               {value.map((task) => (
-                <li key={task._id} className="flex items-center border-b-2 p-1">
+                <li
+                  key={task._id}
+                  className="flex items-center bg-gray-50 p-1.5 border"
+                >
                   <span>
                     {task.isDone === true ? (
                       <CheckCircleIcon
@@ -311,7 +318,7 @@ const Assigned = ({ loggedUser }) => {
       <div>
         <Card className="p-4 rounded-md gap-4">
           <div className="py-2">
-            <p className="text-xl">My Assigned Features</p>
+            <p className="text-xl font-semibold">My Assigned Features</p>
           </div>
           <table
             {...getTableProps()}
@@ -320,6 +327,14 @@ const Assigned = ({ loggedUser }) => {
           >
             {/* Table Headers */}
             <thead className="bg-blue-gray-50">
+
+//               <tr>
+//                 {TABLE_HEAD.map((head) => (
+//                   <td style={customTableStyles.headCells.style} key={head}>
+//                     {head}
+//                   </td>
+//                 ))}
+//               </tr>
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
@@ -348,7 +363,8 @@ const Assigned = ({ loggedUser }) => {
                     {...row.getRowProps()}
                     onClick={() => handleOpen(row.original)}
                     style={{ ...CustomTableStyles.rows.style }}
-                    className="hover:cursor-pointer hover:bg-blue-gray-50"
+                    className="hover:cursor-pointer hover:bg-blue-gray-50 border-b-2"
+
                   >
                     {row.cells.map((cell) => {
                       return (
@@ -365,11 +381,23 @@ const Assigned = ({ loggedUser }) => {
               })}
             </tbody>
           </table>
-          <div>
-            <Button onClick={previousPage} disabled={!canPreviousPage}>
+          <div className="flex space-x-2 justify-end">
+            <Button
+              onClick={previousPage}
+              variant="outlined"
+              className="rounded-md"
+              size="sm"
+              disabled={!canPreviousPage}
+            >
               Previous
             </Button>
-            <Button onClick={nextPage} disabled={!canNextPage}>
+            <Button
+              onClick={nextPage}
+              variant="outlined"
+              className="rounded-md"
+              size="sm"
+              disabled={!canNextPage}
+            >
               Next
             </Button>
           </div>
@@ -384,7 +412,7 @@ const Assigned = ({ loggedUser }) => {
         </div>
         <div className="mt-4 space-y-6">
           <div>
-            <p>Description</p>
+            <p className="text-xs">Description</p>
             <Input
               variant="standard"
               value={selectedFeature?.description}
@@ -393,7 +421,7 @@ const Assigned = ({ loggedUser }) => {
           </div>
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <p>Due Date</p>
+              <p className="text-xs">Due Date</p>
               <Input
                 variant="standard"
                 value={formatDate(selectedFeature?.dueDate)}
@@ -401,7 +429,7 @@ const Assigned = ({ loggedUser }) => {
               />
             </div>
             <div>
-              <p>Status</p>
+              <p className="text-xs">Status</p>
               <Select
                 variant="standard"
                 value={status || ""}
@@ -411,6 +439,55 @@ const Assigned = ({ loggedUser }) => {
                 <Option value="In Progress">In Progress</Option>
                 <Option value="Done">Done</Option>
               </Select>
+            </div>
+          </div>
+          <div className="">
+            <p className="text-xs mb-2">Tasks to Accomplish</p>
+
+            {/* List of tasks */}
+            <div className="overflow-y-auto w-full scroll-m-1 max-h-[200px]">
+              <div>
+                {selectedFeature?.tasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedFeature.tasks.map((task) => (
+                      <div
+                        key={task._id}
+                        class="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
+                      >
+                        <Checkbox
+                          className="my-3 h-4 w-4 rounded-full hover:shadow-none"
+                          type="checkbox"
+                          size="sm"
+                          checked={task.isDone}
+                          onChange={(e) =>
+                            handleTaskDoneChange(task._id, e.target.checked)
+                          }
+                        />
+                        <Input
+                          type="text"
+                          variant="standard"
+                          size="md"
+                          value={taskUpdates[task._id] || task.name}
+                          onChange={(e) =>
+                            handleTaskInputChange(task._id, e.target.value)
+                          }
+                          onBlur={() => handleUpdateTask(task._id)}
+                        />
+                        <button onClick={() => handleDeleteTask(task._id)}>
+                          <TrashIcon
+                            strokeWidth={1}
+                            className="h-5 w-5 text-gray-600 hover:text-red-600"
+                          />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-12 font-semibold">
+                    <p>No tasks added</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className="">
