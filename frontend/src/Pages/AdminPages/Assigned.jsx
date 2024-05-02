@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 import {
   Card,
-  Typography,
-  Button,
-  Input,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
   Select,
   Option,
+  Button,
+  Input,
   Checkbox,
 } from "@material-tailwind/react";
-
 import {
   PlusIcon,
   TrashIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/solid";
+import { useTable, useSortBy, usePagination } from "react-table";
+import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
 
 const Assigned = ({ loggedUser }) => {
   const [features, setFeatures] = useState([]);
@@ -38,7 +37,26 @@ const Assigned = ({ loggedUser }) => {
       const response = await axios.get(
         `/api/v1/features/assigned/${loggedUser._id}`
       );
-      setFeatures(response.data.features);
+      const featuresWithParentProject = await Promise.all(
+        response.data.features.map(async (feature) => {
+          const featureWithParentProject = { ...feature };
+          const parentProject = await axios.get(
+            `/api/v1/projects/${feature.parentProject}`
+          );
+          featureWithParentProject.parentProjectName =
+            parentProject.data.project.name;
+          featureWithParentProject.parentProjectDescription =
+            parentProject.data.project.description;
+          featureWithParentProject.parentProjectPriority =
+            parentProject.data.project.priority;
+          featureWithParentProject.parentProjectStatus = parentProject.data
+            .project.isDone
+            ? "Done"
+            : "Ongoing";
+          return featureWithParentProject;
+        })
+      );
+      setFeatures(featuresWithParentProject);
     } catch (error) {
       console.error("Error fetching features:", error);
     }
@@ -61,7 +79,7 @@ const Assigned = ({ loggedUser }) => {
     setOpen(false);
     setSelectedFeature(null);
     setNewTaskName("");
-    setTaskUpdates({}); // Reset task updates
+    setTaskUpdates({});
   };
 
   const handleSelect = (value) => {
@@ -173,33 +191,72 @@ const Assigned = ({ loggedUser }) => {
     }
   };
 
-  //TABLE CONFIGS
-  const TABLE_HEAD = ["Name", "Status", "Due Date", "Task To Accomplish"];
-  const customTableStyles = {
-    headCells: {
-      style: {
-        backgroundColor: "#F8F8F8",
-        borderBottom: "0.2px solid #ddd",
-        color: "#616161",
-        fontSize: "12px",
-        fontWeight: "bold",
-        padding: "14px",
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Name",
+        accessor: "name",
       },
-    },
-    rows: {
-      style: {
-        paddingTop: "7px",
-        paddingBottom: "7px",
-        borderBottom: "0.5px solid #ddd",
+      {
+        Header: "Status",
+        accessor: "status",
       },
-    },
-    cells: {
-      style: {
-        fontSize: "13px",
-        padding: "14px",
+      {
+        Header: "Due Date",
+        accessor: "dueDate",
+        Cell: ({ value }) => formatDate(value),
       },
+      {
+        Header: "Task To Accomplish",
+        accessor: "tasks",
+        Cell: ({ value }) => {
+          if (value.length === 0) {
+            return <span>No Task Yet</span>;
+          }
+          return (
+            <ul>
+              {value.map((task) => (
+                <li key={task._id} className="flex items-center">
+                  {task.name}
+                  <span>
+                    {task.isDone === true ? (
+                      <CheckCircleIcon strokeWidth={2} className="h-4 w-4" />
+                    ) : (
+                      ""
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          );
+        },
+      },
+      {
+        Header: "Parent Project",
+        accessor: "parentProjectName", // Accessor for the parent project name
+      },
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    prepareRow,
+  } = useTable(
+    {
+      columns,
+      data: features,
     },
-  };
+    useSortBy,
+    usePagination
+  );
 
   return (
     <>
@@ -208,62 +265,66 @@ const Assigned = ({ loggedUser }) => {
           <div className="py-2">
             <p className="text-xl">My Assigned Features</p>
           </div>
-          <table className="w-full table-fixed">
+          <table
+            {...getTableProps()}
+            className="w-full table-auto"
+            id="myTable"
+          >
             {/* Table Headers */}
             <thead className="bg-blue-gray-50">
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <td style={customTableStyles.headCells.style} key={head}>
-                    {head}
-                  </td>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {features.map((feature) => (
-                <tr
-                  key={feature._id}
-                  onClick={() => handleOpen(feature)}
-                  style={customTableStyles.rows.style}
-                  className="hover:cursor-pointer hover:bg-blue-gray-50"
-                >
-                  <td style={customTableStyles.cells.style}>
-                    <p>Name: {feature.name}</p>
-                    <p>Desription: {feature.description}</p>
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {feature.status}
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {formatDate(feature.dueDate)}
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {feature.tasks.length > 0 ? (
-                      <ul>
-                        {feature.tasks.map((task) => (
-                          <li key={task._id} className="flex items-center">
-                            {task.name}
-                            <span>
-                              {task.isDone === true ? (
-                                <CheckCircleIcon
-                                  strokeWidth={2}
-                                  className="h-4 w-4"
-                                />
-                              ) : (
-                                ""
-                              )}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "No Task Added"
-                    )}
-                  </td>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      style={{ ...CustomTableStyles.headCells.style }}
+                    >
+                      {column.render("Header")}
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? " 🔽"
+                            : " 🔼"
+                          : ""}
+                      </span>
+                    </th>
+                  ))}
                 </tr>
               ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    onClick={() => handleOpen(row.original)}
+                    style={{ ...CustomTableStyles.rows.style }}
+                    className="hover:cursor-pointer hover:bg-blue-gray-50"
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <td
+                          {...cell.getCellProps()}
+                          style={{ ...CustomTableStyles.cells.style }}
+                        >
+                          {cell.render("Cell")}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+          <div>
+            <Button onClick={previousPage} disabled={!canPreviousPage}>
+              Previous
+            </Button>
+            <Button onClick={nextPage} disabled={!canNextPage}>
+              Next
+            </Button>
+          </div>
         </Card>
       </div>
 

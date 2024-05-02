@@ -60,40 +60,6 @@ const SingleProject = () => {
     setOpenUpdate(true);
   };
 
-  //DATA TABLE
-  const columns = [
-    {
-      name: "Feature",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    {
-      name: "Status",
-      selector: (row) => row.status,
-      sortable: true,
-    },
-    {
-      name: "Due Date",
-      selector: (row) => row.dueDate,
-      sortable: true,
-      format: (row) =>
-        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
-    },
-    {
-      // sort causes error to this column for some reason
-      name: "Assigned To",
-      selector: "assignedTo",
-      // sortable: true,
-      format: (row) =>
-        row.assignedTo ? row.assignedTo.name || "Not Assigned" : "Not Assigned",
-    },
-  ];
-
   const fetchProject = async () => {
     try {
       const { data } = await axios.get(`/api/v1/projects/${projectID}`);
@@ -158,10 +124,10 @@ const SingleProject = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        `/api/v1/features/${projectID}`,
-        newFeature
-      );
+      const { data } = await axios.post(`/api/v1/features/${projectID}`, {
+        ...newFeature,
+        parentProject: projectID, // Assign the parent project ID to the feature
+      });
       console.log("New Feature Created:", data.feature);
 
       setOpen(false);
@@ -201,7 +167,10 @@ const SingleProject = () => {
     try {
       const { data } = await axios.patch(
         `/api/v1/features/${featureToUpdate._id}`,
-        updatedFeature // Use updatedFeature here
+        {
+          ...updatedFeature,
+          parentProject: featureToUpdate.parentProject, // Maintain the parent project ID
+        }
       );
       console.log("Feature Updated:", data.feature);
       setOpenUpdate(false);
@@ -215,7 +184,43 @@ const SingleProject = () => {
     }
   };
 
-  if (loading) {
+  const getAssignedToName = (assignedToId) => {
+    const user = users.find((user) => user._id === assignedToId);
+    return user ? user.name : "Not Assigned";
+  };
+
+  const columns = [
+    {
+      name: "Feature",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: "Due Date",
+      selector: (row) => row.dueDate,
+      sortable: true,
+      format: (row) =>
+        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
+    },
+    {
+      name: "Assigned To",
+      selector: (row) => row.assignedTo,
+      format: (row) => getAssignedToName(row.assignedTo),
+      sortable: true,
+    },
+  ];
+
+  if (loading || users.length === 0) {
     return <div>Loading...</div>;
   }
 
