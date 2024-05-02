@@ -340,26 +340,60 @@ const SingleProject = () => {
   return (
     <div>
       <div className="flex flex-col">
-        <Card className="p-4 rounded-md">
-          <Typography>Project: {singleProject.name}</Typography>
-          <Typography>Description: {singleProject.description}</Typography>
-          <Typography>
-            Status: {singleProject.isDone ? "Done" : "Ongoing"}
-          </Typography>
-          <Typography>Priority: {singleProject.priority}</Typography>
+        <Card className="p-5 rounded-md shadow-md bg-white">
+          <div>
+            <p className="text-lg font-semibold mb-1">Project Information</p>
+          </div>
+          <div className="grid grid-cols-5 gap-10 items-center mt-2">
+            <div>
+              <p className="text-xs mb-4 uppercase ">Project</p>
+              <Typography className="border-b-2 max-w-[300px]">
+                {singleProject.name}
+              </Typography>
+            </div>
+            <div>
+              <p className="text-xs mb-4 uppercase">Description</p>
+              <Typography className="border-b-2 max-w-[300px]">
+                {singleProject.description}
+              </Typography>
+            </div>
+            <div>
+              <p className="text-xs mb-4 uppercase">Status</p>
+              <Typography
+                className={`border-b-2 max-w-[300px] ${
+                  singleProject.isDone ? "text-green-600" : "text-blue-600"
+                }`}
+              >
+                {singleProject.isDone ? "Done" : "In Progress"}
+              </Typography>
+            </div>
+            <div>
+              <p className="text-xs mb-4 uppercase">Priority</p>
+              <Typography className="border-b-2 max-w-[300px]">
+                {singleProject.priority}
+              </Typography>
+            </div>
+            <div className="flex flex-col justify-end space-y-2">
+              <Button size="sm" onClick={handleOpenUpdateProject}>
+                Update
+              </Button>
+              <Button
+                variant="outlined"
+                size="sm"
+                onClick={handleDeleteProject}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
         </Card>
-
-        <div>
-          <Button onClick={handleDeleteProject}>Delete</Button>
-          <Button onClick={handleOpenUpdateProject}>Update</Button>
-        </div>
       </div>
 
       <Card className="rounded-md mt-4">
         <div className="p-2">
           <div className="flex shrink-0 flex-col gap-2 py-5 px-3 justify-between sm:flex-row ">
             <div>
-              <p className="text-xl">Project Features</p>
+              <p className="text-lg font-semibold">Project Features</p>
             </div>
             <div>
               <Button
