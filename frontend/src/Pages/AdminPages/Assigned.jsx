@@ -173,59 +173,99 @@ const Assigned = ({ loggedUser }) => {
     }
   };
 
+  //TABLE CONFIGS
+  const TABLE_HEAD = ["Name", "Status", "Due Date", "Task To Accomplish"];
+  const customTableStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#F8F8F8",
+        borderBottom: "0.2px solid #ddd",
+        color: "#616161",
+        fontSize: "12px",
+        fontWeight: "bold",
+        padding: "14px",
+      },
+    },
+    rows: {
+      style: {
+        paddingTop: "7px",
+        paddingBottom: "7px",
+        borderBottom: "0.5px solid #ddd",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "13px",
+        padding: "14px",
+      },
+    },
+  };
+
   return (
-    <div>
-      <h2>My Assigned Features</h2>
-      <table className="w-full table-fixed">
-        {/* Table Headers */}
-        <thead className="bg-blue-gray-50">
-          <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Due Date</th>
-            <th>Tasks to Accomplish</th>
-          </tr>
-        </thead>
-        <tbody>
-          {features.map((feature) => (
-            <tr
-              key={feature._id}
-              onClick={() => handleOpen(feature)}
-              className="hover:cursor-pointer hover:bg-blue-gray-50"
-            >
-              <td>
-                <p>Name: {feature.name}</p>
-                <p>Desription: {feature.description}</p>
-              </td>
-              <td>{feature.status}</td>
-              <td>{formatDate(feature.dueDate)}</td>
-              <td>
-                {feature.tasks.length > 0 ? (
-                  <ul>
-                    {feature.tasks.map((task) => (
-                      <li key={task._id} className="flex items-center">
-                        {task.name}
-                        <span>
-                          {task.isDone === true ? (
-                            <CheckCircleIcon
-                              strokeWidth={2}
-                              className="h-4 w-4"
-                            />
-                          ) : (
-                            ""
-                          )}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  "No Task Added"
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <>
+      <div>
+        <Card className="p-4 rounded-md gap-4">
+          <div className="py-2">
+            <p className="text-xl">My Assigned Features</p>
+          </div>
+          <table className="w-full table-fixed">
+            {/* Table Headers */}
+            <thead className="bg-blue-gray-50">
+              <tr>
+                {TABLE_HEAD.map((head) => (
+                  <td style={customTableStyles.headCells.style} key={head}>
+                    {head}
+                  </td>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {features.map((feature) => (
+                <tr
+                  key={feature._id}
+                  onClick={() => handleOpen(feature)}
+                  style={customTableStyles.rows.style}
+                  className="hover:cursor-pointer hover:bg-blue-gray-50"
+                >
+                  <td style={customTableStyles.cells.style}>
+                    <p>Name: {feature.name}</p>
+                    <p>Desription: {feature.description}</p>
+                  </td>
+                  <td style={customTableStyles.cells.style}>
+                    {feature.status}
+                  </td>
+                  <td style={customTableStyles.cells.style}>
+                    {formatDate(feature.dueDate)}
+                  </td>
+                  <td style={customTableStyles.cells.style}>
+                    {feature.tasks.length > 0 ? (
+                      <ul>
+                        {feature.tasks.map((task) => (
+                          <li key={task._id} className="flex items-center">
+                            {task.name}
+                            <span>
+                              {task.isDone === true ? (
+                                <CheckCircleIcon
+                                  strokeWidth={2}
+                                  className="h-4 w-4"
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      "No Task Added"
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
 
       {/* Task Modal */}
       <Dialog open={open} handler={handleClose} size="sm" className="p-3">
@@ -317,7 +357,7 @@ const Assigned = ({ loggedUser }) => {
           </Button>
         </DialogFooter>
       </Dialog>
-    </div>
+    </>
   );
 };
 
