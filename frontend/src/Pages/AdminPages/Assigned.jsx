@@ -19,6 +19,11 @@ import {
   PlusIcon,
   TrashIcon,
   CheckCircleIcon,
+  ClockIcon,
+  XCircleIcon,
+  XMarkIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/solid";
 
 const Assigned = ({ loggedUser }) => {
@@ -115,6 +120,7 @@ const Assigned = ({ loggedUser }) => {
       const updatedFeature = updatedFeatureResponse.data.feature;
       // Update the selected feature state
       setSelectedFeature(updatedFeature);
+      fetchFeatures();
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -173,40 +179,96 @@ const Assigned = ({ loggedUser }) => {
     }
   };
 
-  //TABLE CONFIGS
-  const TABLE_HEAD = ["Name", "Status", "Due Date", "Task To Accomplish"];
-  const customTableStyles = {
-    headCells: {
-      style: {
-        backgroundColor: "#F8F8F8",
-        borderBottom: "0.2px solid #ddd",
-        color: "#616161",
-        fontSize: "12px",
-        fontWeight: "bold",
-        padding: "14px",
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Parent Project",
+        accessor: "parentProject", // Accessor for the parent project object
+        Cell: ({ value }) => (
+          <div className="flex flex-col">
+            <span className="text-lg font-bold">{value.name}</span>
+            <span className="text-sm">
+              Priority: <span className="b">{value.priority}</span>{" "}
+            </span>
+          </div>
+        ),
       },
-    },
-    rows: {
-      style: {
-        paddingTop: "7px",
-        paddingBottom: "7px",
-        borderBottom: "0.5px solid #ddd",
+      {
+        Header: "Feature Name",
+        accessor: "name",
       },
-    },
-    cells: {
-      style: {
-        fontSize: "13px",
-        padding: "14px",
+      {
+        Header: "Status",
+        accessor: "status",
       },
+      {
+        Header: "Due Date",
+        accessor: "dueDate",
+        Cell: ({ value }) => formatDate(value),
+      },
+      {
+        Header: "Task To Accomplish",
+        accessor: "tasks",
+        Cell: ({ value }) => {
+          if (value.length === 0) {
+            return <span>No Task Yet</span>;
+          }
+          return (
+            <ul className="space-y-2">
+              {value.map((task) => (
+                <li
+                  key={task._id}
+                  className="flex items-center bg-gray-50 p-1.5 border"
+                >
+                  <span>
+                    {task.isDone === true ? (
+                      <CheckCircleIcon
+                        strokeWidth={2}
+                        className="h-4 w-4 mr-2 text-green-800"
+                      />
+                    ) : (
+                      <XCircleIcon
+                        strokeWidth={2}
+                        className="h-4 w-4 mr-2 text-red-500"
+                      />
+                    )}
+                  </span>
+                  {task.name}
+                </li>
+              ))}
+            </ul>
+          );
+        },
+      },
+    ],
+    []
+  );
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    page,
+    nextPage,
+    previousPage,
+    canNextPage,
+    canPreviousPage,
+    prepareRow,
+  } = useTable(
+    {
+      columns,
+      data: features,
     },
-  };
+    useSortBy,
+    usePagination
+  );
 
   return (
     <>
       <div>
         <Card className="p-4 rounded-md gap-4">
           <div className="py-2">
-            <p className="text-xl">My Assigned Features</p>
+            <p className="text-xl font-semibold">My Assigned Features</p>
           </div>
           <table className="w-full table-fixed">
             {/* Table Headers */}
@@ -219,90 +281,138 @@ const Assigned = ({ loggedUser }) => {
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {features.map((feature) => (
-                <tr
-                  key={feature._id}
-                  onClick={() => handleOpen(feature)}
-                  style={customTableStyles.rows.style}
-                  className="hover:cursor-pointer hover:bg-blue-gray-50"
-                >
-                  <td style={customTableStyles.cells.style}>
-                    <p>Name: {feature.name}</p>
-                    <p>Desription: {feature.description}</p>
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {feature.status}
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {formatDate(feature.dueDate)}
-                  </td>
-                  <td style={customTableStyles.cells.style}>
-                    {feature.tasks.length > 0 ? (
-                      <ul>
-                        {feature.tasks.map((task) => (
-                          <li key={task._id} className="flex items-center">
-                            {task.name}
-                            <span>
-                              {task.isDone === true ? (
-                                <CheckCircleIcon
-                                  strokeWidth={2}
-                                  className="h-4 w-4"
-                                />
-                              ) : (
-                                ""
-                              )}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      "No Task Added"
-                    )}
-                  </td>
-                </tr>
-              ))}
+            <tbody {...getTableBodyProps()}>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    onClick={() => handleOpen(row.original)}
+                    style={{ ...CustomTableStyles.rows.style }}
+                    className="hover:cursor-pointer hover:bg-blue-gray-50 border-b-2"
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <td
+                          {...cell.getCellProps()}
+                          style={{ ...CustomTableStyles.cells.style }}
+                        >
+                          {cell.render("Cell")}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
+          <div className="flex space-x-2 justify-end">
+            <Button
+              onClick={previousPage}
+              variant="outlined"
+              className="rounded-md"
+              size="sm"
+              disabled={!canPreviousPage}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={nextPage}
+              variant="outlined"
+              className="rounded-md"
+              size="sm"
+              disabled={!canNextPage}
+            >
+              Next
+            </Button>
+          </div>
         </Card>
       </div>
 
       {/* Task Modal */}
-      <Dialog open={open} handler={handleClose} size="sm" className="p-3">
-        <DialogHeader className="text-md text-gray-800 uppercase">
-          Feature Info
-        </DialogHeader>
-        <DialogBody className="flex flex-col">
-          <p>Name: {selectedFeature?.name}</p>
-          <p>Description: {selectedFeature?.description}</p>
-          <p>Due Date: {formatDate(selectedFeature?.dueDate)}</p>
-          <Select label="Status" value={status || ""} onChange={handleSelect}>
-            <Option value="Not Yet Started">Not Yet Started</Option>
-            <Option value="In Progress">In Progress</Option>
-            <Option value="Done">Done</Option>
-          </Select>
-
-          <div className="mt-2">
-            <p>Tasks to Accomplish</p>
-            <div className="relative flex w-full">
+      <Dialog open={open} handler={handleClose} size="sm" className="p-5">
+        <div className="flex flex-col justify-start items-start">
+          <p className="text-sm uppercase">Feature Name</p>
+          <p className="text-lg font-semibold">{selectedFeature?.name}</p>
+        </div>
+        <div className="mt-4 space-y-6">
+          <div>
+            <p className="text-xs">Description</p>
+            <Input
+              variant="standard"
+              value={selectedFeature?.description}
+              readOnly
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <p className="text-xs">Due Date</p>
               <Input
-                type="text"
-                label="Add Task"
-                value={newTaskName}
-                onChange={(e) => setNewTaskName(e.target.value)}
-                className="pr-20"
-                containerProps={{
-                  className: "min-w-0",
-                }}
+                variant="standard"
+                value={formatDate(selectedFeature?.dueDate)}
+                readOnly
               />
-              <Button
-                variant="outlined"
-                onClick={handleAddTask}
-                size="sm"
-                className="!absolute right-1 top-1 rounded hover:bg-black hover:text-white"
+            </div>
+            <div>
+              <p className="text-xs">Status</p>
+              <Select
+                variant="standard"
+                value={status || ""}
+                onChange={handleSelect}
               >
-                <PlusIcon strokeWidth={2} className="h-4 w-4" />
-              </Button>
+                <Option value="Not Yet Started">Not Yet Started</Option>
+                <Option value="In Progress">In Progress</Option>
+                <Option value="Done">Done</Option>
+              </Select>
+            </div>
+          </div>
+          <div className="">
+            <p className="text-xs mb-2">Tasks to Accomplish</p>
+
+            {/* List of tasks */}
+            <div className="overflow-y-auto w-full scroll-m-1 max-h-[200px]">
+              <div>
+                {selectedFeature?.tasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedFeature.tasks.map((task) => (
+                      <div
+                        key={task._id}
+                        class="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
+                      >
+                        <Checkbox
+                          className="my-3 h-4 w-4 rounded-full hover:shadow-none"
+                          type="checkbox"
+                          size="sm"
+                          checked={task.isDone}
+                          onChange={(e) =>
+                            handleTaskDoneChange(task._id, e.target.checked)
+                          }
+                        />
+                        <Input
+                          type="text"
+                          variant="standard"
+                          size="md"
+                          value={taskUpdates[task._id] || task.name}
+                          onChange={(e) =>
+                            handleTaskInputChange(task._id, e.target.value)
+                          }
+                          onBlur={() => handleUpdateTask(task._id)}
+                        />
+                        <button onClick={() => handleDeleteTask(task._id)}>
+                          <TrashIcon
+                            strokeWidth={1}
+                            className="h-5 w-5 text-gray-600 hover:text-red-600"
+                          />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="mt-12 font-semibold">
+                    <p>No tasks added</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* List of tasks */}
@@ -343,7 +453,7 @@ const Assigned = ({ loggedUser }) => {
               )}
             </div>
           </div>
-        </DialogBody>
+        </div>
         <DialogFooter className="space-x-2">
           <Button
             onClick={handleClose}
