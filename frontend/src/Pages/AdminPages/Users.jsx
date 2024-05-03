@@ -32,8 +32,9 @@ import { useEffect, useState, useRef } from "react";
 import DataTable from "react-data-table-component";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
 import defaultUserIcon from "../../Assets/images/user.png";
-import Actions from "../../Components/Admin/UserManagement/Actions";
-import Roles from "../../Components/Admin/UserManagement/Roles";
+import ActionsCell from "../../Components/Admin/UserManagement/ActionsCell";
+import RolesCell from "../../Components/Admin/UserManagement/RolesCell";
+import UsersCell from "../../Components/Admin/UserManagement/UsersCell";
 
 const TABS = [
   {
@@ -91,27 +92,8 @@ const Users = () => {
     {
       //TO FIX: causes deprecated warning, should use selector function
       name: "Name",
-      selector: "name",
-      cell: (row) => (
-        <div className="flex items-center gap-3">
-          <Avatar src={defaultUserIcon} alt={row.name} />
-          <div className="flex flex-col">
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="font-normal"
-            >
-              {row.name}
-            </Typography>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="font-normal opacity-70"
-            >
-              {row.isAdmin ? "Admin" : "User"}
-            </Typography>
-          </div>
-        </div>
+      selector: (row) => (
+        <UsersCell row={row} defaultUserIcon={defaultUserIcon} />
       ),
     },
     {
@@ -123,24 +105,13 @@ const Users = () => {
       selector: (row) => row.password,
     },
     {
-      //TO FIX: causes deprecated warning, should use selector function
       name: "Role",
-      selector: "isAdmin",
-      cell: (row) => (
-        <div className="w-max">
-          <Chip
-            variant="ghost"
-            size="sm"
-            value={row.isAdmin ? "Admin" : "User"}
-            color={row.isAdmin ? "green" : "blue-gray"}
-          />
-        </div>
-      ),
+      selector: (row) => <RolesCell isAdmin={row.isAdmin} />,
     },
     {
       name: "Actions",
-      cell: (row) => (
-        <Actions
+      selector: (row) => (
+        <ActionsCell
           row={row}
           handleDelete={handleDelete}
           handleOpenUpdate={handleOpenUpdate}
@@ -324,7 +295,6 @@ const Users = () => {
           data={users}
           customStyles={CustomTableStyles}
           pagination
-          pointerOnHover
           fixedHeader
         />
       </Card>
