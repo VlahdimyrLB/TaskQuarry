@@ -32,8 +32,8 @@ import { useEffect, useState, useRef } from "react";
 import DataTable from "react-data-table-component";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
 import defaultUserIcon from "../../Assets/images/user.png";
-import Actions from "../../Components/Admin/UsersPage/Actions";
-import Roles from "../../Components/Admin/UsersPage/Roles";
+import Actions from "../../Components/Admin/UserManagement/Actions";
+import Roles from "../../Components/Admin/UserManagement/Roles";
 
 const TABS = [
   {
