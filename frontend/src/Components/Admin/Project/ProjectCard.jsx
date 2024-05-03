@@ -23,8 +23,17 @@ const ProjectCard = ({ project }) => {
         <hr className="px-0 border-2" />
         <div className="flex flex-row px-4 py-4 justify-between">
           <div className="flex flex-row space-x-1 items-center">
-            <span className="inline-block h-3 w-3 rounded-full bg-blue-500"></span>
-            <p>In Progress</p>
+            {project.isDone ? (
+              <>
+                <span className="inline-block h-3 w-3 rounded-full bg-green-500"></span>
+                <p>Done</p>
+              </>
+            ) : (
+              <>
+                <span className="inline-block h-3 w-3 rounded-full bg-blue-500"></span>
+                <p>In Progress</p>
+              </>
+            )}
           </div>
           <div>
             <p>
