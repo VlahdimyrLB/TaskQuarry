@@ -1,6 +1,5 @@
 // App.jsx
-import React from "react";
-import { useState } from "react";
+import { useState, createContext } from "react";
 import { Routes, Route } from "react-router-dom";
 
 //Pages
@@ -10,37 +9,41 @@ import Userpage from "./Pages/UserPage";
 import ProtectedRoute from "./Pages/ProtectedRoute";
 import Error from "./Pages/Error";
 
+export const AuthContext = createContext();
+
 function App() {
   const [loggedUser, setLoggedUser] = useState(null);
 
   return (
-    <Routes>
-      {/* LOGIN / INDEX PAGE */}
-      <Route path="/" element={<Login setLoggedUser={setLoggedUser} />} />
+    <AuthContext.Provider value={{ loggedUser, setLoggedUser }}>
+      <Routes>
+        {/* LOGIN / INDEX PAGE */}
+        <Route path="/" element={<Login />} />
 
-      {/* USER PROTECTED ROUTES */}
-      <Route
-        path="user/*"
-        element={
-          <ProtectedRoute loggedUser={loggedUser}>
-            <Userpage loggedUser={loggedUser} setLoggedUser={setLoggedUser} />
-          </ProtectedRoute>
-        }
-      />
+        {/* USER PROTECTED ROUTE */}
+        <Route
+          path="user/*"
+          element={
+            <ProtectedRoute>
+              <Userpage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* ADMIN PROTECTED ROUTES */}
-      <Route
-        path="admin/*"
-        element={
-          <ProtectedRoute loggedUser={loggedUser}>
-            <AdminPage loggedUser={loggedUser} setLoggedUser={setLoggedUser} />
-          </ProtectedRoute>
-        }
-      />
+        {/* ADMIN PROTECTED ROUTE */}
+        <Route
+          path="admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Error Page path is asterisk */}
-      <Route path="*" element={<Error />} />
-    </Routes>
+        {/* Error Page path is asterisk */}
+        <Route path="*" element={<Error />} />
+      </Routes>
+    </AuthContext.Provider>
   );
 }
 

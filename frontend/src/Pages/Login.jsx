@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Card,
   CardBody,
@@ -9,8 +9,10 @@ import {
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../App";
 
-const Login = ({ setLoggedUser }) => {
+const Login = () => {
+  const { setLoggedUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [visible, setVisible] = useState(false);
