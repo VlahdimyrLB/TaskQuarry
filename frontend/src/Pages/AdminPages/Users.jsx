@@ -27,7 +27,7 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useContext } from "react";
 // import { useReactTable } from "@tanstack/react-table";
 import DataTable from "react-data-table-component";
 import { createTheme } from "react-data-table-component";
@@ -36,6 +36,8 @@ import defaultUserIcon from "../../Assets/images/user.png";
 import ActionsCell from "../../Components/Admin/UserManagement/ActionsCell";
 import RolesCell from "../../Components/Admin/UserManagement/RolesCell";
 import UsersCell from "../../Components/Admin/UserManagement/UsersCell";
+
+import { AuthContext } from "../../App";
 
 const TABS = [
   {
@@ -58,7 +60,8 @@ createTheme("custom", {
     default: "transparent",
   },
 });
-const Users = ({ loggedUser, setLoggedUser }) => {
+const Users = () => {
+  const { loggedUser } = useContext(AuthContext);
   const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);

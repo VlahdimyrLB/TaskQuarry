@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   Card,
@@ -24,8 +24,10 @@ import {
 } from "@heroicons/react/24/solid";
 import { useTable, useSortBy, usePagination } from "react-table";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
+import { AuthContext } from "../../App";
 
-const Assigned = ({ loggedUser }) => {
+const Assigned = () => {
+  const { loggedUser } = useContext(AuthContext);
   const [features, setFeatures] = useState([]);
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [open, setOpen] = useState(false);

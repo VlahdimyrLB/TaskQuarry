@@ -22,14 +22,16 @@ import {
   Cog6ToothIcon,
   PowerIcon,
 } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Switcher from "./Switcher";
 import userIcon from "../../Assets/images/user.png";
 import TQ from "../../Assets/images/TQ.png";
+import { AuthContext } from "../../App";
 
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-const Navbar = ({ toggleSidebar, loggedUser, setLoggedUser }) => {
+const Navbar = ({ toggleSidebar }) => {
+  const { loggedUser, setLoggedUser } = useContext(AuthContext);
   // HANDLES MENU STATE OF PROFILE
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // const closeMenu = () => setIsMenuOpen(false);

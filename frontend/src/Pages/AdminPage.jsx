@@ -15,7 +15,7 @@ import SingleProject from "./AdminPages/SingleProject";
 import Assigned from "./AdminPages/Assigned";
 import ErrorPage from "./Error";
 
-const AdminPage = ({ loggedUser, setLoggedUser }) => {
+const AdminPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -30,29 +30,18 @@ const AdminPage = ({ loggedUser, setLoggedUser }) => {
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
-        <Navbar
-          toggleSidebar={toggleSidebar}
-          loggedUser={loggedUser}
-          setLoggedUser={setLoggedUser}
-        />
+        <Navbar toggleSidebar={toggleSidebar} />
+
         {/* MAIN CONTENT SECTION */}
         <section className="h-screen text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
           {/* Nested Routes */}
           <Routes>
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
-            <Route
-              path="users"
-              element={
-                <Users loggedUser={loggedUser} setLoggedUser={setLoggedUser} />
-              }
-            />
+            <Route path="users" element={<Users />} />
             <Route path="reports" element={<Reports />} />
             <Route path="history" element={<History />} />
-            <Route
-              path="assigned"
-              element={<Assigned loggedUser={loggedUser} />}
-            />
+            <Route path="assigned" element={<Assigned />} />
 
             {/* ROUTE FOR SPECIFIC PROJECT */}
             <Route path="projects/:projectID" element={<SingleProject />} />
