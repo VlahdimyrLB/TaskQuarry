@@ -4,7 +4,7 @@ import { useContext } from "react";
 
 // Theres two props children/or the component inside the protected route and the user from login
 const ProtectedRoute = ({ children }) => {
-  const loggedUser = useContext(AuthContext);
+  const { loggedUser } = useContext(AuthContext);
 
   // If there's no logged user go back to homepage
   if (!loggedUser) {

@@ -61,7 +61,7 @@ createTheme("custom", {
   },
 });
 const Users = () => {
-  const loggedUser = useContext(AuthContext);
+  const { loggedUser } = useContext(AuthContext);
   const [users, setUsers] = useState([]); // users list
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);

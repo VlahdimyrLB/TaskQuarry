@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 
 // Shared Component throughout the system (always there)
@@ -10,7 +10,11 @@ import Dashboard from "./UserPages/Dashboard";
 import Assigned from "./UserPages/Assigned";
 import ErrorPage from "./Error";
 
-const UserPage = ({ loggedUser, setLoggedUser }) => {
+// Authentication Context
+import { AuthContext } from "../App";
+
+const UserPage = () => {
+  const { loggedUser, setLoggedUser } = useContext(AuthContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -25,20 +29,13 @@ const UserPage = ({ loggedUser, setLoggedUser }) => {
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
       <div className="flex flex-col w-full">
-        <Navbar
-          toggleSidebar={toggleSidebar}
-          loggedUser={loggedUser}
-          setLoggedUser={setLoggedUser}
-        />
+        <Navbar toggleSidebar={toggleSidebar} />
         {/* MAIN CONTENT SECTION */}
         <section className="h-screen text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
           {/* Nested Routes */}
           <Routes>
-            <Route index element={<Dashboard loggedUser={loggedUser} />} />
-            <Route
-              path="assigned"
-              element={<Assigned loggedUser={loggedUser} />}
-            />
+            <Route index element={<Dashboard />} />
+            <Route path="assigned" element={<Assigned />} />
 
             <Route path="*" element={<ErrorPage />} />
           </Routes>

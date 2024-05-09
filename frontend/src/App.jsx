@@ -9,6 +9,7 @@ import Userpage from "./Pages/UserPage";
 import ProtectedRoute from "./Pages/ProtectedRoute";
 import Error from "./Pages/Error";
 
+// Authentication Context
 export const AuthContext = createContext();
 
 function App() {
