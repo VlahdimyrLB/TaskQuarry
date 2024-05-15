@@ -30,6 +30,25 @@ import {
 } from "@tanstack/react-table";
 import { useState } from "react";
 
+const TABS = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Not Yet Started",
+    value: "not",
+  },
+  {
+    label: "In-Progress",
+    value: "monitored",
+  },
+  {
+    label: "Done",
+    value: "unmonitored",
+  },
+];
+
 const columns = [
   {
     header: "Project Name",
@@ -62,7 +81,7 @@ const columns = [
     cell: (props) => {
       const tasks = props.getValue();
       if (tasks.length === 0) {
-        return <span>No Task Yet</span>;
+        return <button>No Task Yet</button>;
       }
       return (
         <ul className="space-y-2">
@@ -94,15 +113,36 @@ const columns = [
 ];
 
 export function AssignedTable({ features }) {
+  const [columnFilters, setColumnFilters] = useState([]);
+
+  const featureName =
+    columnFilters.find((filter) => filter.id === "name")?.value || "";
+
+  const onFilterChange = (id, value) =>
+    setColumnFilters((prev) =>
+      prev
+        .filter((f) => f.id !== id)
+        .concat({
+          id,
+          value,
+        })
+    );
+
+  const handleOpen = (feature) => {
+    console.log(feature);
+  };
+
   const table = useReactTable({
     data: features,
     columns,
+    state: { columnFilters },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
-  // console.log(table.getHeaderGroups());
+  console.log(columnFilters);
   return (
     <Card className=" w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -118,7 +158,7 @@ export function AssignedTable({ features }) {
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row"></div>
         </div>
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          {/* <Tabs value="all" className="w-full md:w-max">
+          <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (
                 <Tab key={value} value={value}>
@@ -126,11 +166,13 @@ export function AssignedTable({ features }) {
                 </Tab>
               ))}
             </TabsHeader>
-          </Tabs> */}
+          </Tabs>
           <div className="w-full md:w-72">
             <Input
               label="Search"
               icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              value={featureName}
+              onChange={(e) => onFilterChange("name", e.target.value)}
             />
           </div>
         </div>
@@ -189,6 +231,7 @@ export function AssignedTable({ features }) {
                     className="p-4 border-b border-blue-gray-50"
                     key={cell.id}
                     style={{ width: cell.column.getSize() }}
+                    onClick={() => handleOpen(row.original)}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
