@@ -65,7 +65,13 @@ const columns = [
   {
     header: "Due Date",
     accessorKey: "dueDate",
-    cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
+    cell: (props) => (
+      <p>
+        {props.getValue()
+          ? new Date(props.getValue()).toLocaleDateString()
+          : "No Due"}
+      </p>
+    ),
   },
   {
     header: "Task to Accomplish",
@@ -133,11 +139,13 @@ export function AssignedTable() {
 
   // modal/dialog states
   const [open, setOpen] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState("");
+  const [selectedFeature, setSelectedFeature] = useState(null);
+  const [featureStatus, setFeatureStatus] = useState("");
 
   const handleOpen = (feature) => {
     setOpen(!open);
     setSelectedFeature(feature);
+    setFeatureStatus(feature.status);
   };
 
   console.log(selectedFeature);
@@ -288,7 +296,11 @@ export function AssignedTable() {
       <ViewTaskDialog
         open={open}
         handleOpen={handleOpen}
+        fetchFeatures={fetchFeatures}
         selectedFeature={selectedFeature}
+        setSelectedFeature={setSelectedFeature}
+        featureStatus={featureStatus}
+        setFeatureStatus={setFeatureStatus}
       />
     </>
   );

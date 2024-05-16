@@ -1,4 +1,6 @@
 import React from "react";
+import { useState } from "react";
+import axios from "axios";
 import {
   Button,
   Dialog,
@@ -10,13 +12,95 @@ import {
   Option,
   Checkbox,
 } from "@material-tailwind/react";
-import { CalendarDaysIcon, TrashIcon } from "@heroicons/react/24/solid";
-export function ViewTaskDialog({ open, setOpen, handleOpen, selectedFeature }) {
+import {
+  CalendarDaysIcon,
+  TrashIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
+
+export function ViewTaskDialog({
+  open,
+  setOpen,
+  handleOpen,
+  selectedFeature,
+  setSelectedFeature,
+  featureStatus,
+  setFeatureStatus,
+  fetchFeatures,
+}) {
   const formatDate = (dueDate) => {
     if (!dueDate) return "No Due";
     const date = new Date(dueDate);
     const options = { year: "numeric", month: "long", day: "numeric" };
     return date.toLocaleDateString("en-US", options);
+  };
+
+  // Status Change Handler
+  const handleStatusChange = async (value) => {
+    try {
+      setFeatureStatus(value);
+      await axios.patch(
+        `/api/v1/features/update-status/${selectedFeature._id}`,
+        { status: value }
+      );
+      fetchFeatures();
+    } catch (error) {
+      console.error("Error updating status in database:", error);
+    }
+  };
+
+  // FEATURE-TASK REFRESHER
+  const refresher = async () => {
+    try {
+      // Fetch updated feature to reload items
+      const response = await axios.get(
+        `/api/v1/features/${selectedFeature._id}`
+      );
+      const updatedFeature = response.data.feature;
+
+      // Merge existing selectedFeature with updatedFeature to retain parentProject
+      setSelectedFeature((prevFeature) => ({
+        ...prevFeature,
+        ...updatedFeature,
+        parentProject:
+          prevFeature.parentProject || updatedFeature.parentProject,
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Addd Task Handler
+  const [taskName, setTaskName] = useState("");
+
+  const handleAddTask = async () => {
+    try {
+      await axios.post(`/api/v1/features/${selectedFeature._id}/tasks`, {
+        name: taskName,
+      });
+
+      refresher();
+      fetchFeatures();
+      setTaskName("");
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
+  };
+
+  // Check Task Handler
+  const handleTaskDone = async (taskId, isChecked) => {
+    try {
+      await axios.patch(
+        `/api/v1/features/${selectedFeature._id}/tasks/${taskId}`,
+        {
+          isDone: isChecked,
+        }
+      );
+      refresher();
+      fetchFeatures();
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   return (
@@ -57,8 +141,8 @@ export function ViewTaskDialog({ open, setOpen, handleOpen, selectedFeature }) {
               <Select
                 label="Set Status"
                 variant="static"
-                value={selectedFeature?.status}
-                // onChange={handleSelect}
+                value={featureStatus}
+                onChange={handleStatusChange}
               >
                 <Option value="Not Yet Started">Not Yet Started</Option>
                 <Option value="In Progress">In Progress</Option>
@@ -68,8 +152,27 @@ export function ViewTaskDialog({ open, setOpen, handleOpen, selectedFeature }) {
           </div>
 
           <div className="flex-1 flex-col">
-            <p>Tasks to Accomplish</p>
-            <div className="overflow-y-auto w-full scroll-m-1 max-h-[200px]">
+            <div className="relative flex w-full mb-4">
+              <Input
+                type="text"
+                label="Add New Task"
+                variant="standard"
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
+                className="pr-20"
+                containerProps={{
+                  className: "min-w-0",
+                }}
+              />
+              <button
+                onClick={handleAddTask}
+                size="sm"
+                className="!absolute right-1 top-4 rounded hover:text-black   "
+              >
+                <PlusIcon strokeWidth={2} className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="overflow-y-auto w-full scroll-m-1 max-h-[300px]">
               <div>
                 {selectedFeature?.tasks?.length > 0 ? (
                   <div className="space-y-3">
@@ -82,16 +185,16 @@ export function ViewTaskDialog({ open, setOpen, handleOpen, selectedFeature }) {
                           className="my-3 h-4 w-4 rounded-full hover:shadow-none"
                           type="checkbox"
                           size="sm"
-                          // checked={task.isDone}
-                          // onChange={(e) =>
-                          //   handleTaskDoneChange(task._id, e.target.checked)
-                          // }
+                          checked={task.isDone}
+                          onChange={(e) =>
+                            handleTaskDone(task._id, e.target.checked)
+                          }
                         />
                         <Input
                           type="text"
                           variant="standard"
                           size="md"
-                          value={task.name}
+                          // value={task.name}
                           // onChange={(e) =>
                           //   handleTaskInputChange(task._id, e.target.value)
                           // }
@@ -117,15 +220,12 @@ export function ViewTaskDialog({ open, setOpen, handleOpen, selectedFeature }) {
         </DialogBody>
         <DialogFooter>
           <Button
-            variant="text"
-            color="red"
+            variant="gradient"
+            color="black"
             onClick={handleOpen}
             className="mr-1"
           >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="gradient" color="green" onClick={handleOpen}>
-            <span>Confirm</span>
+            <span>Close</span>
           </Button>
         </DialogFooter>
       </Dialog>
