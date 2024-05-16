@@ -115,8 +115,8 @@ const SingleProject = () => {
   };
 
   const handleSelect = (value) => {
-    setNewFeature((prevUser) => ({
-      ...prevUser,
+    setNewFeature((prev) => ({
+      ...prev,
       assignedTo: value,
     }));
 

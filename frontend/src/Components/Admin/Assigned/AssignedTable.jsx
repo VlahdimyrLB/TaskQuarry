@@ -51,12 +51,17 @@ const TABS = [
 
 const columns = [
   {
-    header: "Project Name",
+    header: "Project Info",
     accessorKey: "parentProject",
     cell: (props) => (
       <div>
-        <p>{props.getValue().name}</p>
+        <p className="font-semibold">{props.getValue().name}</p>
+        <p className="text-sm">{props.getValue().description}</p>
         <p className="text-sm">{props.getValue().priority}</p>
+        <p className="text-sm">
+          {new Date(props.getValue().startDate).toLocaleDateString()} &#8211;{" "}
+          {new Date(props.getValue().endDate).toLocaleDateString()}
+        </p>
       </div>
     ),
   },
@@ -146,7 +151,7 @@ export function AssignedTable({ features }) {
   return (
     <Card className=" w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-8 flex items-center justify-between gap-8">
+        <div className="mb-2 flex items-center justify-between gap-8">
           <div>
             <Typography variant="h5" color="blue-gray">
               Assigned Work list
@@ -155,9 +160,16 @@ export function AssignedTable({ features }) {
               See information about your works
             </Typography>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row"></div>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <Input
+              label="Search Features"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              value={featureName}
+              onChange={(e) => onFilterChange("name", e.target.value)}
+            />
+          </div>
         </div>
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        {/* <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <Tabs value="all" className="w-full md:w-max">
             <TabsHeader>
               {TABS.map(({ label, value }) => (
@@ -175,7 +187,7 @@ export function AssignedTable({ features }) {
               onChange={(e) => onFilterChange("name", e.target.value)}
             />
           </div>
-        </div>
+        </div> */}
       </CardHeader>
       <CardBody className="overflow-y-auto px-0">
         <table className="mt-4 w-full min-w-max table-auto text-left">

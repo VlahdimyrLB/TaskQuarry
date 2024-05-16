@@ -12,6 +12,7 @@ const {
   getAllFeaturesOfProject,
   getFeaturesByAssignedUser,
   updateFeatureStatus,
+  getFeaturesWithProjectAndAssigneUser,
 } = require("../controllers/features");
 
 // Route to get all features of a specific project
@@ -19,6 +20,12 @@ router.get("/project/:projectId", getAllFeaturesOfProject);
 
 // New route to get features by assigned user ID
 router.get("/assigned/:userId", getFeaturesByAssignedUser);
+
+// Route to get all features assigned to a User, and it incudes the parent(Projects) items
+router.get(
+  "/withProjectInfo/assigned/:userId",
+  getFeaturesWithProjectAndAssigneUser
+);
 
 // Routes for other feature-related operations
 router.route("/").get(getAllFeatures);

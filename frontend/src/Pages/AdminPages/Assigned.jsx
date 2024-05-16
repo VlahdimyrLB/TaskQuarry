@@ -6,47 +6,36 @@ import { AuthContext } from "../../App";
 const Assigned = () => {
   const { loggedUser } = useContext(AuthContext);
   const [features, setFeatures] = useState([]);
-
-  const fetchFeatures = async () => {
-    try {
-      const response = await axios.get(
-        `/api/v1/features/assigned/${loggedUser._id}`
-      );
-      const featuresWithParentProject = await Promise.all(
-        response.data.features.map(async (feature) => {
-          const featureWithParentProject = { ...feature };
-          const parentProject = await axios.get(
-            `/api/v1/projects/${feature.parentProject}`
-          );
-          featureWithParentProject.parentProject = {
-            name: parentProject.data.project.name,
-            description: parentProject.data.project.description,
-            priority: parentProject.data.project.priority,
-          };
-          featureWithParentProject.parentProjectPriority =
-            parentProject.data.project.priority;
-          featureWithParentProject.parentProjectStatus = parentProject.data
-            .project.isDone
-            ? "Done"
-            : "Ongoing";
-          return featureWithParentProject;
-        })
-      );
-      setFeatures(featuresWithParentProject);
-    } catch (error) {
-      console.error("Error fetching features:", error);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchFeatures();
   }, [loggedUser._id]);
 
-  console.log("features", features);
+  const fetchFeatures = async () => {
+    try {
+      const response = await axios.get(
+        `/api/v1/features/withProjectInfo/assigned/${loggedUser._id}`
+      );
+      setFeatures(response.data.features);
+      setIsLoading(false);
+    } catch (error) {
+      setError(error);
+      setIsLoading(false);
+      console.log("Error fetching features:", error);
+    }
+  };
 
   return (
     <>
-      <AssignedTable features={features} />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error.message}</p>
+      ) : (
+        <AssignedTable features={features} />
+      )}
     </>
   );
 };
