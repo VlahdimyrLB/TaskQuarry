@@ -276,6 +276,29 @@ const getFeaturesByAssignedUser = async (req, res) => {
   }
 };
 
+const getFeaturesWithProjectAndAssigneUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find features assigned to the specified user ID and populate parentProject details
+    const features = await Feature.find({ assignedTo: userId }).populate(
+      "parentProject",
+      "name description priority isDone startDate endDate"
+    );
+
+    // Transform the data as needed
+    const transformedFeatures = features.map((feature) => ({
+      ...feature.toObject(),
+      parentProjectPriority: feature.parentProject.priority,
+      parentProjectStatus: feature.parentProject.isDone ? "Done" : "Ongoing",
+    }));
+
+    res.status(200).json({ features: transformedFeatures });
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
 module.exports = {
   getAllFeatures,
   getSingleFeature,
@@ -289,4 +312,5 @@ module.exports = {
   // assignUserToFeature,
   getFeaturesByAssignedUser,
   updateFeatureStatus,
+  getFeaturesWithProjectAndAssigneUser,
 };

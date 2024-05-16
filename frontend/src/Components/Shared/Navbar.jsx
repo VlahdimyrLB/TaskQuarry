@@ -48,7 +48,7 @@ const Navbar = ({ toggleSidebar }) => {
   const handleOpen = () => setOpen(!open);
 
   return (
-    <nav className="sticky top-0 left-0 right-0">
+    <nav className="sticky top-0 left-0 right-0 z-20">
       <div className="flex flex-col flex-1 overflow-y-auto">
         <div
           className="flex items-center justify-between h-14 pr-4 bg-white border-b-gray-3 00 border-b-[1px]

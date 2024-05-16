@@ -29,11 +29,11 @@ const AdminPage = () => {
   return (
     <div className="flex h-screen">
       <Sidebar isOpen={isSidebarOpen} close={handleCloseSidebar} />
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full max-h-screen overflow-hidden">
         <Navbar toggleSidebar={toggleSidebar} />
 
         {/* MAIN CONTENT SECTION */}
-        <section className="h-screen text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
+        <section className="flex-1 text-dark p-5 overflow-auto bg-gray-100 dark:bg-dark-primary">
           {/* Nested Routes */}
           <Routes>
             <Route index element={<Dashboard />} />
