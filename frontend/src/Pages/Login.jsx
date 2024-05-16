@@ -20,8 +20,8 @@ const Login = () => {
     setVisible(!visible);
   };
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("Admin");
+  const [password, setPassword] = useState("Admin");
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
 
