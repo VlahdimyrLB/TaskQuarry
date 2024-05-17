@@ -169,9 +169,9 @@ export function ViewTaskDialog({
             {selectedFeature?.description}
           </p>
         </DialogHeader>
-        <DialogBody className="flex justify-evenly items-start">
-          <div className="flex-1 flex-col space-y-8 pt-4">
-            <div className="w-48 ">
+        <DialogBody className="flex flex-col items-center space-y-6 justify-center sm:flex-row sm:items-start sm:justify-evenly sm:space-y-0 sm:space-x-6">
+          <div className="space-y-8 pt-4">
+            <div className="w-56 ">
               <Input
                 variant="static"
                 type="datetime"
@@ -182,7 +182,7 @@ export function ViewTaskDialog({
               />
             </div>
 
-            <div className="w-40">
+            <div className="w-56">
               <Select
                 label="Set Status"
                 variant="static"

@@ -179,7 +179,7 @@ export function AssignedTable() {
     <>
       <Card className=" w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
-          <div className="mb-2 flex items-center justify-between gap-8">
+          <div className="mb-1 flex flex-col lg:flex-row  justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
                 Assigned Work list
@@ -188,7 +188,7 @@ export function AssignedTable() {
                 See information about your works
               </Typography>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="flex flex-row shrink-0  gap-2">
               <StatusFilter
                 columnFilters={columnFilters}
                 setColumnFilters={setColumnFilters}
