@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useState, useEffect, useContext } from "react";
 import {
   MagnifyingGlassIcon,
   ChevronUpDownIcon,
@@ -28,31 +30,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useState } from "react";
 
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Not Yet Started",
-    value: "not",
-  },
-  {
-    label: "In-Progress",
-    value: "monitored",
-  },
-  {
-    label: "Done",
-    value: "unmonitored",
-  },
-];
+import { ViewTaskDialog } from "./ViewTaskDialog";
+import { StatusFilter } from "./StatusFilter";
+import { AuthContext } from "../../../App";
 
+//Table columns
 const columns = [
   {
     header: "Project Info",
     accessorKey: "parentProject",
+    enableSorting: false,
     cell: (props) => (
       <div>
         <p className="font-semibold">{props.getValue().name}</p>
@@ -78,7 +66,13 @@ const columns = [
   {
     header: "Due Date",
     accessorKey: "dueDate",
-    cell: (props) => <p>{new Date(props.getValue()).toLocaleDateString()}</p>,
+    cell: (props) => (
+      <p>
+        {props.getValue()
+          ? new Date(props.getValue()).toLocaleDateString()
+          : "No Due"}
+      </p>
+    ),
   },
   {
     header: "Task to Accomplish",
@@ -117,7 +111,45 @@ const columns = [
   },
 ];
 
-export function AssignedTable({ features }) {
+export function AssignedTable() {
+  // CRUD OPERATION HERE
+  const { loggedUser } = useContext(AuthContext);
+
+  // data fetching states
+  const [features, setFeatures] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchFeatures();
+  }, [loggedUser._id]);
+
+  const fetchFeatures = async () => {
+    try {
+      const response = await axios.get(
+        `/api/v1/features/withProjectInfo/assigned/${loggedUser._id}`
+      );
+      setFeatures(response.data.features);
+      setIsLoading(false);
+    } catch (error) {
+      setError(error);
+      setIsLoading(false);
+      console.log("Error fetching features:", error);
+    }
+  };
+
+  // modal/dialog states
+  const [open, setOpen] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState(null);
+  const [featureStatus, setFeatureStatus] = useState("");
+
+  const handleOpen = (feature) => {
+    setOpen(!open);
+    setSelectedFeature(feature);
+    setFeatureStatus(feature.status);
+  };
+
+  // TanStack Table handler
   const [columnFilters, setColumnFilters] = useState([]);
 
   const featureName =
@@ -132,11 +164,6 @@ export function AssignedTable({ features }) {
           value,
         })
     );
-
-  const handleOpen = (feature) => {
-    console.log(feature);
-  };
-
   const table = useReactTable({
     data: features,
     columns,
@@ -145,138 +172,144 @@ export function AssignedTable({ features }) {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
-  console.log(columnFilters);
   return (
-    <Card className=" w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="mb-2 flex items-center justify-between gap-8">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              Assigned Work list
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              See information about your works
-            </Typography>
+    <>
+      <Card className=" w-full">
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <div className="mb-2 flex items-center justify-between gap-8">
+            <div>
+              <Typography variant="h5" color="blue-gray">
+                Assigned Work list
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                See information about your works
+              </Typography>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <StatusFilter
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
+              />
+              <div>
+                <Input
+                  label="Search Features"
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  value={featureName}
+                  onChange={(e) => onFilterChange("name", e.target.value)}
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Input
-              label="Search Features"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              value={featureName}
-              onChange={(e) => onFilterChange("name", e.target.value)}
-            />
-          </div>
-        </div>
-        {/* <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <Tabs value="all" className="w-full md:w-max">
-            <TabsHeader>
-              {TABS.map(({ label, value }) => (
-                <Tab key={value} value={value}>
-                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs>
-          <div className="w-full md:w-72">
-            <Input
-              label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              value={featureName}
-              onChange={(e) => onFilterChange("name", e.target.value)}
-            />
-          </div>
-        </div> */}
-      </CardHeader>
-      <CardBody className="overflow-y-auto px-0">
-        <table className="mt-4 w-full min-w-max table-auto text-left">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 "
-                    style={{ width: header.getSize(), position: "relative" }}
-                  >
-                    <div
-                      variant="small"
-                      color="blue-gray"
-                      className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+        </CardHeader>
+        <CardBody className="overflow-y-auto px-0">
+          <table className="mt-4 w-full min-w-max table-auto text-left">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 "
+                      style={{ width: header.getSize(), position: "relative" }}
                     >
-                      {header.column.columnDef.header}
+                      <div
+                        variant="small"
+                        color="blue-gray"
+                        className="flex items-center justify-between gap-2 font-normal leading-none opacity-70"
+                      >
+                        {header.column.columnDef.header}
 
-                      <div className="text-brown-900 font-bold text-sm">
-                        {
-                          //CODE COMMENTED WILL WORK FOR CUSTOMIZATION
+                        <div className="text-brown-900 font-bold text-sm">
                           {
-                            asc: "asc",
-                            desc: "desc",
-                          }[header.column.getIsSorted()]
+                            //CODE COMMENTED WILL WORK FOR CUSTOMIZATION
+                            {
+                              asc: "asc",
+                              desc: "desc",
+                            }[header.column.getIsSorted()]
 
-                          // header.column.getIsSorted()
-                        }
+                            // header.column.getIsSorted()
+                          }
+                        </div>
+
+                        {header.column.getCanSort() && (
+                          <button
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <ChevronUpDownIcon
+                              strokeWidth={2}
+                              className="h-5 w-5 hover:opacity-80 transition-colors"
+                            />
+                          </button>
+                        )}
                       </div>
-
-                      {header.column.getCanSort() && (
-                        <button
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          <ChevronUpDownIcon
-                            strokeWidth={2}
-                            className="h-5 w-5 hover:opacity-80 transition-colors"
-                          />
-                        </button>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  onClick={() => handleOpen(row.original)}
+                  className="transition-colors hover:cursor-pointer hover:bg-blue-gray-50"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className="p-4 border-b border-blue-gray-50 "
+                      key={cell.id}
+                      style={{ width: cell.column.getSize() }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
                       )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    className="p-4 border-b border-blue-gray-50"
-                    key={cell.id}
-                    style={{ width: cell.column.getSize() }}
-                    onClick={() => handleOpen(row.original)}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </CardBody>
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-        <Typography variant="small" color="blue-gray" className="font-normal">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </Typography>
-        <div className="flex gap-2">
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outlined"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </CardFooter>
-    </Card>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardBody>
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+          <Typography variant="small" color="blue-gray" className="font-normal">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </Typography>
+          <div className="flex gap-2">
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outlined"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
+
+      {/* Task Dialog */}
+      <ViewTaskDialog
+        open={open}
+        handleOpen={handleOpen}
+        fetchFeatures={fetchFeatures}
+        selectedFeature={selectedFeature}
+        setSelectedFeature={setSelectedFeature}
+        featureStatus={featureStatus}
+        setFeatureStatus={setFeatureStatus}
+      />
+    </>
   );
 }
