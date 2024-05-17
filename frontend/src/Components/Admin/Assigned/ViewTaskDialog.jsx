@@ -255,8 +255,8 @@ export function ViewTaskDialog({
                     ))}
                   </div>
                 ) : (
-                  <div className="mt-12 font-semibold">
-                    <p>No tasks added</p>
+                  <div className="mt-5 text-center text-gray-700">
+                    <p className="mr-5">No tasks added</p>
                   </div>
                 )}
               </div>

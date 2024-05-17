@@ -32,6 +32,7 @@ import {
 } from "@tanstack/react-table";
 
 import { ViewTaskDialog } from "./ViewTaskDialog";
+import { StatusFilter } from "./StatusFilter";
 import { AuthContext } from "../../../App";
 
 //Table columns
@@ -150,6 +151,7 @@ export function AssignedTable() {
 
   // TanStack Table handler
   const [columnFilters, setColumnFilters] = useState([]);
+
   const featureName =
     columnFilters.find((filter) => filter.id === "name")?.value || "";
 
@@ -170,6 +172,7 @@ export function AssignedTable() {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
@@ -186,12 +189,18 @@ export function AssignedTable() {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Input
-                label="Search Features"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-                value={featureName}
-                onChange={(e) => onFilterChange("name", e.target.value)}
+              <StatusFilter
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
               />
+              <div>
+                <Input
+                  label="Search Features"
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                  value={featureName}
+                  onChange={(e) => onFilterChange("name", e.target.value)}
+                />
+              </div>
             </div>
           </div>
         </CardHeader>
