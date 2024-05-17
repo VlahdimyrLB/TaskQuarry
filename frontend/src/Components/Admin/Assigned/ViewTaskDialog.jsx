@@ -20,7 +20,6 @@ import {
 
 export function ViewTaskDialog({
   open,
-  setOpen,
   handleOpen,
   selectedFeature,
   setSelectedFeature,
@@ -49,7 +48,7 @@ export function ViewTaskDialog({
     }
   };
 
-  // FEATURE-TASK REFRESHER
+  // FEATURE-TASK refresher
   const refresher = async () => {
     try {
       // Fetch updated feature to reload items
@@ -99,7 +98,53 @@ export function ViewTaskDialog({
       refresher();
       fetchFeatures();
     } catch (error) {
+      console.error("Error changing task status:", error);
+    }
+  };
+
+  // Update Task Handler
+  const [updatedTask, setUpdatedTask] = useState({});
+
+  const handleTaskChange = (taskId, newValue) => {
+    console.log(taskId, "task");
+    setUpdatedTask((prevTaskValue) => ({
+      ...prevTaskValue,
+      [taskId]: newValue,
+    }));
+  };
+
+  const handleTaskUpdate = async (taskId) => {
+    try {
+      const updatedInput = updatedTask[taskId];
+      console.log(updatedInput, "Updated");
+      // if (updatedInput === undefined || "") return;
+
+      await axios.patch(
+        `/api/v1/features/${selectedFeature._id}/tasks/${taskId}`,
+        {
+          name: updatedInput,
+        }
+      );
+
+      refresher();
+      fetchFeatures();
+    } catch (error) {
       console.error("Error updating task:", error);
+    }
+  };
+
+  // Delete Task Handler
+  const handleDeleteTask = async (taskId) => {
+    console.log(taskId);
+    try {
+      await axios.delete(
+        `/api/v1/features/${selectedFeature._id}/tasks/${taskId}`
+      );
+
+      refresher();
+      fetchFeatures();
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
   };
 
@@ -194,11 +239,11 @@ export function ViewTaskDialog({
                           type="text"
                           variant="standard"
                           size="md"
-                          // value={task.name}
-                          // onChange={(e) =>
-                          //   handleTaskInputChange(task._id, e.target.value)
-                          // }
-                          // onBlur={() => handleUpdateTask(task._id)}
+                          value={updatedTask[task._id] || task.name}
+                          onChange={(e) =>
+                            handleTaskChange(task._id, e.target.value)
+                          }
+                          onBlur={() => handleTaskUpdate(task._id)}
                         />
                         <button onClick={() => handleDeleteTask(task._id)}>
                           <TrashIcon

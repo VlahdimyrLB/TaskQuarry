@@ -148,7 +148,6 @@ export function AssignedTable() {
     setFeatureStatus(feature.status);
   };
 
-  console.log(selectedFeature);
   // TanStack Table handler
   const [columnFilters, setColumnFilters] = useState([]);
   const featureName =
