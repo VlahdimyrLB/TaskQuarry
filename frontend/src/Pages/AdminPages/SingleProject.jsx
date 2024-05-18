@@ -344,10 +344,10 @@ const SingleProject = () => {
           <div>
             <p className="text-lg font-semibold mb-1">Project Information</p>
           </div>
-          <div className="grid grid-cols-5 gap-10 items-center mt-2">
+          <div className="grid grid-cols-5 gap-10 items-end mt-2">
             <div>
               <p className="text-xs mb-4 uppercase ">Project</p>
-              <Typography className="border-b-2 max-w-[300px]">
+              <Typography className="border-b-2 ">
                 {singleProject.name}
               </Typography>
             </div>
@@ -361,7 +361,7 @@ const SingleProject = () => {
               <p className="text-xs mb-4 uppercase">Status</p>
               <Typography
                 className={`border-b-2 max-w-[300px] ${
-                  singleProject.isDone ? "text-green-600" : "text-blue-600"
+                  singleProject.isDone ? "text-green-900" : "text-yellow-900"
                 }`}
               >
                 {singleProject.isDone ? "Done" : "Ongoing"}
@@ -369,7 +369,17 @@ const SingleProject = () => {
             </div>
             <div>
               <p className="text-xs mb-4 uppercase">Priority</p>
-              <Typography className="border-b-2 max-w-[300px]">
+              <Typography
+                className={`border-b-2 max-w-[300px] text-${
+                  singleProject.priority === "Urgent"
+                    ? "red-900"
+                    : singleProject.priority === "Important"
+                    ? "deep-orange-500"
+                    : singleProject.priority === "Medium"
+                    ? "blue-900"
+                    : "light-green-800"
+                }`}
+              >
                 {singleProject.priority}
               </Typography>
             </div>
@@ -540,12 +550,12 @@ const SingleProject = () => {
               variant="standard"
               size="md"
               name="status"
-              value={updatedFeature.status || ""}
+              value={updatedFeature.status || features.status}
               onChange={(value) => handleUpdateSelect("status", value)}
               required
             >
               <Option value="Not Yet Started">Not Yet Started</Option>
-              <Option value="Ongoing">Ongoing</Option>
+              <Option value="In Progress">In Progress</Option>
               <Option value="Done">Done</Option>
             </Select>
             <Input
@@ -631,13 +641,30 @@ const SingleProject = () => {
               size="md"
               name="priority"
               value={updatedProject.priority}
-              onChange={(value) => handleUpdateSelectProject("priority", value)} // Directly pass name and value
+              onChange={(value) => handleUpdateSelectProject("priority", value)}
+              className={`text-${
+                updatedProject.priority === "Urgent"
+                  ? "red-900"
+                  : updatedProject.priority === "Important"
+                  ? "deep-orange-500"
+                  : updatedProject.priority === "Medium"
+                  ? "blue-900"
+                  : "light-green-800"
+              }`}
               required
             >
-              <Option value="Urgent">Urgent</Option>
-              <Option value="High">High</Option>
-              <Option value="Medium">Medium</Option>
-              <Option value="Low">Low</Option>
+              <Option value="Urgent" className="text-red-900">
+                Urgent
+              </Option>
+              <Option value="Important" className="text-deep-orange-500">
+                Important
+              </Option>
+              <Option value="Medium" className="text-blue-900">
+                Medium
+              </Option>
+              <Option value="Low" className="text-light-green-800">
+                Low
+              </Option>
             </Select>
             <Select
               label="Status"

@@ -69,6 +69,14 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
     }
   };
 
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // Add leading zero if needed
+    const day = String(today.getDate()).padStart(2, "0"); // Add leading zero if needed
+    return `${year}-${month}-${day}`;
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose} size="sm" className="p-3">
       <form onSubmit={handleSubmit}>
@@ -96,12 +104,12 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
           />
           <div className="flex space-x-2">
             <Input
-              label="Start Date"
+              label="Start Date (default today)"
               type="date"
               variant="standard"
               size="md"
               name="startDate"
-              value={newProjectData.startDate}
+              value={newProjectData.startDate || getCurrentDate()}
               onChange={handleChange}
               required
             />

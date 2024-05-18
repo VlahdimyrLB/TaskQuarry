@@ -225,11 +225,11 @@ export function ViewTaskDialog({
               <Card className="shadow-none">
                 {selectedFeature?.tasks?.length > 0 ? (
                   selectedFeature?.tasks.map((task) => (
-                    <List className="pl-0">
+                    <List className="pl-0" key={task._id}>
                       <ListItem className="p-0">
                         <label
                           htmlFor="vertical-list-react"
-                          className="flex w-full cursor-pointer items-center justify-start py-2"
+                          className="flex w-full cursor-pointer items-center justify-around py-2"
                         >
                           <ListItemPrefix className="mx-3">
                             <Checkbox
