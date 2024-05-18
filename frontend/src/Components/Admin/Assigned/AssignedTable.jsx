@@ -179,7 +179,7 @@ export function AssignedTable() {
     <>
       <Card className=" w-full">
         <CardHeader floated={false} shadow={false} className="rounded-none">
-          <div className="mb-2 flex items-center justify-between gap-8">
+          <div className="my-2 flex flex-col lg:flex-row  justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
                 Assigned Work list
@@ -188,7 +188,7 @@ export function AssignedTable() {
                 See information about your works
               </Typography>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <div className="flex flex-row shrink-0  gap-2">
               <StatusFilter
                 columnFilters={columnFilters}
                 setColumnFilters={setColumnFilters}
@@ -204,7 +204,7 @@ export function AssignedTable() {
             </div>
           </div>
         </CardHeader>
-        <CardBody className="overflow-y-auto px-0">
+        <CardBody className="overflow-y-auto px-0 pb-0">
           <table className="mt-4 w-full min-w-max table-auto text-left">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -225,12 +225,12 @@ export function AssignedTable() {
                         <div className="text-brown-900 font-bold text-sm">
                           {
                             //CODE COMMENTED WILL WORK FOR CUSTOMIZATION
-                            {
-                              asc: "asc",
-                              desc: "desc",
-                            }[header.column.getIsSorted()]
+                            // {
+                            //   asc: "asc",
+                            //   desc: "desc",
+                            // }[header.column.getIsSorted()]
 
-                            // header.column.getIsSorted()
+                            header.column.getIsSorted()
                           }
                         </div>
 

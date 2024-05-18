@@ -49,12 +49,12 @@ const Login = () => {
   return (
     <div className="h-screen flex justify-center items-center">
       <Card className="w-80 md:w-96 mx-auto rounded-md">
-        <CardBody className="mt-4 mx-auto h-[282px]">
+        <CardBody className="mt-3 mx-auto h-[282px]">
           {/* FORM */}
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col md:w-80">
-              <Typography className="text-center uppercase text-lg font-semibold mb-2">
-                Login
+              <Typography className="text-center uppercase text-xl font-semibold mb-5">
+                TASKQUARRY
               </Typography>
               <div className="mb-6">
                 <Input
@@ -95,7 +95,7 @@ const Login = () => {
                   type="submit"
                   className="w-full mt-5 rounded-sm hover:bg-blue-gray-800"
                 >
-                  LOG IN
+                  LOGIN
                 </Button>
               </div>
             </div>
