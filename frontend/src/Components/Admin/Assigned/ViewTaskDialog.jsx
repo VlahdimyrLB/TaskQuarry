@@ -11,6 +11,11 @@ import {
   Select,
   Option,
   Checkbox,
+  Card,
+  List,
+  ListItem,
+  ListItemPrefix,
+  Typography,
 } from "@material-tailwind/react";
 import {
   CalendarDaysIcon,
@@ -169,7 +174,7 @@ export function ViewTaskDialog({
             {selectedFeature?.description}
           </p>
         </DialogHeader>
-        <DialogBody className="flex flex-col items-center space-y-6 justify-center sm:flex-row sm:items-start sm:justify-evenly sm:space-y-0 sm:space-x-6">
+        <DialogBody className="flex flex-col items-center space-y-6 justify-center md:flex-row md:items-start md:justify-evenly md:space-y-0 md:space-x-6">
           <div className="space-y-8 pt-4">
             <div className="w-56 ">
               <Input
@@ -196,15 +201,14 @@ export function ViewTaskDialog({
             </div>
           </div>
 
-          <div className="flex-1 flex-col">
-            <div className="relative flex w-full mb-4">
+          <div className="flex-1 flex-col ">
+            <div className="relative flex mb-4">
               <Input
                 type="text"
                 label="Add New Task"
                 variant="standard"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="pr-20"
                 containerProps={{
                   className: "min-w-0",
                 }}
@@ -214,52 +218,65 @@ export function ViewTaskDialog({
                 size="sm"
                 className="!absolute right-1 top-4 rounded hover:text-black   "
               >
-                <PlusIcon strokeWidth={2} className="h-5 w-5" />
+                <PlusIcon strokeWidth={3} className="h-5 w-5" />
               </button>
             </div>
-            <div className="overflow-y-auto w-full scroll-m-1 max-h-[300px]">
-              <div>
+            <div className="overflow-y-auto w-full z max-h-[300px]">
+              <Card className="shadow-none">
                 {selectedFeature?.tasks?.length > 0 ? (
-                  <div className="space-y-3">
-                    {selectedFeature?.tasks.map((task) => (
-                      <div
-                        key={task._id}
-                        className="flex w-full justify-start items-center rounded-none px-2 text-blue-gray-700 outline-none transition-all bg-blue-gray-50"
-                      >
-                        <Checkbox
-                          className="my-3 h-4 w-4 rounded-full hover:shadow-none"
-                          type="checkbox"
-                          size="sm"
-                          checked={task.isDone}
-                          onChange={(e) =>
-                            handleTaskDone(task._id, e.target.checked)
-                          }
-                        />
-                        <Input
-                          type="text"
-                          variant="standard"
-                          size="md"
-                          value={updatedTask[task._id] || task.name}
-                          onChange={(e) =>
-                            handleTaskChange(task._id, e.target.value)
-                          }
-                          onBlur={() => handleTaskUpdate(task._id)}
-                        />
-                        <button onClick={() => handleDeleteTask(task._id)}>
-                          <TrashIcon
-                            strokeWidth={1}
-                            className="h-5 w-5 text-gray-600 hover:text-red-600"
-                          />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  selectedFeature?.tasks.map((task) => (
+                    <List className="pl-0">
+                      <ListItem className="p-0">
+                        <label
+                          htmlFor="vertical-list-react"
+                          className="flex w-full cursor-pointer items-center justify-start py-2"
+                        >
+                          <ListItemPrefix className="mx-3">
+                            <Checkbox
+                              id="vertical-list-react"
+                              ripple={false}
+                              className="hover:before:opacity-0"
+                              containerProps={{
+                                className: "p-0",
+                              }}
+                              checked={task.isDone}
+                              onChange={(e) =>
+                                handleTaskDone(task._id, e.target.checked)
+                              }
+                            />
+                          </ListItemPrefix>
+                          <Typography
+                            color="blue-gray"
+                            className="font-medium mr-3"
+                          >
+                            <input
+                              type="text"
+                              className="appearance-none outline-none bg-transparent max-w-40"
+                              value={updatedTask[task._id] || task.name}
+                              onChange={(e) =>
+                                handleTaskChange(task._id, e.target.value)
+                              }
+                              onBlur={() => handleTaskUpdate(task._id)}
+                            />
+                          </Typography>
+                          <ListItemPrefix>
+                            <button onClick={() => handleDeleteTask(task._id)}>
+                              <TrashIcon
+                                strokeWidth={1}
+                                className="h-5 w-5 text-gray-600 hover:text-red-600"
+                              />
+                            </button>
+                          </ListItemPrefix>
+                        </label>
+                      </ListItem>
+                    </List>
+                  ))
                 ) : (
                   <div className="mt-5 text-center text-gray-700">
                     <p className="mr-5">No tasks added</p>
                   </div>
                 )}
-              </div>
+              </Card>
             </div>
           </div>
         </DialogBody>
