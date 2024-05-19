@@ -32,9 +32,9 @@ const Login = () => {
         username,
         password,
       });
-
-      setLoggedUser(response.data.user); // Store the entire user object to loggedUser
-      console.log(response.data.user);
+      // Store the entire user object to loggedUser
+      setLoggedUser(response.data.user);
+      // console.log(response.data.user);
       if (response.data.isAdmin === "Admin") {
         setIsAdmin(true);
         navigate("/admin");

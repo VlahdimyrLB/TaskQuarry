@@ -1,15 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import ProjectCard from "../../Components/Admin/Project/ProjectCard";
 import NewProjectDialog from "../../Components/Admin/Project/NewProjectDialog";
 import SearchBar from "../../Components/Admin/Project/SearchBar";
-import { Button, Card } from "@material-tailwind/react";
+import { Button, Input } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchProjects();
@@ -19,25 +21,48 @@ const Projects = () => {
     try {
       const { data } = await axios.get("/api/v1/projects");
       setProjects(data.projects);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleDialogToggle = () => {
-    setDialogOpen(!isDialogOpen);
+    setIsOpen(!isOpen);
   };
 
+  // porjects data refresher
   const handleProjectCreated = () => {
     fetchProjects();
-    setDialogOpen(false);
+    setIsOpen(false);
+  };
+
+  // For Search Bar
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProjects = projects.filter((project) =>
+    project.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
   };
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex flex-col">
         <p className="text-xl text-gray-800 font-semibold">Projects</p>
-        <div>
+        <div className="flex items-center justify-between mt-3">
+          <div>
+            <Input
+              type="text"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              label="Search for a Project"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+
           <Button
             onClick={handleDialogToggle}
             className="flex items-center gap-2"
@@ -47,16 +72,29 @@ const Projects = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-5 mt-4 lg:grid-cols-2 xl:grid-cols-3">
-        {projects.map((project) => (
-          <Link key={project._id} to={`/admin/projects/${project._id}`}>
-            <ProjectCard project={project} />
-          </Link>
-        ))}
-      </div>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-10 text-lg">
+          Loading projects...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5 mt-4 lg:grid-cols-2 xl:grid-cols-3">
+          {filteredProjects.length === 0 ? (
+            <p>No projects found.</p>
+          ) : (
+            filteredProjects.map((project) => (
+              <Link key={project._id} to={`/admin/projects/${project._id}`}>
+                <ProjectCard project={project} />
+              </Link>
+            ))
+          )}
+        </div>
+      )}
+
       <NewProjectDialog
         projects={projects}
-        isOpen={isDialogOpen}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
         onClose={handleDialogToggle}
         onProjectCreated={handleProjectCreated}
       />

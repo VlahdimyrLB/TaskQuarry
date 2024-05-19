@@ -13,15 +13,15 @@ import {
 } from "@material-tailwind/react";
 
 const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
+  const [duplicate, setDuplicate] = useState(false);
   const [newProjectData, setNewProjectData] = useState({
     name: "",
     description: "",
     startDate: "",
     endDate: "",
-    priority: "Medium",
+    priority: "Medium", //default
     isDone: false,
   });
-  const [duplicate, setDuplicate] = useState(false);
 
   const handleChange = (e) => {
     setNewProjectData({ ...newProjectData, [e.target.name]: e.target.value });
@@ -31,12 +31,10 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
     e.preventDefault();
 
     const { name } = newProjectData;
-
-    if (!name.trim()) {
-      // Validation: Project name is required
-      return;
-    }
-
+    // if (!name.trim()) {
+    //   // Validation: Project name is required
+    //   return;
+    // }
     // Check for duplicate project name
     const duplicateName = projects.find((project) => project.name === name);
     if (duplicateName) {
@@ -51,8 +49,8 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
         },
       });
 
-      onProjectCreated(); // Notify parent component that a new project was created
-
+      // Notify parent component that a new project was created or REFRESH
+      onProjectCreated();
       // Reset form data
       setNewProjectData({
         name: "",
@@ -62,7 +60,7 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
         priority: "Medium",
         isDone: false,
       });
-
+      setDuplicate(false);
       onClose(); // Close the dialog
     } catch (error) {
       console.log(error);
@@ -104,12 +102,12 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
           />
           <div className="flex space-x-2">
             <Input
-              label="Start Date (default today)"
+              label="Start Date"
               type="date"
               variant="standard"
               size="md"
               name="startDate"
-              value={newProjectData.startDate || getCurrentDate()}
+              value={newProjectData.startDate}
               onChange={handleChange}
               required
             />

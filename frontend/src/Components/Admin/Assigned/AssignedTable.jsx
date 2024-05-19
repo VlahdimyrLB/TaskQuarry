@@ -66,16 +66,16 @@ const columns = [
       const tasks = props.getValue();
       return (
         <div>
-          <p className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             {tasks === "Not Yet Started" ? (
-              <div className="bg-gray-600 w-4 h-4 rounded-full"></div>
+              <div className="bg-gray-700 w-4 h-4 rounded-full"></div>
             ) : tasks === "In Progress" ? (
-              <div className="bg-orange-600 w-4 h-4 rounded-full"></div>
+              <div className="bg-orange-700 w-4 h-4 rounded-full"></div>
             ) : (
-              <div className="bg-green-600 w-4 h-4 rounded-full"></div>
+              <div className="bg-blue-700 w-4 h-4 rounded-full"></div>
             )}
             {tasks}
-          </p>
+          </div>
         </div>
       );
     },
@@ -281,26 +281,34 @@ export function AssignedTable() {
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  onClick={() => handleOpen(row.original)}
-                  className="transition-colors hover:cursor-pointer hover:bg-blue-gray-50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      className="p-4 border-b border-blue-gray-50 "
-                      key={cell.id}
-                      style={{ width: cell.column.getSize() }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+              {isLoading ? (
+                <tr>
+                  <td className="py-3 my-3 ml-3 text-lg text-center">
+                    Loading...
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    onClick={() => handleOpen(row.original)}
+                    className="transition-colors hover:cursor-pointer hover:bg-blue-gray-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        className="p-4 border-b border-blue-gray-50 "
+                        key={cell.id}
+                        style={{ width: cell.column.getSize() }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </CardBody>
