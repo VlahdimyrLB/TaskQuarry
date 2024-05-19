@@ -281,10 +281,12 @@ const getFeaturesWithProjectAndAssigneUser = async (req, res) => {
     const { userId } = req.params;
 
     // Find features assigned to the specified user ID and populate parentProject details
-    const features = await Feature.find({ assignedTo: userId }).populate(
-      "parentProject",
-      "name description priority isDone startDate endDate"
-    );
+    const features = await Feature.find({ assignedTo: userId })
+      .populate(
+        "parentProject",
+        "name description priority isDone startDate endDate"
+      )
+      .sort({ name: 1, dueDate: 1 });
 
     // Transform the data as needed
     const transformedFeatures = features.map((feature) => ({

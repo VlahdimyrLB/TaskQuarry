@@ -165,9 +165,11 @@ export function ViewTaskDialog({
         size="md"
       >
         <DialogHeader className="flex-col items-start">
-          <div>
-            {selectedFeature?.parentProject?.name}/
-            <span className="text-gray-800"> {selectedFeature?.name}</span>
+          <div className="flex">
+            <p className="">{selectedFeature?.parentProject?.name}</p>/
+            <span className="text-gray-700 text-md">
+              {selectedFeature?.name}
+            </span>
           </div>
 
           <p className="text-sm text-gray-700">
@@ -202,7 +204,7 @@ export function ViewTaskDialog({
           </div>
 
           <div className="flex-1 flex-col ">
-            <div className="relative flex mb-4">
+            <div className="relative flex mb-4 pl-3">
               <Input
                 type="text"
                 label="Add New Task"
