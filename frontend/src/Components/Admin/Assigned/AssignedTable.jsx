@@ -4,8 +4,12 @@ import {
   MagnifyingGlassIcon,
   ChevronUpDownIcon,
 } from "@heroicons/react/24/outline";
-import { PencilIcon, UserPlusIcon } from "@heroicons/react/24/solid";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  ClockIcon,
+} from "@heroicons/react/24/solid";
+import {} from "@heroicons/react/24/outline";
 import {
   Card,
   CardHeader,
@@ -13,14 +17,7 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
 } from "@material-tailwind/react";
 import {
   flexRender,
@@ -56,23 +53,50 @@ const columns = [
   {
     header: "Feature Name",
     accessorKey: "name",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: (props) => <p className="font-semibold">{props.getValue()}</p>,
   },
   {
     header: "Status",
     accessorKey: "status",
-    cell: (props) => <p>{props.getValue()}</p>,
+    cell: (props) => {
+      const tasks = props.getValue();
+      return (
+        <div>
+          <p className="flex items-center gap-2">
+            {tasks === "Not Yet Started" ? (
+              <div className="bg-gray-600 w-4 h-4 rounded-full"></div>
+            ) : tasks === "In Progress" ? (
+              <div className="bg-orange-600 w-4 h-4 rounded-full"></div>
+            ) : (
+              <div className="bg-green-600 w-4 h-4 rounded-full"></div>
+            )}
+            {tasks}
+          </p>
+        </div>
+      );
+    },
   },
   {
     header: "Due Date",
     accessorKey: "dueDate",
-    cell: (props) => (
-      <p>
-        {props.getValue()
-          ? new Date(props.getValue()).toLocaleDateString()
-          : "No Due"}
-      </p>
-    ),
+    cell: (props) => {
+      const date = props.getValue();
+      const formattedDate = date
+        ? new Date(date).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "No Due";
+      const iconClass = date ? "w-5 h-5 mr-2 text-brown-700" : ""; // Conditionally apply the class for clock icon
+      return (
+        <p className="flex items-center ">
+          {date && <ClockIcon className={iconClass} />}{" "}
+          {/* Render clock icon only if date exists */}
+          {formattedDate}
+        </p>
+      );
+    },
   },
   {
     header: "Task to Accomplish",
@@ -83,22 +107,25 @@ const columns = [
         return <button>No Task Yet</button>;
       }
       return (
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {tasks.map((task) => (
             <li
               key={task._id}
-              className="flex items-center bg-gray-50 p-1.5 border"
+              // className={`flex items-center  pl-2 p-1 rounded-lg ${
+              //   task.isDone === true ? "bg-green-50" : "bg-red-50"
+              // } `}
+              className="flex items-center  pl-2 p-1"
             >
               <span>
                 {task.isDone === true ? (
                   <CheckCircleIcon
                     strokeWidth={2}
-                    className="h-4 w-4 mr-2 text-green-800"
+                    className="h-5 w-5 mr-2 text-green-700"
                   />
                 ) : (
                   <XCircleIcon
                     strokeWidth={2}
-                    className="h-4 w-4 mr-2 text-red-500"
+                    className="h-5 w-5 mr-2 text-red-700"
                   />
                 )}
               </span>
@@ -171,7 +198,6 @@ export function AssignedTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
 

@@ -202,7 +202,7 @@ export function ViewTaskDialog({
           </div>
 
           <div className="flex-1 flex-col ">
-            <div className="relative flex mb-4">
+            <div className="relative flex mb-4 pl-3">
               <Input
                 type="text"
                 label="Add New Task"

@@ -427,7 +427,7 @@ const SingleProject = () => {
               onRowClicked={(row) => handleOpenUpdate(row._id)}
             />
           ) : (
-            <p className="text-center">No Features Yet</p>
+            <p className="text-center">No Features Data</p>
           )}
         </div>
       </Card>
@@ -671,6 +671,9 @@ const SingleProject = () => {
               variant="standard"
               size="md"
               name="isDone"
+              className={` ${
+                updatedProject.isDone ? "text-green-900" : "text-yellow-900"
+              }`}
               value={updatedProject.isDone ? "Done" : "Ongoing"}
               onChange={(value) =>
                 setUpdatedProject((prev) => ({
@@ -680,8 +683,12 @@ const SingleProject = () => {
               }
               required
             >
-              <Option value="Ongoing">Ongoing</Option>
-              <Option value="Done">Done</Option>
+              <Option value="Ongoing" className="text-yellow-900">
+                Ongoing
+              </Option>
+              <Option value="Done" className="text-green-900">
+                Done
+              </Option>
             </Select>
           </DialogBody>
           <DialogFooter className="space-x-2">

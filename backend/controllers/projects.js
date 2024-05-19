@@ -1,11 +1,28 @@
 const Project = require("../models/project");
 
+// const getAllProjects = async (req, res) => {
+//   try {
+//     const sortField = req.query.sortField || "priority";
+//     const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+
+//     const projects = await Project.find({})
+//       .sort({ [sortField]: sortOrder })
+//       .populate("features");
+
+//     res.status(201).json({ projects });
+//   } catch (error) {
+//     res.status(500).json({ msg: error.message });
+//   }
+// };
+
 const getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find({});
+    const projects = await Project.find({})
+      .sort({ priority: -1, endDate: 1 })
+      .populate("features");
     res.status(201).json({ projects });
   } catch (error) {
-    res.status(500).json({ msg: error });
+    res.status(500).json({ msg: error.message });
   }
 };
 
