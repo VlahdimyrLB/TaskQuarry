@@ -53,7 +53,11 @@ const columns = [
   {
     header: "Feature Name",
     accessorKey: "name",
-    cell: (props) => <p className="font-semibold">{props.getValue()}</p>,
+    cell: (props) => (
+      <div>
+        <p className="font-semibold">{props.getValue()}</p>
+      </div>
+    ),
   },
   {
     header: "Status",

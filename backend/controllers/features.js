@@ -286,7 +286,7 @@ const getFeaturesWithProjectAndAssigneUser = async (req, res) => {
         "parentProject",
         "name description priority isDone startDate endDate"
       )
-      .sort({ dueDate: 1 });
+      .sort({ name: 1, dueDate: 1 });
 
     // Transform the data as needed
     const transformedFeatures = features.map((feature) => ({

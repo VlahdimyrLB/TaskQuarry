@@ -165,9 +165,11 @@ export function ViewTaskDialog({
         size="md"
       >
         <DialogHeader className="flex-col items-start">
-          <div>
-            {selectedFeature?.parentProject?.name}/
-            <span className="text-gray-800"> {selectedFeature?.name}</span>
+          <div className="flex">
+            <p className="">{selectedFeature?.parentProject?.name}</p>/
+            <span className="text-gray-700 text-md">
+              {selectedFeature?.name}
+            </span>
           </div>
 
           <p className="text-sm text-gray-700">
