@@ -12,14 +12,20 @@ import {
   Button,
 } from "@material-tailwind/react";
 
-const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
+const NewProjectDialog = ({
+  isOpen,
+  projects,
+  handleDialogToggle,
+  handleProjectCreated,
+}) => {
   const [duplicate, setDuplicate] = useState(false);
+
   const [newProjectData, setNewProjectData] = useState({
     name: "",
     description: "",
     startDate: "",
     endDate: "",
-    priority: "Medium", //default
+    priority: "Medium",
     isDone: false,
   });
 
@@ -31,14 +37,36 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
     e.preventDefault();
 
     const { name } = newProjectData;
-    // if (!name.trim()) {
-    //   // Validation: Project name is required
-    //   return;
-    // }
+    if (!name.trim()) {
+      return;
+    }
+
     // Check for duplicate project name
     const duplicateName = projects.find((project) => project.name === name);
     if (duplicateName) {
       setDuplicate(true);
+      return;
+    }
+
+    const options = { timeZone: "Asia/Manila", timeZoneName: "short" };
+    const date1 = new Date(newProjectData.startDate).toLocaleDateString(
+      "en-PH",
+      options
+    );
+    const date2 = new Date(newProjectData.endDate).toLocaleDateString(
+      "en-PH",
+      options
+    );
+    const today = new Date().toLocaleDateString("en-PH", options).slice(0, 10);
+
+    if (date1 === date2) {
+      window.alert("Same Date not Applicable!");
+      return;
+    } else if (date1 > date2) {
+      window.alert("End Date should be greater than Start Date!");
+      return;
+    } else if (date1 < today || date2 < today) {
+      window.alert("Date should NOT be less than today!");
       return;
     }
 
@@ -49,9 +77,10 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
         },
       });
 
-      // Notify parent component that a new project was created or REFRESH
-      onProjectCreated();
-      // Reset form data
+      console.log(date1, date2, today);
+
+      // Notify parent component that a new project was created and REFRESH states
+      setDuplicate(false);
       setNewProjectData({
         name: "",
         description: "",
@@ -60,8 +89,8 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
         priority: "Medium",
         isDone: false,
       });
-      setDuplicate(false);
-      onClose(); // Close the dialog
+      handleProjectCreated();
+      handleDialogToggle();
     } catch (error) {
       console.log(error);
     }
@@ -70,13 +99,18 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
   const getCurrentDate = () => {
     const today = new Date();
     const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Add leading zero if needed
-    const day = String(today.getDate()).padStart(2, "0"); // Add leading zero if needed
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} size="sm" className="p-3">
+    <Dialog
+      open={isOpen}
+      onClose={handleDialogToggle}
+      size="sm"
+      className="p-3"
+    >
       <form onSubmit={handleSubmit}>
         <DialogHeader className="text-md text-gray-800 uppercase">
           Create New Project
@@ -161,7 +195,7 @@ const NewProjectDialog = ({ isOpen, onClose, onProjectCreated, projects }) => {
           )}
         </DialogBody>
         <DialogFooter className="space-x-2">
-          <Button variant="outlined" onClick={onClose}>
+          <Button variant="outlined" onClick={handleDialogToggle}>
             <span>Cancel</span>
           </Button>
           <Button variant="filled" type="submit">

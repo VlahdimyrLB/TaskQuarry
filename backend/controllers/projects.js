@@ -18,7 +18,7 @@ const Project = require("../models/project");
 const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find({})
-      .sort({ priority: -1, endDate: 1 })
+      .sort({ isDone: 1, priority: -1, endDate: 1, name: 1 })
       .populate("features");
     res.status(201).json({ projects });
   } catch (error) {
