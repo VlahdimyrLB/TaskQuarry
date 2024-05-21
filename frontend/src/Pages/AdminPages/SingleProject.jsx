@@ -280,6 +280,8 @@ const SingleProject = () => {
   const [updatedProject, setUpdatedProject] = useState({
     name: "",
     description: "",
+    startDate: "",
+    endDate: "",
     priority: "",
     isDone: false,
   });
@@ -288,6 +290,8 @@ const SingleProject = () => {
     setUpdatedProject({
       name: singleProject.name,
       description: singleProject.description,
+      startDate: new Date(singleProject.startDate).toISOString().split("T")[0],
+      endDate: new Date(singleProject.endDate).toISOString().split("T")[0],
       priority: singleProject.priority,
       isDone: singleProject.isDone,
     });
@@ -671,6 +675,29 @@ const SingleProject = () => {
               onChange={handleUpdateProjectChange}
               required
             />
+
+            <div className="flex space-x-2">
+              <Input
+                label="Start Date"
+                type="date"
+                variant="standard"
+                size="md"
+                name="startDate"
+                value={updatedProject.startDate}
+                onChange={handleUpdateProjectChange}
+                required
+              />
+              <Input
+                label="End Date"
+                type="date"
+                variant="standard"
+                size="md"
+                name="endDate"
+                value={updatedProject.endDate}
+                onChange={handleUpdateProjectChange}
+                required
+              />
+            </div>
             <Select
               label="Priority"
               variant="standard"
