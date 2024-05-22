@@ -82,8 +82,6 @@ const Users = () => {
 
   useEffect(() => {
     fetchUsers();
-
-    console.log(loggedUser);
   }, []);
 
   //OPEN CREATE NEW USER DIALOG

@@ -41,9 +41,8 @@ export function StatusFilter({ setColumnFilters }) {
   return (
     <Popover placement="bottom">
       <PopoverHandler>
-        <Button className="flex items-center bg-blue-gray-800 px-3 max-h-10">
-          <FunnelIcon className="h-4 w-4 mr-1" />
-          <p>Filter</p>
+        <Button className="flex items-center bg-black px-3 max-h-10">
+          <FunnelIcon className="h-4 w-4 " />
         </Button>
       </PopoverHandler>
       <PopoverContent className="px-0 py-0">

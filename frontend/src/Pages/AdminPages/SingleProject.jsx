@@ -1,8 +1,9 @@
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import DataTable from "react-data-table-component";
-import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
+
 import {
   Card,
   Typography,
@@ -16,7 +17,6 @@ import {
   Option,
 } from "@material-tailwind/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
 
 const SingleProject = () => {
   const { projectID } = useParams(); // get the ID in url parameter
@@ -280,6 +280,8 @@ const SingleProject = () => {
   const [updatedProject, setUpdatedProject] = useState({
     name: "",
     description: "",
+    startDate: "",
+    endDate: "",
     priority: "",
     isDone: false,
   });
@@ -288,6 +290,8 @@ const SingleProject = () => {
     setUpdatedProject({
       name: singleProject.name,
       description: singleProject.description,
+      startDate: new Date(singleProject.startDate).toISOString().split("T")[0],
+      endDate: new Date(singleProject.endDate).toISOString().split("T")[0],
       priority: singleProject.priority,
       isDone: singleProject.isDone,
     });
@@ -329,6 +333,20 @@ const SingleProject = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+
+    const options = {
+      timeZone: "Asia/Manila",
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+      // timeZoneName: "short",
+    };
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-PH", options);
+  };
+
   if (loading || users.length === 0) {
     return <div>Loading...</div>;
   }
@@ -344,33 +362,39 @@ const SingleProject = () => {
           <div>
             <p className="text-lg font-semibold mb-1">Project Information</p>
           </div>
-          <div className="grid grid-cols-5 gap-10 items-end mt-2">
-            <div>
-              <p className="text-xs mb-4 uppercase ">Project</p>
-              <Typography className="border-b-2 ">
+
+          <div className="flex flex-col justify-evenly items-start mt-2 space-y-3  md:flex-row md:items-end md:space-x-6">
+            <div className="flex-none w-36 mr-5">
+              <p className="text-xs mb-2 uppercase font-semibold">Project</p>
+              <Typography className="border-b-2 w-36">
                 {singleProject.name}
               </Typography>
             </div>
-            <div>
-              <p className="text-xs mb-4 uppercase">Description</p>
-              <Typography className="border-b-2 max-w-[300px]">
+
+            <div className="w-64">
+              <p className="text-xs mb-2 uppercase font-semibold">
+                Description
+              </p>
+              <Typography className="border-b-2 w-64">
                 {singleProject.description}
               </Typography>
             </div>
+
             <div>
-              <p className="text-xs mb-4 uppercase">Status</p>
+              <p className="text-xs mb-2 uppercase font-semibold">Status</p>
               <Typography
-                className={`border-b-2 max-w-[300px] ${
+                className={`border-b-2 w-[80px] ${
                   singleProject.isDone ? "text-green-900" : "text-yellow-900"
                 }`}
               >
                 {singleProject.isDone ? "Done" : "Ongoing"}
               </Typography>
             </div>
+
             <div>
-              <p className="text-xs mb-4 uppercase">Priority</p>
+              <p className="text-xs mb-2 uppercase font-semibold">Priority</p>
               <Typography
-                className={`border-b-2 max-w-[300px] text-${
+                className={`w-[80px] border-b-2 text-${
                   singleProject.priority === "Urgent"
                     ? "red-900"
                     : singleProject.priority === "Important"
@@ -383,17 +407,34 @@ const SingleProject = () => {
                 {singleProject.priority}
               </Typography>
             </div>
-            <div className="flex flex-col justify-end space-y-2">
-              <Button size="sm" onClick={handleOpenUpdateProject}>
-                Update
-              </Button>
-              <Button
-                variant="outlined"
-                size="sm"
-                onClick={handleDeleteProject}
-              >
-                Delete
-              </Button>
+
+            <div>
+              <p className="text-xs mb-2 uppercase font-semibold">
+                Date / Duration
+              </p>
+              <Typography className="w-[180px] border-b-2">
+                {formatDate(singleProject.startDate)} -{" "}
+                {formatDate(singleProject.endDate)}
+              </Typography>
+            </div>
+          </div>
+
+          <div className="flex flex-row justify-end items-center mt-3">
+            <div className="flex justify-end items-center space-x-2 ">
+              <div>
+                <Button size="sm" onClick={handleOpenUpdateProject}>
+                  Update
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant="outlined"
+                  size="sm"
+                  onClick={handleDeleteProject}
+                >
+                  Delete
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
@@ -419,7 +460,6 @@ const SingleProject = () => {
             <DataTable
               columns={columns}
               data={features}
-              customStyles={CustomTableStyles}
               highlightOnHover
               pointerOnHover
               pagination
@@ -635,6 +675,29 @@ const SingleProject = () => {
               onChange={handleUpdateProjectChange}
               required
             />
+
+            <div className="flex space-x-2">
+              <Input
+                label="Start Date"
+                type="date"
+                variant="standard"
+                size="md"
+                name="startDate"
+                value={updatedProject.startDate}
+                onChange={handleUpdateProjectChange}
+                required
+              />
+              <Input
+                label="End Date"
+                type="date"
+                variant="standard"
+                size="md"
+                name="endDate"
+                value={updatedProject.endDate}
+                onChange={handleUpdateProjectChange}
+                required
+              />
+            </div>
             <Select
               label="Priority"
               variant="standard"

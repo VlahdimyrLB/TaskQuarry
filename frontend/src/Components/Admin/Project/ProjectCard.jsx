@@ -4,7 +4,7 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 
 const ProjectCard = ({ project }) => {
   const formatDate = (date, options) => {
-    return new Date(date).toLocaleDateString("en-US", options);
+    return new Date(date).toLocaleDateString("en-PH", options);
   };
   const startDate = formatDate(project.startDate, {
     month: "short",
@@ -19,7 +19,11 @@ const ProjectCard = ({ project }) => {
   return (
     <>
       {/* {project.isDone ? null : ( */}
-      <Card className="flex flex-colbg-[#FBFBFB] transition ease-in-out delay-80 rounded-md hover:bg-blue-gray-50 hover:-translate-y-1 hover:scale-100 duration-300 h-48">
+      <Card
+        className={`flex flex-colbg-[#FBFBFB] transition ease-in-out delay-80 rounded-md hover:bg-blue-gray-50 hover:-translate-y-1 hover:scale-100 duration-300 h-48 ${
+          project.isDone ? "bg-green-50" : ""
+        } `}
+      >
         <div className="p-4 flex-grow">
           <div className="flex items-center justify-between">
             <Typography>
