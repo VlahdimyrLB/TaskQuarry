@@ -4,33 +4,19 @@ import axios from "axios";
 
 import DataTable from "react-data-table-component";
 
-import {
-  Card,
-  Typography,
-  Button,
-  Input,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Select,
-  Option,
-} from "@material-tailwind/react";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { Card, Typography, Button } from "@material-tailwind/react";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
-// Child Componenets
+// Child Components
 import UpdateProjectDialog from "../../Components/Admin/SingleProject/UpdateProjectDialog";
 import AddFeatureDialog from "../../Components/Admin/SingleProject/AddFeatureDialog";
+import UpdateFeatureDialog from "../../Components/Admin/SingleProject/UpdateFeatureDialog";
 
 const SingleProject = () => {
   const navigate = useNavigate();
-
-  // get the ID in url parameter
   const { projectID } = useParams();
-
-  // loading and error state
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch Single Project
   const [singleProject, setSingleProject] = useState(null);
@@ -50,7 +36,7 @@ const SingleProject = () => {
     fetchProject();
   }, [projectID]);
 
-  // Fetch features
+  // Fetch Features
   const [features, setFeatures] = useState([]);
 
   const fetchFeatures = async () => {
@@ -83,6 +69,11 @@ const SingleProject = () => {
   }, [projectID]);
 
   // table for react data table
+  const getAssignedToName = (assignedToId) => {
+    const user = users.find((user) => user._id === assignedToId);
+    return user ? user.name : "Not Assigned";
+  };
+
   const columns = [
     {
       name: <p className="font-bold">Feature</p>,
@@ -115,7 +106,7 @@ const SingleProject = () => {
   ];
 
   // PROJECT states and handlers
-  // open project to update
+  // OPEN & UPDATE Project
   const [openProjectToUpdate, setOpenProjectToUpdate] = useState(false);
   const [projectToUpdate, setProjectToUpdate] = useState({
     name: "",
@@ -138,122 +129,9 @@ const SingleProject = () => {
     setOpenProjectToUpdate(!openProjectToUpdate);
   };
 
-  // FEATURE states and handlers
-  // ADD Feature
-  const [openAddFeature, setOpenAddFeature] = useState(false);
-  const [newFeature, setNewFeature] = useState({
-    name: "",
-    description: "",
-    status: "Not Yet Started",
-    dueDate: null,
-    assignedTo: null,
-  });
-
-  const handleOpenAddFeature = () => {
-    setNewFeature({
-      name: "",
-      description: "",
-      status: "Not Yet Started",
-      dueDate: null,
-      assignedTo: null,
-    });
-    setOpenAddFeature(!openAddFeature);
-  };
-
-  const [openUpdate, setOpenUpdate] = useState(false);
-  const [featureToUpdate, setFeatureToUpdate] = useState(null);
-
-  const handleOpenUpdate = (id) => {
-    const featureToUpdate = features.find((feature) => feature._id === id);
-    setFeatureToUpdate(featureToUpdate);
-
-    // Convert dueDate to the format "YYYY-MM-DD"
-    const formattedDueDate = featureToUpdate.dueDate
-      ? new Date(featureToUpdate.dueDate).toISOString().split("T")[0]
-      : null;
-
-    setUpdatedFeature({
-      name: featureToUpdate.name,
-      description: featureToUpdate.description,
-      status: featureToUpdate.status,
-      dueDate: formattedDueDate, // Set the formatted dueDate
-      assignedTo: featureToUpdate.assignedTo,
-    });
-
-    setOpenUpdate(true);
-  };
-
-  // For Update Feature
-  const [updatedFeature, setUpdatedFeature] = useState({
-    name: "",
-    description: "",
-    status: "",
-    dueDate: null,
-    assignedTo: null,
-  });
-
-  const handleUpdateFeatureChange = (e) => {
-    const { name, value } = e.target;
-    setUpdatedFeature((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateSelect = (name, value) => {
-    setUpdatedFeature((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.patch(
-        `/api/v1/features/${featureToUpdate._id}`,
-        {
-          ...updatedFeature,
-          parentProject: featureToUpdate.parentProject, // Maintain the parent project ID
-        }
-      );
-      console.log("Feature Updated:", data.feature);
-      setOpenUpdate(false);
-      setFeatures((prevFeatures) =>
-        prevFeatures.map((feature) =>
-          feature._id === data.feature._id ? data.feature : feature
-        )
-      );
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const handleDeleteFeature = async () => {
-    const confirmation = window.confirm(
-      "Are you sure you want to delete this feature?"
-    );
-    if (confirmation) {
-      try {
-        await axios.delete(`/api/v1/features/${featureToUpdate._id}`);
-        setFeatures((prevFeatures) =>
-          prevFeatures.filter((feature) => feature._id !== featureToUpdate._id)
-        );
-        setFeatureToUpdate(null);
-        setOpenUpdate(false);
-        fetchFeatures();
-      } catch (error) {
-        setError(error.message);
-      }
-    }
-  };
-
-  const getAssignedToName = (assignedToId) => {
-    const user = users.find((user) => user._id === assignedToId);
-    return user ? user.name : "Not Assigned";
-  };
-
+  // DELETE Project
   const handleDeleteProject = async () => {
+    // if there are associated feature within this project
     if (features.length > 0) {
       const confirmation = window.confirm(
         "This project has associated features. Deleting this project will also delete its features. Are you sure you want to proceed?"
@@ -286,6 +164,69 @@ const SingleProject = () => {
     }
   };
 
+  // FEATURE states and handlers
+  // ADD Feature
+  const [openAddFeature, setOpenAddFeature] = useState(false);
+  const [newFeature, setNewFeature] = useState({
+    name: "",
+    description: "",
+    status: "Not Yet Started",
+    dueDate: null,
+    assignedTo: null,
+  });
+
+  const handleOpenAddFeature = () => {
+    setNewFeature({
+      name: "",
+      description: "",
+      status: "Not Yet Started",
+      dueDate: null,
+      assignedTo: null,
+    });
+    setOpenAddFeature(!openAddFeature);
+  };
+
+  // UPDATE Feature
+  const [openUpdateFeature, setOpenUpdateFeature] = useState(false);
+  const [featureToUpdate, setFeatureToUpdate] = useState(null);
+  const [updatedFeature, setUpdatedFeature] = useState({
+    name: "",
+    description: "",
+    status: "",
+    dueDate: null,
+    assignedTo: null,
+  });
+
+  const handleOpenFeatureToUpdate = (id) => {
+    const selectedFeature = features.find((feature) => feature._id === id);
+    setFeatureToUpdate(selectedFeature);
+
+    setUpdatedFeature({
+      name: selectedFeature.name,
+      description: selectedFeature.description,
+      status: selectedFeature.status,
+      dueDate: selectedFeature.status
+        ? new Date(selectedFeature.dueDate).toLocaleDateString().split("T")[0]
+        : null,
+      assignedTo: selectedFeature.assignedTo,
+    });
+
+    setOpenUpdateFeature(!openUpdateFeature);
+  };
+
+  const closeUpdateFeature = () => {
+    setOpenUpdateFeature(!openUpdateFeature);
+    setOpenUpdateFeature(false);
+    setFeatureToUpdate(null);
+    setUpdatedFeature({
+      name: "",
+      description: "",
+      status: "",
+      dueDate: null,
+      assignedTo: null,
+    });
+  };
+
   // Date Formatter
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -310,7 +251,7 @@ const SingleProject = () => {
   }
 
   return (
-    <div>
+    <>
       <div className="flex flex-col">
         <Card className="p-5 rounded-md shadow-md bg-white">
           <div>
@@ -418,7 +359,7 @@ const SingleProject = () => {
               pointerOnHover
               pagination
               fixedHeader
-              onRowClicked={(row) => handleOpenUpdate(row._id)}
+              onRowClicked={(row) => handleOpenFeatureToUpdate(row._id)}
             />
           ) : (
             <p className="text-center">No Features Data</p>
@@ -449,104 +390,21 @@ const SingleProject = () => {
       />
 
       {/* UPDATE FEATURE */}
-      <Dialog
-        open={openUpdate && featureToUpdate !== null}
-        onClose={() => {
-          setFeatureToUpdate(null);
-          setOpenUpdate(false);
-        }}
-        size="sm"
-        className="p-3"
-      >
-        <form onSubmit={handleUpdateSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase flex justify-between">
-            <p>Update Feature</p>
-            <button onClick={handleDeleteFeature}>
-              <TrashIcon
-                strokeWidth={2}
-                className="h-6 w-6 text-red-600 hover:text-red-900 hover:cursor-pointer"
-              />
-            </button>
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-7">
-            <Input
-              label="Feature Name"
-              variant="standard"
-              size="md"
-              name="name"
-              value={updatedFeature.name || ""}
-              onChange={handleUpdateFeatureChange}
-              required
-            />
-            <Input
-              label="Feature Description"
-              variant="standard"
-              size="md"
-              name="description"
-              value={updatedFeature.description || ""}
-              onChange={handleUpdateFeatureChange}
-              required
-            />
-            <Select
-              label="Status"
-              variant="standard"
-              size="md"
-              name="status"
-              value={updatedFeature.status || features.status}
-              onChange={(value) => handleUpdateSelect("status", value)}
-              required
-            >
-              <Option value="Not Yet Started">Not Yet Started</Option>
-              <Option value="In Progress">In Progress</Option>
-              <Option value="Done">Done</Option>
-            </Select>
-            <Input
-              type="date"
-              label="Due Date"
-              variant="standard"
-              size="md"
-              name="dueDate"
-              value={updatedFeature.dueDate || ""}
-              onChange={handleUpdateFeatureChange}
-            />
-            <Select
-              label="Assign To"
-              variant="standard"
-              size="md"
-              name="assignedTo"
-              value={updatedFeature.assignedTo || ""}
-              onChange={(value) => handleUpdateSelect("assignedTo", value)}
-              required
-            >
-              {users.map((user) => (
-                <Option key={user._id} value={user._id}>
-                  {user.name}
-                </Option>
-              ))}
-            </Select>
-          </DialogBody>
-          <DialogFooter className="space-x-2">
-            <Button
-              variant="outlined"
-              onClick={() => {
-                setFeatureToUpdate(null);
-                setOpenUpdate(false);
-              }}
-              className="rounded-md hover:text-red-700 hover:border-red-700"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="filled"
-              type="submit"
-              className="rounded-md hover:opacity-75"
-            >
-              <span>Update</span>
-            </Button>
-          </DialogFooter>
-        </form>
-      </Dialog>
-    </div>
+      <UpdateFeatureDialog
+        openUpdateFeature={openUpdateFeature}
+        handleOpenFeatureToUpdate={handleOpenFeatureToUpdate}
+        featureToUpdate={featureToUpdate}
+        updatedFeature={updatedFeature}
+        setUpdatedFeature={setUpdatedFeature}
+        setError={setError}
+        fetchFeatures={fetchFeatures}
+        setOpenUpdateFeature={setOpenUpdateFeature}
+        users={users}
+        closeUpdateFeature={closeUpdateFeature}
+        setFeatureToUpdate={setFeatureToUpdate}
+        setFeatures={setFeatures}
+      />
+    </>
   );
 };
 
