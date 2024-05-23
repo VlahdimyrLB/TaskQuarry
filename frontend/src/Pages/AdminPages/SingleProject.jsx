@@ -147,37 +147,6 @@ const SingleProject = () => {
     setOpenProjectToUpdate(!openProjectToUpdate);
   };
 
-  const handleUpdateSelectProject = (name, value) => {
-    setUpdatedProject((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateProjectChange = (e) => {
-    const { name, value } = e.target;
-    setUpdatedProject((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateProjectSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.patch(
-        `/api/v1/projects/${projectID}`,
-        updatedProject
-      );
-
-      setOpenProjectToUpdate(!openProjectToUpdate);
-
-      fetchProject();
-    } catch (error) {
-      console.error("Error updating project:", error.message);
-    }
-  };
-
   // FEATURES
 
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -494,6 +463,9 @@ const SingleProject = () => {
         openProjectToUpdate={openProjectToUpdate}
         handleOpenUpdateProject={handleOpenUpdateProject}
         projectToUpdate={projectToUpdate}
+        setProjectToUpdate={setProjectToUpdate}
+        fetchProject={fetchProject}
+        projectID={projectID}
       />
 
       {/* ADD FEATURE */}
