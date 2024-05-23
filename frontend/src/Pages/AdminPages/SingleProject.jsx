@@ -17,7 +17,10 @@ import {
   Option,
 } from "@material-tailwind/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+
+// Child Componenets
 import UpdateProjectDialog from "../../Components/Admin/SingleProject/UpdateProjectDialog";
+import AddFeatureDialog from "../../Components/Admin/SingleProject/AddFeatureDialog";
 
 const SingleProject = () => {
   const navigate = useNavigate();
@@ -79,18 +82,6 @@ const SingleProject = () => {
     fetchUsers();
   }, [projectID]);
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(!open);
-    setNewFeature({
-      name: "",
-      description: "",
-      status: "Not Yet Started",
-      dueDate: null,
-      assignedTo: null,
-    });
-  };
-
   // table for react data table
   const columns = [
     {
@@ -147,7 +138,27 @@ const SingleProject = () => {
     setOpenProjectToUpdate(!openProjectToUpdate);
   };
 
-  // FEATURES
+  // FEATURE states and handlers
+  // ADD Feature
+  const [openAddFeature, setOpenAddFeature] = useState(false);
+  const [newFeature, setNewFeature] = useState({
+    name: "",
+    description: "",
+    status: "Not Yet Started",
+    dueDate: null,
+    assignedTo: null,
+  });
+
+  const handleOpenAddFeature = () => {
+    setNewFeature({
+      name: "",
+      description: "",
+      status: "Not Yet Started",
+      dueDate: null,
+      assignedTo: null,
+    });
+    setOpenAddFeature(!openAddFeature);
+  };
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [featureToUpdate, setFeatureToUpdate] = useState(null);
@@ -170,49 +181,6 @@ const SingleProject = () => {
     });
 
     setOpenUpdate(true);
-  };
-
-  // CREATE/ADD HANDLER
-  const [newFeature, setNewFeature] = useState({
-    name: "",
-    description: "",
-    status: "Not Yet Started",
-    dueDate: null,
-    assignedTo: null,
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target; // Destructure name and value from the event target
-    setNewFeature((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSelect = (value) => {
-    setNewFeature((prev) => ({
-      ...prev,
-      assignedTo: value,
-    }));
-
-    console.log(value);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.post(`/api/v1/features/${projectID}`, {
-        ...newFeature,
-        parentProject: projectID, // Assign the parent project ID to the feature
-      });
-      console.log("New Feature Created:", data.feature);
-
-      setOpen(false);
-      setFeatures((prevFeatures) => [...prevFeatures, data.feature]);
-      fetchFeatures();
-    } catch (error) {
-      setError(error.message);
-    }
   };
 
   // For Update Feature
@@ -436,7 +404,7 @@ const SingleProject = () => {
               <Button
                 className="flex items-center gap-3"
                 size="sm"
-                onClick={handleOpen}
+                onClick={handleOpenAddFeature}
               >
                 <PlusIcon strokeWidth={2} className="h-5 w-5" /> ADD A FEATURE
               </Button>
@@ -468,79 +436,17 @@ const SingleProject = () => {
         projectID={projectID}
       />
 
-      {/* ADD FEATURE */}
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        size="sm"
-        className="p-3"
-      >
-        <form onSubmit={handleSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase">
-            Add New Feature
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-7">
-            <Input
-              label="Enter Feature Name"
-              variant="standard"
-              size="md"
-              name="name"
-              value={newFeature.name || ""}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              label="Enter Feature Description"
-              variant="standard"
-              size="md"
-              name="description"
-              value={newFeature.description || ""}
-              onChange={handleChange}
-              required
-            />
-            <Input
-              type="date"
-              label="Enter Due Date"
-              variant="standard"
-              size="md"
-              name="dueDate"
-              value={newFeature.dueDate || ""}
-              onChange={handleChange}
-            />
-            <Select
-              label="Assign To"
-              variant="standard"
-              size="md"
-              name="assignedTo"
-              value={newFeature.assignedTo || ""}
-              onChange={handleSelect}
-              required
-            >
-              {users.map((user) => (
-                <Option key={user._id} value={user._id}>
-                  {user.name}
-                </Option>
-              ))}
-            </Select>
-          </DialogBody>
-          <DialogFooter className="space-x-2">
-            <Button
-              variant="outlined"
-              onClick={() => setOpen(false)}
-              className="rounded-md hover:text-red-700 hover:border-red-700"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="filled"
-              type="submit"
-              className="rounded-md hover:opacity-75"
-            >
-              <span>Create</span>
-            </Button>
-          </DialogFooter>
-        </form>
-      </Dialog>
+      {/* FEATURE ADD DIALOG */}
+      <AddFeatureDialog
+        users={users}
+        projectID={projectID}
+        openAddFeature={openAddFeature}
+        handleOpenAddFeature={handleOpenAddFeature}
+        newFeature={newFeature}
+        setNewFeature={setNewFeature}
+        setError={setError}
+        fetchFeatures={fetchFeatures}
+      />
 
       {/* UPDATE FEATURE */}
       <Dialog
@@ -640,8 +546,6 @@ const SingleProject = () => {
           </DialogFooter>
         </form>
       </Dialog>
-
-      {/* UPDATE PROJECT DIALOG */}
     </div>
   );
 };

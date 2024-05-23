@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-
-import DataTable from "react-data-table-component";
 
 import {
   Button,
