@@ -17,15 +17,67 @@ import {
   Option,
 } from "@material-tailwind/react";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import UpdateProjectDialog from "../../Components/Admin/SingleProject/UpdateProjectDialog";
 
 const SingleProject = () => {
-  const { projectID } = useParams(); // get the ID in url parameter
   const navigate = useNavigate();
-  const [singleProject, setSingleProject] = useState(null);
-  const [features, setFeatures] = useState([]);
-  const [users, setUsers] = useState([]);
+
+  // get the ID in url parameter
+  const { projectID } = useParams();
+
+  // loading and error state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Fetch Single Project
+  const [singleProject, setSingleProject] = useState(null);
+
+  const fetchProject = async () => {
+    try {
+      const { data } = await axios.get(`/api/v1/projects/${projectID}`);
+      setSingleProject(data.project);
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProject();
+  }, [projectID]);
+
+  // Fetch features
+  const [features, setFeatures] = useState([]);
+
+  const fetchFeatures = async () => {
+    try {
+      const { data } = await axios.get(`/api/v1/features/project/${projectID}`);
+      setFeatures(data.features);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeatures();
+  }, [projectID]);
+
+  // Fetch Users
+  const [users, setUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const { data } = await axios.get(`/api/v1/users`);
+      setUsers(data.user);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [projectID]);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -38,6 +90,64 @@ const SingleProject = () => {
       assignedTo: null,
     });
   };
+
+  // table for react data table
+  const columns = [
+    {
+      name: <p className="font-bold">Feature</p>,
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: <p className="font-bold">Description</p>,
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    {
+      name: <p className="font-bold">Status</p>,
+      selector: (row) => row.status,
+      sortable: true,
+    },
+    {
+      name: <p className="font-bold">Due Date</p>,
+      selector: (row) => row.dueDate,
+      format: (row) =>
+        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
+      sortable: true,
+    },
+    {
+      name: <p className="font-bold">Assigned To</p>,
+      selector: (row) => row.assignedTo,
+      format: (row) => getAssignedToName(row.assignedTo),
+      sortable: true,
+    },
+  ];
+
+  // PROJECT states and handlers
+  // open project to update
+  const [openProjectToUpdate, setOpenProjectToUpdate] = useState(false);
+  const [projectToUpdate, setProjectToUpdate] = useState({
+    name: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+    priority: "",
+    isDone: false,
+  });
+
+  const handleOpenUpdateProject = () => {
+    setProjectToUpdate({
+      name: singleProject.name,
+      description: singleProject.description,
+      startDate: new Date(singleProject.startDate).toISOString().split("T")[0],
+      endDate: new Date(singleProject.endDate).toISOString().split("T")[0],
+      priority: singleProject.priority,
+      isDone: singleProject.isDone,
+    });
+    setOpenProjectToUpdate(!openProjectToUpdate);
+  };
+
+  // FEATURES
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [featureToUpdate, setFeatureToUpdate] = useState(null);
@@ -61,41 +171,6 @@ const SingleProject = () => {
 
     setOpenUpdate(true);
   };
-
-  const fetchProject = async () => {
-    try {
-      const { data } = await axios.get(`/api/v1/projects/${projectID}`);
-      setSingleProject(data.project);
-      setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
-
-  const fetchFeatures = async () => {
-    try {
-      const { data } = await axios.get(`/api/v1/features/project/${projectID}`);
-      setFeatures(data.features);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const { data } = await axios.get(`/api/v1/users`);
-      setUsers(data.user);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchProject();
-    fetchFeatures();
-    fetchUsers();
-  }, [projectID]);
 
   // CREATE/ADD HANDLER
   const [newFeature, setNewFeature] = useState({
@@ -210,37 +285,6 @@ const SingleProject = () => {
     return user ? user.name : "Not Assigned";
   };
 
-  const columns = [
-    {
-      name: "Feature",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    {
-      name: "Status",
-      selector: (row) => row.status,
-      sortable: true,
-    },
-    {
-      name: "Due Date",
-      selector: (row) => row.dueDate,
-      sortable: true,
-      format: (row) =>
-        row.dueDate ? new Date(row.dueDate).toLocaleDateString() : "No Due",
-    },
-    {
-      name: "Assigned To",
-      selector: (row) => row.assignedTo,
-      format: (row) => getAssignedToName(row.assignedTo),
-      sortable: true,
-    },
-  ];
-
   const handleDeleteProject = async () => {
     if (features.length > 0) {
       const confirmation = window.confirm(
@@ -274,65 +318,7 @@ const SingleProject = () => {
     }
   };
 
-  // State and handlers for updating project
-  const [project, setProject] = useState(null);
-  const [openUpdateProject, setOpenUpdateProject] = useState(false);
-  const [updatedProject, setUpdatedProject] = useState({
-    name: "",
-    description: "",
-    startDate: "",
-    endDate: "",
-    priority: "",
-    isDone: false,
-  });
-
-  const handleOpenUpdateProject = () => {
-    setUpdatedProject({
-      name: singleProject.name,
-      description: singleProject.description,
-      startDate: new Date(singleProject.startDate).toISOString().split("T")[0],
-      endDate: new Date(singleProject.endDate).toISOString().split("T")[0],
-      priority: singleProject.priority,
-      isDone: singleProject.isDone,
-    });
-    setOpenUpdateProject(true);
-  };
-
-  const handleCloseUpdateProject = () => {
-    setOpenUpdateProject(false);
-  };
-
-  const handleUpdateSelectProject = (name, value) => {
-    setUpdatedProject((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateProjectChange = (e) => {
-    const { name, value } = e.target;
-    setUpdatedProject((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleUpdateProjectSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.patch(
-        `/api/v1/projects/${projectID}`,
-        updatedProject
-      );
-      setProject(data.project);
-      setOpenUpdateProject(false);
-
-      fetchProject();
-    } catch (error) {
-      console.error("Error updating project:", error.message);
-    }
-  };
-
+  // Date Formatter
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
 
@@ -471,6 +457,16 @@ const SingleProject = () => {
           )}
         </div>
       </Card>
+
+      {/* PROJECT UPDATE DIALOG */}
+      <UpdateProjectDialog
+        openProjectToUpdate={openProjectToUpdate}
+        handleOpenUpdateProject={handleOpenUpdateProject}
+        projectToUpdate={projectToUpdate}
+        setProjectToUpdate={setProjectToUpdate}
+        fetchProject={fetchProject}
+        projectID={projectID}
+      />
 
       {/* ADD FEATURE */}
       <Dialog
@@ -646,132 +642,6 @@ const SingleProject = () => {
       </Dialog>
 
       {/* UPDATE PROJECT DIALOG */}
-      <Dialog
-        open={openUpdateProject}
-        handler={handleCloseUpdateProject}
-        size="sm"
-        className="p-3"
-      >
-        <form onSubmit={handleUpdateProjectSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase">
-            Update Project
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-7">
-            <Input
-              label="Project Name"
-              variant="standard"
-              size="md"
-              name="name"
-              value={updatedProject.name}
-              onChange={handleUpdateProjectChange}
-              required
-            />
-            <Input
-              label="Description"
-              variant="standard"
-              size="md"
-              name="description"
-              value={updatedProject.description}
-              onChange={handleUpdateProjectChange}
-              required
-            />
-
-            <div className="flex space-x-2">
-              <Input
-                label="Start Date"
-                type="date"
-                variant="standard"
-                size="md"
-                name="startDate"
-                value={updatedProject.startDate}
-                onChange={handleUpdateProjectChange}
-                required
-              />
-              <Input
-                label="End Date"
-                type="date"
-                variant="standard"
-                size="md"
-                name="endDate"
-                value={updatedProject.endDate}
-                onChange={handleUpdateProjectChange}
-                required
-              />
-            </div>
-            <Select
-              label="Priority"
-              variant="standard"
-              size="md"
-              name="priority"
-              value={updatedProject.priority}
-              onChange={(value) => handleUpdateSelectProject("priority", value)}
-              className={`text-${
-                updatedProject.priority === "Urgent"
-                  ? "red-900"
-                  : updatedProject.priority === "Important"
-                  ? "deep-orange-500"
-                  : updatedProject.priority === "Medium"
-                  ? "blue-900"
-                  : "light-green-800"
-              }`}
-              required
-            >
-              <Option value="Urgent" className="text-red-900">
-                Urgent
-              </Option>
-              <Option value="Important" className="text-deep-orange-500">
-                Important
-              </Option>
-              <Option value="Medium" className="text-blue-900">
-                Medium
-              </Option>
-              <Option value="Low" className="text-light-green-800">
-                Low
-              </Option>
-            </Select>
-            <Select
-              label="Status"
-              variant="standard"
-              size="md"
-              name="isDone"
-              className={` ${
-                updatedProject.isDone ? "text-green-900" : "text-yellow-900"
-              }`}
-              value={updatedProject.isDone ? "Done" : "Ongoing"}
-              onChange={(value) =>
-                setUpdatedProject((prev) => ({
-                  ...prev,
-                  isDone: value === "Done",
-                }))
-              }
-              required
-            >
-              <Option value="Ongoing" className="text-yellow-900">
-                Ongoing
-              </Option>
-              <Option value="Done" className="text-green-900">
-                Done
-              </Option>
-            </Select>
-          </DialogBody>
-          <DialogFooter className="space-x-2">
-            <Button
-              variant="outlined"
-              onClick={handleCloseUpdateProject}
-              className="rounded-md hover:text-red-700 hover:border-red-700"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="filled"
-              type="submit"
-              className="rounded-md hover:opacity-75"
-            >
-              <span>Update</span>
-            </Button>
-          </DialogFooter>
-        </form>
-      </Dialog>
     </div>
   );
 };
