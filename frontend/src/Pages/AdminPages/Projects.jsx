@@ -31,7 +31,7 @@ const Projects = () => {
     }
   };
 
-  // dialog/modal toggle
+  // dialog / modal toggle
   const handleDialogToggle = () => {
     setIsOpen(!isOpen);
   };
