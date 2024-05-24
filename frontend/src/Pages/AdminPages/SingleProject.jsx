@@ -205,7 +205,7 @@ const SingleProject = () => {
       name: selectedFeature.name,
       description: selectedFeature.description,
       status: selectedFeature.status,
-      dueDate: selectedFeature.status
+      dueDate: selectedFeature.dueDate
         ? new Date(selectedFeature.dueDate).toLocaleDateString().split("T")[0]
         : null,
       assignedTo: selectedFeature.assignedTo,
