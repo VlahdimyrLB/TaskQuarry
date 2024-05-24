@@ -90,7 +90,7 @@ const UpdateProjectDialog = ({
             required
           />
 
-          <div className="flex space-x-2">
+          <div className="flex flex-col space-y-5 items-start ml-0 md:flex-row md:space-x-2">
             <Input
               label="Start Date"
               type="date"

@@ -4,7 +4,7 @@ import axios from "axios";
 
 import DataTable from "react-data-table-component";
 
-import { Card, Typography, Button } from "@material-tailwind/react";
+import { Card, Typography, Button, Textarea } from "@material-tailwind/react";
 import { PlusIcon } from "@heroicons/react/24/solid";
 
 // Child Components
@@ -233,7 +233,7 @@ const SingleProject = () => {
 
     const options = {
       timeZone: "Asia/Manila",
-      month: "numeric",
+      month: "short",
       day: "numeric",
       year: "numeric",
       // timeZoneName: "short",
@@ -258,19 +258,19 @@ const SingleProject = () => {
             <p className="text-lg font-semibold mb-1">Project Information</p>
           </div>
 
-          <div className="flex flex-col justify-evenly items-start mt-2 space-y-3  md:flex-row md:items-end md:space-x-6">
-            <div className="flex-none w-36 mr-5">
+          <div className="grid gap-5 grid-cols-1 grid-flow-row-dense items-end sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            <div className="pt-5">
               <p className="text-xs mb-2 uppercase font-semibold">Project</p>
-              <Typography className="border-b-2 w-36">
+              <Typography className="border-b-2 ">
                 {singleProject.name}
               </Typography>
             </div>
 
-            <div className="w-64">
+            <div className="col-span-2">
               <p className="text-xs mb-2 uppercase font-semibold">
                 Description
               </p>
-              <Typography className="border-b-2 w-64">
+              <Typography className="border-b-2">
                 {singleProject.description}
               </Typography>
             </div>
@@ -278,7 +278,7 @@ const SingleProject = () => {
             <div>
               <p className="text-xs mb-2 uppercase font-semibold">Status</p>
               <Typography
-                className={`border-b-2 w-[80px] ${
+                className={`border-b-2  ${
                   singleProject.isDone ? "text-green-900" : "text-yellow-900"
                 }`}
               >
@@ -289,7 +289,7 @@ const SingleProject = () => {
             <div>
               <p className="text-xs mb-2 uppercase font-semibold">Priority</p>
               <Typography
-                className={`w-[80px] border-b-2 text-${
+                className={`border-b-2 text-${
                   singleProject.priority === "Urgent"
                     ? "red-900"
                     : singleProject.priority === "Important"
@@ -307,7 +307,7 @@ const SingleProject = () => {
               <p className="text-xs mb-2 uppercase font-semibold">
                 Date / Duration
               </p>
-              <Typography className="w-[180px] border-b-2">
+              <Typography className=" border-b-2">
                 {formatDate(singleProject.startDate)} -{" "}
                 {formatDate(singleProject.endDate)}
               </Typography>
