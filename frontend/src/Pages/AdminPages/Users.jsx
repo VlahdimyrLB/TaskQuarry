@@ -98,15 +98,14 @@ const Users = () => {
 
   const columns = [
     {
-      //TO FIX: causes deprecated warning, should use selector function
       name: "Name",
-      selector: (row) => (
-        <UsersCell row={row} defaultUserIcon={defaultUserIcon} />
-      ),
+      selector: (row) => row.name,
+      sortable: true,
     },
     {
       name: "Username",
       selector: (row) => row.username,
+      sortable: true,
     },
     {
       name: "Password",
@@ -292,37 +291,40 @@ const Users = () => {
   return (
     <>
       <Card className="w-full shadow-lg p-2 dark:bg-dark-secondary dark:text-[#E6EDF3] dark:shadow-white dark:shadow-sm">
-        <div className="mb-8 flex items-center justify-between gap-8 px-4 mt-5">
-          <div>
-            <Typography variant="h5" color="blue-gray">
-              Users list
-            </Typography>
-            <Typography color="gray" className="mt-1 font-normal">
-              See information about all users
-            </Typography>
+        <div className="flex flex-col justify-between">
+          <div className="mb-6 flex items-center justify-between gap-8 px-4 mt-5">
+            <div>
+              <Typography variant="h5" color="blue-gray">
+                Users list
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                See information about all users
+              </Typography>
+            </div>
           </div>
-          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-            <Button
-              className="flex items-center gap-3"
-              size="sm"
-              onClick={handleOpen}
-            >
-              <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Create New
-              User
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-end gap-4 md:flex-row px-4 mb-2">
-          <div className="w-full md:w-72">
-            <Input
-              label="Search"
-              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              onChange={handleSearch}
-            />
+          <div className="flex flex-row items-center justify-between gap-4 px-2 mb-3">
+            <div className="w-full md:w-auto">
+              <Input
+                label="Search for Users"
+                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                onChange={handleSearch}
+              />
+            </div>
+
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <Button
+                className="flex items-center gap-3"
+                size="sm"
+                onClick={handleOpen}
+              >
+                <UserPlusIcon strokeWidth={2} className="h-4 w-4 my-1" />
+                <span className="hidden md:block">Create New User</span>
+              </Button>
+            </div>
           </div>
         </div>
         <DataTable
-          className="overflow-hidden"
+          className="overflow-y-auto"
           columns={columns}
           data={filteredUsers} // Use filteredUsers instead of users
           customStyles={CustomTableStyles}

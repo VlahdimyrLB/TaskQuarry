@@ -255,10 +255,10 @@ const SingleProject = () => {
       <div className="flex flex-col">
         <Card className="p-5 rounded-md shadow-md bg-white">
           <div>
-            <p className="text-lg font-semibold mb-1">Project Information</p>
+            <p className="text-lg font-semibold mb-3">Project Information</p>
           </div>
 
-          <div className="grid gap-5 grid-cols-1 grid-flow-row-dense items-end sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="grid gap-5 grid-cols-1 items-end sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 ">
             <div className="pt-5">
               <p className="text-xs mb-2 uppercase font-semibold">Project</p>
               <Typography className="border-b-2 ">
@@ -286,7 +286,7 @@ const SingleProject = () => {
               </Typography>
             </div>
 
-            <div>
+            <div className="w-36 md:w-full">
               <p className="text-xs mb-2 uppercase font-semibold">Priority</p>
               <Typography
                 className={`border-b-2 text-${
@@ -303,7 +303,7 @@ const SingleProject = () => {
               </Typography>
             </div>
 
-            <div>
+            <div className="col-span-2 md:col-auto">
               <p className="text-xs mb-2 uppercase font-semibold">
                 Date / Duration
               </p>
