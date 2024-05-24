@@ -38,14 +38,14 @@ export const columns = [
     cell: (props) => {
       const tasks = props.getValue();
       return (
-        <div>
+        <div className="w-32">
           <div className="flex items-center gap-2">
             {tasks === "Not Yet Started" ? (
-              <div className="bg-gray-700 w-4 h-4 rounded-full"></div>
+              <div className="bg-gray-700 w-3 h-3 rounded-full"></div>
             ) : tasks === "In Progress" ? (
-              <div className="bg-orange-700 w-4 h-4 rounded-full"></div>
+              <div className="bg-orange-700 w-3 h-3 rounded-full"></div>
             ) : (
-              <div className="bg-blue-700 w-4 h-4 rounded-full"></div>
+              <div className="bg-blue-700 w-3 h-3 rounded-full"></div>
             )}
             {tasks}
           </div>
@@ -67,7 +67,7 @@ export const columns = [
         : "No Due";
       const iconClass = date ? "w-5 h-5 mr-2 text-brown-700" : ""; // Conditionally apply the class for clock icon
       return (
-        <p className="flex items-center ">
+        <p className="flex items-center w-32">
           {date && <ClockIcon className={iconClass} />}{" "}
           {/* Render clock icon only if date exists */}
           {formattedDate}

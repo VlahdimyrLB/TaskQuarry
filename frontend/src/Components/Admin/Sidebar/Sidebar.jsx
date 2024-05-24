@@ -40,7 +40,7 @@ const Sidebar = ({ isOpen, close }) => {
 
   return (
     <>
-      {/* Dark ovrlay */}
+      {/* Dark overlay */}
       {isOpen && (
         <>
           <div
@@ -84,6 +84,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>
@@ -101,6 +102,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>
@@ -118,6 +120,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>
@@ -135,6 +138,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>
@@ -152,6 +156,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>
@@ -169,6 +174,7 @@ const Sidebar = ({ isOpen, close }) => {
                   ? "bg-gray-200 dark:bg-blue-gray-50 dark:text-blue-gray-900 dark:opacity-80 rounded"
                   : ""
               }
+              onClick={close}
               end
             >
               <ListItem>

@@ -67,9 +67,7 @@ const UpdateFeatureDialog = ({
     );
     if (confirmation) {
       try {
-        const response = await axios.delete(
-          `/api/v1/features/${featureToUpdate._id}`
-        );
+        await axios.delete(`/api/v1/features/${featureToUpdate._id}`);
 
         setFeatureToUpdate(null);
         fetchFeatures();
@@ -135,7 +133,11 @@ const UpdateFeatureDialog = ({
             variant="standard"
             size="md"
             name="dueDate"
-            value={updatedFeature.dueDate || ""}
+            value={
+              updatedFeature.dueDate !== null
+                ? new Date(updatedFeature.dueDate).toISOString().split("T")[0]
+                : ""
+            }
             onChange={handleUpdateFeatureChange}
           />
           <Select

@@ -176,9 +176,9 @@ export function ViewTaskDialog({
             {selectedFeature?.description}
           </p>
         </DialogHeader>
-        <DialogBody className="flex flex-col items-center space-y-6 justify-center md:flex-row md:items-start md:justify-evenly md:space-y-0 md:space-x-6">
+        <DialogBody className="flex flex-col space-y-6 justify-center md:flex-row md:items-start md:justify-evenly md:space-y-0 md:space-x-6">
           <div className="space-y-8 pt-4">
-            <div className="w-56 ">
+            <div className="md:w-56">
               <Input
                 variant="static"
                 type="datetime"
@@ -189,7 +189,7 @@ export function ViewTaskDialog({
               />
             </div>
 
-            <div className="w-56">
+            <div className="md:w-56">
               <Select
                 label="Set Status"
                 variant="static"
@@ -204,7 +204,7 @@ export function ViewTaskDialog({
           </div>
 
           <div className="flex-1 flex-col ">
-            <div className="relative flex mb-4 pl-3">
+            <div className="relative flex mb-4 md:pl-3">
               <Input
                 type="text"
                 label="Add New Task"
@@ -223,7 +223,7 @@ export function ViewTaskDialog({
                 <PlusIcon strokeWidth={3} className="h-5 w-5" />
               </button>
             </div>
-            <div className="overflow-y-auto w-full z max-h-[300px]">
+            <div className="overflow-y-auto w-full z max-h-[250px]">
               <Card className="shadow-none">
                 {selectedFeature?.tasks?.length > 0 ? (
                   selectedFeature?.tasks.map((task) => (
