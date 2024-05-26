@@ -25,6 +25,7 @@ import defaultUserIcon from "../../Assets/images/user.png";
 import UsersCell from "../../Components/Admin/UserManagement/UsersCell";
 
 import AddUserDialog from "../../Components/Admin/UserManagement/AddUserDialog";
+import UpdateUserDialog from "../../Components/Admin/UserManagement/UpdateUserDialog";
 
 import { AuthContext } from "../../App";
 
@@ -93,7 +94,7 @@ const Users = () => {
     },
   ];
 
-  // Add Task related handler and states
+  // ADD User related handler and states
   const [openAddUser, setOpenAddUser] = useState(false);
   const [isNameDuplicate, setIsNameDuplicate] = useState(false);
   const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
@@ -117,7 +118,7 @@ const Users = () => {
     setOpenAddUser(!openAddUser);
   };
 
-  // OPEN UPDATE DIALOG
+  // UPDATE User related handler and states
   const [toUpdateUser, setToUpdateUser] = useState(null);
 
   const handleOpenUpdate = (id) => {
@@ -127,65 +128,7 @@ const Users = () => {
     setIsUsernameDuplicate(false);
   };
 
-  // HANDLE CHANGE UPDATE
-  const handleChangeUpdate = (e) => {
-    const { name, value } = e.target;
-    setToUpdateUser((prevUser) => ({
-      ...prevUser,
-      [name]: value,
-    }));
-  };
-
-  const handleSelect = (value) => {
-    setToUpdateUser((prevUser) => ({
-      ...prevUser,
-      isAdmin: value,
-    }));
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-
-    const { _id, name, username, password, isAdmin } = toUpdateUser;
-
-    if (!name.trim() || !username.trim()) {
-      // Validation: Name and Username are required
-      return;
-    }
-
-    // Check for duplicate name
-    const isNameDuplicate = users.some(
-      (user) => user.name === name && user._id !== _id
-    );
-    if (isNameDuplicate) {
-      setIsNameDuplicate(true);
-      return;
-    }
-
-    // Check for duplicate username
-    const isDuplicateUsername = users.some(
-      (user) => user.username === username && user._id !== _id
-    );
-    if (isDuplicateUsername) {
-      setIsUsernameDuplicate(true);
-      return;
-    }
-
-    try {
-      await axios.patch(`/api/v1/users/${_id}`, {
-        name,
-        username,
-        password,
-        isAdmin: toUpdateUser.isAdmin,
-      });
-      fetchUsers();
-      setToUpdateUser(null);
-    } catch (error) {
-      console.log("Error updating user:", error);
-    }
-  };
-
-  // DELETE
+  // DELETE User handler
   const handleDelete = async (userId) => {
     try {
       const confirmed = window.confirm(
@@ -208,8 +151,9 @@ const Users = () => {
     }
   };
 
-  const [searchTerm, setSearchTerm] = useState(""); // State to hold search term
-  const [filteredUsers, setFilteredUsers] = useState([]); // State to hold filtered users
+  // Search and Filter related state and handler
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   // Function to filter users based on search term
   const handleSearch = (e) => {
@@ -285,87 +229,17 @@ const Users = () => {
       />
 
       {/* UPDATE USER DIALOG */}
-      <Dialog
-        open={!!toUpdateUser}
-        handler={() => setToUpdateUser(null)}
-        size="sm"
-        className="p-3"
-      >
-        <DialogHeader className="text-md text-gray-800 uppercase">
-          Update User
-        </DialogHeader>
-        {toUpdateUser ? (
-          <form onSubmit={handleUpdate}>
-            {toUpdateUser ? (
-              <DialogBody className="flex flex-col gap-7">
-                <Input
-                  label="Enter Full Name"
-                  variant="standard"
-                  size="md"
-                  name="name"
-                  value={toUpdateUser.name}
-                  onChange={handleChangeUpdate}
-                  error={isNameDuplicate ? true : false}
-                  className={isNameDuplicate ? "text-red-500" : ""}
-                />
-                <Input
-                  label="Enter Username"
-                  variant="standard"
-                  size="md"
-                  name="username"
-                  value={toUpdateUser.username}
-                  onChange={handleChangeUpdate}
-                  error={isUsernameDuplicate ? true : false}
-                  className={isUsernameDuplicate ? "text-red-500" : ""}
-                />
-                <Input
-                  label="Enter Password"
-                  variant="standard"
-                  size="md"
-                  name="password"
-                  value={toUpdateUser.password}
-                  onChange={handleChangeUpdate}
-                />
 
-                <Select
-                  variant="standard"
-                  label="User Type"
-                  name="isAdmin"
-                  value={toUpdateUser.isAdmin}
-                  onChange={handleSelect}
-                >
-                  <Option value="User">User Only Access</Option>
-                  <Option value="Admin">Admin Access</Option>
-                </Select>
-
-                <p className="text-red-700 text-center">
-                  {isNameDuplicate || isUsernameDuplicate
-                    ? "Duplicate Data Entry"
-                    : ""}
-                </p>
-              </DialogBody>
-            ) : null}
-            <DialogFooter className="space-x-2">
-              <Button
-                variant="outlined"
-                onClick={() => setToUpdateUser(null)}
-                className="rounded-md hover:text-red-700 hover:border-red-700"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="filled"
-                type="submit"
-                className="rounded-md hover:opacity-75"
-              >
-                Save
-              </Button>
-            </DialogFooter>
-          </form>
-        ) : (
-          <p>User not found</p>
-        )}
-      </Dialog>
+      <UpdateUserDialog
+        users={users}
+        fetchUsers={fetchUsers}
+        toUpdateUser={toUpdateUser}
+        setToUpdateUser={setToUpdateUser}
+        isNameDuplicate={isNameDuplicate}
+        setIsNameDuplicate={setIsNameDuplicate}
+        isUsernameDuplicate={isUsernameDuplicate}
+        setIsUsernameDuplicate={setIsUsernameDuplicate}
+      />
     </>
   );
 };

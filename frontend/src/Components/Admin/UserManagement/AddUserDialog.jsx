@@ -1,4 +1,3 @@
-import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 
 import {
@@ -17,7 +16,6 @@ import {
 const AddUserDialog = ({
   users,
   openAddUser,
-  setOpenAddUser,
   handleOpenAddUser,
   newUser,
   setNewUser,
