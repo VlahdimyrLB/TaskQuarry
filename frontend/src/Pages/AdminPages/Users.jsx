@@ -1,71 +1,44 @@
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import {
-  MagnifyingGlassIcon,
-  ChevronUpDownIcon,
-} from "@heroicons/react/24/outline";
-import { PencilIcon, UserPlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+
 import {
   Card,
-  CardHeader,
   Input,
   Typography,
   Button,
-  CardBody,
-  Chip,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Checkbox,
   Select,
   Option,
 } from "@material-tailwind/react";
-import { useEffect, useState, useContext } from "react";
-// import { useReactTable } from "@tanstack/react-table";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
+
 import DataTable from "react-data-table-component";
 import { createTheme } from "react-data-table-component";
 import CustomTableStyles from "../../Components/Shared/CustomTableStyles";
-import defaultUserIcon from "../../Assets/images/user.png";
 import ActionsCell from "../../Components/Admin/UserManagement/ActionsCell";
 import RolesCell from "../../Components/Admin/UserManagement/RolesCell";
+import defaultUserIcon from "../../Assets/images/user.png";
 import UsersCell from "../../Components/Admin/UserManagement/UsersCell";
+
+import AddUserDialog from "../../Components/Admin/UserManagement/AddUserDialog";
 
 import { AuthContext } from "../../App";
 
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Admin",
-    value: "admin",
-  },
-  {
-    label: "User",
-    value: "User",
-  },
-];
-
-const TABLE_HEAD = ["Name", "Username", "Password", "Type", "Actions"];
 createTheme("custom", {
   background: {
     default: "transparent",
   },
 });
+
 const Users = () => {
   const { loggedUser } = useContext(AuthContext);
-  const [users, setUsers] = useState([]); // users list
-  const [isNameDuplicate, setIsNameDuplicate] = useState(false);
-  const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
-  // const [userIcon, setUserIcon] = useState(defaultUserIcon);
+  const [users, setUsers] = useState([]);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchUsers = async () => {
     try {
@@ -74,9 +47,12 @@ const Users = () => {
           Accept: "application/json",
         },
       });
+
       setUsers(data.user);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsError(true);
     }
   };
 
@@ -84,23 +60,13 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  //OPEN CREATE NEW USER DIALOG
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = () => {
-    setOpen(!open);
-    //prevent keeping the uploaded image in preview without submission (suggest other approach)
-    // setUserIcon(defaultUserIcon);
-    setIsNameDuplicate(false);
-    setIsUsernameDuplicate(false);
-    setNewUser(!newUser);
-  };
-
+  // Table Info
   const columns = [
     {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
+      cell: (row) => <p className="w-30">{row.name}</p>,
     },
     {
       name: "Username",
@@ -127,7 +93,11 @@ const Users = () => {
     },
   ];
 
-  // CREATE/ADD HANDLER
+  // Add Task related handler and states
+  const [openAddUser, setOpenAddUser] = useState(false);
+  const [isNameDuplicate, setIsNameDuplicate] = useState(false);
+  const [isUsernameDuplicate, setIsUsernameDuplicate] = useState(false);
+
   const [newUser, setNewUser] = useState({
     name: "",
     username: "",
@@ -135,51 +105,16 @@ const Users = () => {
     isAdmin: "User",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const { name, username } = newUser;
-
-    if (!name.trim() || !username.trim()) {
-      // Validation: Name and Username are required
-      return;
-    }
-
-    // Check for duplicate name
-    const isNameDuplicate = users.some((user) => user.name === name);
-    if (isNameDuplicate) {
-      setIsNameDuplicate(true);
-      return;
-    }
-
-    // Check for duplicate username
-    const isDuplicateUsername = users.some(
-      (user) => user.username === username
-    );
-    if (isDuplicateUsername) {
-      setIsUsernameDuplicate(true);
-      return;
-    }
-
-    try {
-      await axios.post("/api/v1/users", newUser);
-      fetchUsers();
-      setNewUser({
-        name: "",
-        username: "",
-        password: "",
-        isAdmin: "User",
-      });
-
-      handleOpen();
-    } catch (error) {
-      console.log(error);
-    }
+  const handleOpenAddUser = () => {
+    setIsNameDuplicate(false);
+    setIsUsernameDuplicate(false);
+    setNewUser({
+      name: "",
+      username: "",
+      password: "",
+      isAdmin: "User",
+    });
+    setOpenAddUser(!openAddUser);
   };
 
   // OPEN UPDATE DIALOG
@@ -315,7 +250,7 @@ const Users = () => {
               <Button
                 className="flex items-center gap-3"
                 size="sm"
-                onClick={handleOpen}
+                onClick={handleOpenAddUser}
               >
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4 my-1" />
                 <span className="hidden md:block">Create New User</span>
@@ -326,7 +261,7 @@ const Users = () => {
         <DataTable
           className="overflow-y-auto"
           columns={columns}
-          data={filteredUsers} // Use filteredUsers instead of users
+          data={filteredUsers}
           customStyles={CustomTableStyles}
           pagination
           fixedHeader
@@ -334,108 +269,20 @@ const Users = () => {
         />
       </Card>
 
-      {/* CREATE NEW USER DIALOG */}
-      <Dialog open={open} handler={handleOpen} size="sm" className="p-3">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader className="text-md text-gray-800 uppercase mt-2">
-            Create New User
-          </DialogHeader>
-          <DialogBody className="flex flex-col gap-7">
-            {/* <div className="flex justify-center items-center">
-                <div className="relative inline-block">
-                  <img
-                    src={userIcon}
-                    className="h-44 w-44 rounded-full"
-                    alt="User Icon"
-                  />
-                  <Tooltip content="Upload an image">
-                    <span
-                      onClick={handleUploadClick}
-                      className="absolute flex bottom-0 right-0 bg-dark-secondary text-white h-10 w-10 border-4 border-white rounded-full cursor-pointer items-center justify-center"
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </span>
-                  </Tooltip>
-                </div>
-              </div>
-              <input
-                type="file"
-                onChange={handleImageChange}
-                ref={imageUploadRef}
-                hidden
-              /> */}
-            <Input
-              label="Enter Full Name"
-              variant="standard"
-              size="md"
-              name="name"
-              value={newUser.name}
-              onChange={handleChange}
-              error={isNameDuplicate ? true : false}
-              className={isNameDuplicate ? "text-red-500" : ""}
-              required
-            />
-            <Input
-              label="Enter Username"
-              variant="standard"
-              size="md"
-              name="username"
-              value={newUser.username}
-              onChange={handleChange}
-              error={isUsernameDuplicate ? true : false}
-              className={isUsernameDuplicate ? "text-red-500" : ""}
-              required
-            />
-            <Input
-              label="Enter Password"
-              variant="standard"
-              size="md"
-              name="password"
-              value={newUser.password}
-              onChange={handleChange}
-              required
-            />
-
-            <Select
-              variant="standard"
-              label="Automatically User Only Access"
-              name="isAdmin"
-              value={newUser.isAdmin} // Reflect the state value here
-              onChange={(e) =>
-                setNewUser((prevState) => ({
-                  ...prevState,
-                  isAdmin: e.target.value,
-                }))
-              }
-            >
-              <Option value="User">User Only Access</Option>
-              <Option value="Admin">Admin Access</Option>
-            </Select>
-
-            <p className="text-red-700 text-center">
-              {isNameDuplicate || isUsernameDuplicate
-                ? "Duplicate Data Entry"
-                : ""}
-            </p>
-          </DialogBody>
-          <DialogFooter className="space-x-2">
-            <Button
-              variant="outlined"
-              onClick={handleOpen}
-              className="rounded-md hover:text-red-700 hover:border-red-700"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button
-              variant="filled"
-              type="submit"
-              className="rounded-md hover:opacity-75"
-            >
-              <span>Create</span>
-            </Button>
-          </DialogFooter>
-        </form>
-      </Dialog>
+      {/* CREATE/ADD NEW USER DIALOG */}
+      <AddUserDialog
+        users={users}
+        fetchUsers={fetchUsers}
+        openAddUser={openAddUser}
+        setOpenAddUser={setOpenAddUser}
+        newUser={newUser}
+        setNewUser={setNewUser}
+        handleOpenAddUser={handleOpenAddUser}
+        isNameDuplicate={isNameDuplicate}
+        setIsNameDuplicate={setIsNameDuplicate}
+        isUsernameDuplicate={isUsernameDuplicate}
+        setIsUsernameDuplicate={setIsUsernameDuplicate}
+      />
 
       {/* UPDATE USER DIALOG */}
       <Dialog
