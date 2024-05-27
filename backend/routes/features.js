@@ -7,6 +7,7 @@ const {
   updateFeature,
   deleteFeature,
   createTask,
+  getAllTasks,
   updateTask,
   deleteTask,
   getAllFeaturesOfProject,
@@ -14,6 +15,9 @@ const {
   updateFeatureStatus,
   getFeaturesWithProjectAndAssigneUser,
 } = require("../controllers/features");
+
+// Route to get all task
+router.get("/tasks", getAllTasks);
 
 // Route to get all features of a specific project
 router.get("/project/:projectId", getAllFeaturesOfProject);

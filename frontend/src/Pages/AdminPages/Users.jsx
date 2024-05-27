@@ -229,7 +229,6 @@ const Users = () => {
       />
 
       {/* UPDATE USER DIALOG */}
-
       <UpdateUserDialog
         users={users}
         fetchUsers={fetchUsers}
