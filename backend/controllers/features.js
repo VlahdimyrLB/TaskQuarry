@@ -168,6 +168,17 @@ const createTask = async (req, res) => {
   }
 };
 
+const getAllTasks = async (req, res) => {
+  try {
+    const features = await Feature.find({}, { tasks: 1 }); // Include only the tasks field
+    const allTasks = features.map((feature) => feature.tasks).flat(); // Flatten the array of arrays
+
+    res.status(200).json({ allTasks });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+};
+
 const updateTask = async (req, res) => {
   try {
     const { featureId, taskId } = req.params;
@@ -308,6 +319,7 @@ module.exports = {
   updateFeature,
   deleteFeature,
   createTask,
+  getAllTasks,
   updateTask,
   deleteTask,
   getAllFeaturesOfProject,
