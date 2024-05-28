@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import DashboardCard from "../../Components/Admin/Dashboard/DashboardCard";
+import FeatureStatusCount from "../../Components/Admin/Dashboard/FeatureStatusCount";
+
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [projectCount, setProjectCount] = useState(null);
   const [featureCount, setFeatureCount] = useState(null);
+  const [features, setFeatures] = useState(null);
   const [taskCount, setTaskCount] = useState(null);
   const [userCount, setUserCount] = useState(null);
 
@@ -26,6 +29,7 @@ const Dashboard = () => {
   const fetchFeatures = async () => {
     try {
       const { data } = await axios.get("/api/v1/features");
+      setFeatures(data.features);
       setFeatureCount(data.features.length);
     } catch (error) {
       console.log(error);
@@ -66,7 +70,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <>
+    <div className="flex flex-col justify-start">
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <DashboardCard
           logo={"LOGO"}
@@ -89,7 +93,13 @@ const Dashboard = () => {
           data={userCount}
         />
       </div>
-    </>
+
+      <div className="flex justify-evenly items-center my-5 ">
+        <FeatureStatusCount features={features} />
+        <FeatureStatusCount features={features} />
+        <FeatureStatusCount features={features} />
+      </div>
+    </div>
   );
 };
 export default Dashboard;
