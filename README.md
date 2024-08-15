@@ -1,4 +1,4 @@
-# TaskQuarry (currently on remake and refactoring stage)
+# TaskQuarry (continued in private repository)
 
 A collaborative project management tool built using MERN Stack and Tailwind CSS.
 
